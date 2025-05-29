@@ -1,17 +1,17 @@
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import List, Optional
+from .base_entity import BaseEntity
 
 @dataclass
-class Exhibition:
-    id: int
+class Exhibition(BaseEntity):
     title: str
     description: str
     start_date: datetime
     end_date: datetime
+    created_at: datetime = field(default_factory=datetime.now)
     artwork_ids: List[int] = field(default_factory=list)
     max_capacity: Optional[int] = None
-    created_at: datetime = field(default_factory=datetime.now)
 
     def __post_init__(self):
         self._validate()

@@ -12,7 +12,6 @@ class ExhibitionService(IExhibitionService):
                  artwork_repository: IArtworkRepository):
         self._exhibition_repository = exhibition_repository
         self._artwork_repository = artwork_repository
-        self._next_id = 1  # Временное решение для генерации ID
 
     def create_exhibition(self, title: str, description: str,
                          start_date: datetime, end_date: datetime,
@@ -20,16 +19,12 @@ class ExhibitionService(IExhibitionService):
         BusinessRuleValidator.validate_exhibition_dates(start_date, end_date)
         
         exhibition = Exhibition(
-            id=self._next_id,
             title=title,
             description=description,
             start_date=start_date,
             end_date=end_date,
-            max_capacity=max_capacity,
-            artwork_ids=[],
-            created_at=datetime.now()
+            max_capacity=max_capacity
         )
-        self._next_id += 1
         return self._exhibition_repository.add(exhibition)
 
     def update_exhibition(self, exhibition_id: int, title: Optional[str] = None,

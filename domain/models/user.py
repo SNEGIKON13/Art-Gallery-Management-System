@@ -1,19 +1,19 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 from datetime import datetime
 from typing import Optional
+from .base_entity import BaseEntity
 
 class UserRole(Enum):
     ADMIN = "admin"
     USER = "user"
 
 @dataclass
-class User:
-    id: int
+class User(BaseEntity):
     username: str
     password_hash: str
     role: UserRole
-    created_at: datetime
+    created_at: datetime = field(default_factory=datetime.now)
     last_login: Optional[datetime] = None
     is_active: bool = True
 

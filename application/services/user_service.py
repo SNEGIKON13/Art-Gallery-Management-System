@@ -24,7 +24,6 @@ class UserService(IUserService):
             raise ValueError("Username already exists")
 
         user = User(
-            id=self._next_id,
             username=username,
             password_hash=self._hash_password(password),
             role=UserRole.ADMIN if is_admin else UserRole.USER,

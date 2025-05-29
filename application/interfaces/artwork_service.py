@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List, Optional
+from typing import List, Optional, Union
 from domain.models.artwork import Artwork, ArtworkType
 
 class IArtworkService(ABC):
@@ -11,8 +11,10 @@ class IArtworkService(ABC):
         pass
 
     @abstractmethod
-    def update_artwork(self, artwork_id: int, title: Optional[str] = None,
-                      artist: Optional[str] = None, year: Optional[int] = None,
+    def update_artwork(self, artwork_id: int, 
+                      title: Optional[str] = None,
+                      artist: Optional[str] = None, 
+                      year: Optional[int] = None,
                       description: Optional[str] = None,
                       type: Optional[ArtworkType] = None,
                       image_path: Optional[str] = None) -> Artwork:

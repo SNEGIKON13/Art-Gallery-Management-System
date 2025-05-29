@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, Union
 from domain.models.artwork import Artwork, ArtworkType
 from repository.interfaces.base_repository import IBaseRepository
 from application.interfaces.artwork_service import IArtworkService
@@ -12,7 +12,6 @@ class ArtworkService(IArtworkService):
                    description: str, type: ArtworkType,
                    image_path: Optional[str] = None) -> Artwork:
         artwork = Artwork(
-            id=0,  # ID будет установлен репозиторием
             title=title,
             artist=artist,
             year=year,
@@ -23,8 +22,10 @@ class ArtworkService(IArtworkService):
         )
         return self._repository.add(artwork)
 
-    def update_artwork(self, artwork_id: int, title: Optional[str] = None,
-                      artist: Optional[str] = None, year: Optional[int] = None,
+    def update_artwork(self, artwork_id: int, 
+                      title: Optional[str] = None,
+                      artist: Optional[str] = None, 
+                      year: Optional[int] = None,
                       description: Optional[str] = None,
                       type: Optional[ArtworkType] = None,
                       image_path: Optional[str] = None) -> Artwork:

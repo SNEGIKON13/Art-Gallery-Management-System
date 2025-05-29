@@ -1,7 +1,9 @@
 from abc import ABC, abstractmethod
 from typing import Generic, TypeVar, Optional, List
+from domain.models.base_entity import BaseEntity
+from ..specifications.base_specification import Specification
 
-T = TypeVar('T')
+T = TypeVar('T', bound=BaseEntity)
 
 class IBaseRepository(Generic[T], ABC):
     @abstractmethod
@@ -20,11 +22,16 @@ class IBaseRepository(Generic[T], ABC):
         pass
 
     @abstractmethod
-    def update(self, entity: T) -> None:
+    def update(self, entity: T) -> T:
         """Обновить существующую сущность"""
         pass
 
     @abstractmethod
     def delete(self, id: int) -> None:
         """Удалить сущность по id"""
+        pass
+
+    @abstractmethod
+    def find(self, specification: Specification[T]) -> List[T]:
+        """Найти сущности по спецификации"""
         pass

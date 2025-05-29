@@ -1,7 +1,8 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from typing import Optional
+from .base_entity import BaseEntity
 
 class ArtworkType(Enum):
     PAINTING = "painting"
@@ -10,15 +11,15 @@ class ArtworkType(Enum):
     INSTALLATION = "installation"
 
 @dataclass
-class Artwork:
-    id: int
+class Artwork(BaseEntity):
     title: str
     artist: str
     year: int
     description: str
     type: ArtworkType
-    image_path: Optional[str]
-    created_at: datetime
+    image_path: Optional[str] = None
+    created_at: datetime = field(default_factory=datetime.now)
+    _id: int = 0  # наследуется от BaseEntity
 
     def __post_init__(self):
         self._validate()
@@ -33,8 +34,10 @@ class Artwork:
         if not self.description:
             raise ValueError("Description cannot be empty")
 
-    def update_info(self, title: str = None, artist: str = None, 
-                   year: int = None, description: str = None) -> None:
+    def update_info(self, title: Optional[str] = None, 
+                   artist: Optional[str] = None,
+                   year: Optional[int] = None, 
+                   description: Optional[str] = None) -> None:
         """Обновляет основную информацию об экспонате"""
         if title is not None:
             self.title = title
