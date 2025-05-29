@@ -3,10 +3,7 @@ from typing import Optional, List
 from domain.models import User
 
 class IUserService(ABC):
-    @abstractmethod
-    def register(self, username: str, password: str, is_admin: bool = False) -> User:
-        """Регистрирует нового пользователя"""
-        pass
+
 
     @abstractmethod
     def authenticate(self, username: str, password: str) -> Optional[User]:
@@ -36,4 +33,9 @@ class IUserService(ABC):
     @abstractmethod
     def deactivate_user(self, user_id: int) -> bool:
         """Деактивирует пользователя"""
+        pass
+
+    @abstractmethod
+    def register(self, username: str, password: str, is_admin: bool = False) -> User:
+        """Регистрирует нового пользователя"""
         pass

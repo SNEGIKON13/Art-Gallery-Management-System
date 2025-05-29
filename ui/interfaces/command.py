@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
-from typing import List, Any, Optional
+from typing import List, Any, Optional, Sequence
 
 class ICommand(ABC):
     @abstractmethod
-    def execute(self, *args: List[str]) -> None:
+    def execute(self, args: Sequence[str]) -> None:
         """Выполнить команду с заданными аргументами"""
         pass
 
