@@ -3,12 +3,17 @@ from typing import Sequence
 from ...commands.base_command import BaseCommand
 from application.services.exhibition_service import IExhibitionService
 from ...exceptions.command_exceptions import InvalidArgumentsException
+from ...decorators import admin_only, authenticated, transaction, log_command
 
 class CreateExhibitionCommand(BaseCommand):
     def __init__(self, exhibition_service: IExhibitionService, user_service):
         super().__init__(user_service)
         self._exhibition_service = exhibition_service
 
+    @admin_only
+    @authenticated
+    @transaction
+    @log_command
     def execute(self, args: Sequence[str]) -> None:
         if len(args) != 5:
             raise InvalidArgumentsException(
