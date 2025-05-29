@@ -3,7 +3,7 @@ from ...commands.base_command import BaseCommand
 from ...decorators.admin_only import admin_only
 from application.services.artwork_service import IArtworkService
 from domain.models.artwork import ArtworkType
-from ...exceptions.command_exceptions import InvalidArgumentsException
+from ...exceptions.validation_exceptions import MissingRequiredArgumentError, InvalidArgumentTypeError
 
 class AddArtworkCommand(BaseCommand):
     def __init__(self, artwork_service: IArtworkService, user_service):
@@ -13,7 +13,7 @@ class AddArtworkCommand(BaseCommand):
     @admin_only
     def execute(self, args: Sequence[str]) -> None:
         if len(args) < 5:
-            raise InvalidArgumentsException(
+            raise MissingRequiredArgumentError(
                 "Required: title artist year type description [image_path]"
             )
         
@@ -30,7 +30,7 @@ class AddArtworkCommand(BaseCommand):
             )
             print(f"Artwork added successfully with ID: {artwork.id}")
         except ValueError as e:
-            raise InvalidArgumentsException(str(e))
+            raise InvalidArgumentTypeError(str(e))
 
     def get_name(self) -> str:
         return "add_artwork"

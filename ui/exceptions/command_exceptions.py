@@ -1,15 +1,17 @@
-class CommandException(Exception):
-    """Базовое исключение для команд"""
+from .base_exception import UIException
+
+class CommandException(UIException):
+    """Базовое исключение для ошибок команд"""
     pass
 
-class InvalidArgumentsException(CommandException):
-    """Неверные аргументы команды"""
+class CommandNotFoundError(CommandException):
+    """Команда не найдена"""
     pass
 
-class AuthenticationException(CommandException):
-    """Ошибка аутентификации"""
+class InvalidCommandFormatError(CommandException):
+    """Неверный формат команды"""
     pass
 
-class AuthorizationException(CommandException):
-    """Ошибка авторизации"""
+class CommandExecutionError(CommandException):
+    """Ошибка выполнения команды"""
     pass

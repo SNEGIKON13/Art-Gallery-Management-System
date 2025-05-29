@@ -1,6 +1,7 @@
 from typing import Sequence
 from ..base_command import BaseCommand
-from ...exceptions.command_exceptions import InvalidArgumentsException, CommandException
+from ui.exceptions.command_exceptions import CommandExecutionError
+from ui.exceptions.validation_exceptions import MissingRequiredArgumentError
 
 class RegisterCommand(BaseCommand):
     def get_name(self) -> str:
@@ -14,7 +15,7 @@ class RegisterCommand(BaseCommand):
 
     def execute(self, args: Sequence[str]) -> None:
         if len(args) < 2:
-            raise InvalidArgumentsException("Username and password required")
+            raise MissingRequiredArgumentError("Username and password required")
         
         username, password = args[0], args[1]
         is_admin = "--admin" in args[2:] if len(args) > 2 else False
@@ -23,4 +24,4 @@ class RegisterCommand(BaseCommand):
             self._user_service.register(username, password, is_admin)
             print(f"User {username} successfully registered")
         except ValueError as e:
-            raise CommandException(str(e))
+            raise CommandExecutionError(str(e))

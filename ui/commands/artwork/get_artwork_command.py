@@ -1,7 +1,7 @@
 from typing import Sequence
 from ...commands.base_command import BaseCommand
 from application.services.artwork_service import IArtworkService
-from ...exceptions.command_exceptions import InvalidArgumentsException
+from ...exceptions.validation_exceptions import InvalidInputError
 
 class GetArtworkCommand(BaseCommand):
     def __init__(self, artwork_service: IArtworkService, user_service):
@@ -10,7 +10,7 @@ class GetArtworkCommand(BaseCommand):
 
     def execute(self, args: Sequence[str]) -> None:
         if len(args) != 1:
-            raise InvalidArgumentsException("Required: artwork_id")
+            raise InvalidInputError("Required: artwork_id")
         
         try:
             artwork_id = int(args[0])
@@ -27,7 +27,7 @@ class GetArtworkCommand(BaseCommand):
             else:
                 print(f"Artwork {artwork_id} not found")
         except ValueError as e:
-            raise InvalidArgumentsException(str(e))
+            raise InvalidInputError(str(e))
 
     def get_name(self) -> str:
         return "get_artwork"

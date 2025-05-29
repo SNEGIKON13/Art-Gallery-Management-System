@@ -1,7 +1,8 @@
 from typing import Sequence
 from ...commands.base_command import BaseCommand
 from application.services.exhibition_service import IExhibitionService
-from ...exceptions.command_exceptions import InvalidArgumentsException
+from ...exceptions.validation_exceptions import MissingRequiredArgumentError, InvalidArgumentTypeError
+from ...exceptions.command_exceptions import CommandExecutionError
 
 class GetExhibitionCommand(BaseCommand):
     def __init__(self, exhibition_service: IExhibitionService, user_service):
@@ -10,7 +11,7 @@ class GetExhibitionCommand(BaseCommand):
 
     def execute(self, args: Sequence[str]) -> None:
         if len(args) != 1:
-            raise InvalidArgumentsException("Required: exhibition_id")
+            raise MissingRequiredArgumentError("Required: exhibition_id")
         
         try:
             exhibition_id = int(args[0])
@@ -19,14 +20,13 @@ class GetExhibitionCommand(BaseCommand):
                 print(f"ID: {exhibition.id}")
                 print(f"Title: {exhibition.title}")
                 print(f"Description: {exhibition.description}")
-                print(f"Start date: {exhibition.start_date}")
-                print(f"End date: {exhibition.end_date}")
-                print(f"Max capacity: {exhibition.max_capacity}")
-                print(f"Artwork IDs: {exhibition.artwork_ids}")
+                print(f"Start Date: {exhibition.start_date}")
+                print(f"End Date: {exhibition.end_date}")
+                print(f"Max Capacity: {exhibition.max_capacity}")
             else:
-                print(f"Exhibition {exhibition_id} not found")
-        except ValueError as e:
-            raise InvalidArgumentsException(str(e))
+                raise CommandExecutionError(f"Exhibition with ID {exhibition_id} not found")
+        except ValueError:
+            raise InvalidArgumentTypeError("Exhibition ID must be a number")
 
     def get_name(self) -> str:
         return "get_exhibition"

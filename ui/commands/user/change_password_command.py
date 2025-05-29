@@ -1,6 +1,7 @@
 from typing import Sequence
 from ..base_command import BaseCommand
-from ...exceptions.command_exceptions import InvalidArgumentsException, AuthenticationException, CommandException
+from ...exceptions.auth_exceptions import UnauthorizedError, AuthenticationError
+from ...exceptions.validation_exceptions import MissingRequiredArgumentError
 
 class ChangePasswordCommand(BaseCommand):
     def get_name(self) -> str:
@@ -14,10 +15,10 @@ class ChangePasswordCommand(BaseCommand):
 
     def execute(self, args: Sequence[str]) -> None:
         if not self._current_user:
-            raise AuthenticationException("You are not logged in")
+            raise UnauthorizedError("You are not logged in")
             
         if len(args) != 2:
-            raise InvalidArgumentsException("Old and new passwords required")
+            raise MissingRequiredArgumentError("Old and new passwords required")
         
         old_password, new_password = args[0], args[1]
         
@@ -28,4 +29,4 @@ class ChangePasswordCommand(BaseCommand):
         ):
             print("Password changed successfully")
         else:
-            raise CommandException("Failed to change password")
+            raise AuthenticationError("Failed to change password")

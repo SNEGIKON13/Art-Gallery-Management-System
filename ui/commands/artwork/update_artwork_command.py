@@ -3,7 +3,7 @@ from ...commands.base_command import BaseCommand
 from ...decorators.admin_only import admin_only
 from application.services.artwork_service import IArtworkService
 from domain.models.artwork import ArtworkType
-from ...exceptions.command_exceptions import InvalidArgumentsException
+from ...exceptions.validation_exceptions import InvalidInputError
 
 class UpdateArtworkCommand(BaseCommand):
     def __init__(self, artwork_service: IArtworkService, user_service):
@@ -13,7 +13,7 @@ class UpdateArtworkCommand(BaseCommand):
     @admin_only
     def execute(self, args: Sequence[str]) -> None:
         if len(args) < 2:
-            raise InvalidArgumentsException(
+            raise InvalidInputError(
                 "Required: artwork_id field=value [field=value ...]"
             )
         
@@ -32,7 +32,7 @@ class UpdateArtworkCommand(BaseCommand):
             artwork = self._artwork_service.update_artwork(artwork_id, **updates)
             print(f"Artwork {artwork.id} updated successfully")
         except ValueError as e:
-            raise InvalidArgumentsException(str(e))
+            raise InvalidInputError(str(e))
 
     def get_name(self) -> str:
         return "update_artwork"
