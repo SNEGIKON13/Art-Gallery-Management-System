@@ -1,6 +1,6 @@
 from typing import Optional
 from infrastructure.config.cli_config import CLIConfig
-from ui.error_handler import ConsoleErrorHandler
+from ui.handlers.error_handler import ConsoleErrorHandler
 
 class Application:
     def __init__(self, config: Optional[CLIConfig] = None):
