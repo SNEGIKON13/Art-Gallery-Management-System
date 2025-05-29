@@ -1,11 +1,20 @@
 from typing import Optional
 from infrastructure.config.cli_config import CLIConfig
 from ui.handlers.error_handler import ConsoleErrorHandler
+from ui.command_registry import CommandRegistry
+from ui.command_parser import CommandParser
+from ui.command_registrar import register_commands  # Временно для work2
 
 class Application:
     def __init__(self, config: Optional[CLIConfig] = None):
         self.config = config or CLIConfig()
         self.error_handler = ConsoleErrorHandler()
+        self.command_parser = CommandParser()
+        self.command_registry = CommandRegistry(self.command_parser)
+        
+        # Временно используем моки сервисов для work2
+        self.services = create_mock_services()
+        register_commands(self.command_registry, self.services)
 
     def run(self) -> None:
         print(self.config.format_message("Welcome to Art Gallery Management System", "info"))
@@ -17,8 +26,10 @@ class Application:
                     print(self.config.format_message("Goodbye!", "info"))
                     break
                 
-                # Здесь будет выполнение команды
-                # self.command_processor.process(command)
+                # Выполняем команду
+                result = self.command_registry.execute(command)
+                if result:
+                    print(self.config.format_message(result, "success"))
                 
             except KeyboardInterrupt:
                 print(self.config.format_message("\nExiting...", "info"))
