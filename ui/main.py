@@ -1,9 +1,10 @@
-from typing import Optional
+from typing import Optional, Dict, Any
 from infrastructure.config.cli_config import CLIConfig
 from ui.handlers.error_handler import ConsoleErrorHandler
 from ui.command_registry import CommandRegistry
 from ui.command_parser import CommandParser
-from ui.command_registrar import register_commands  # Временно для work2
+from ui.command_registrar import register_commands
+from ui.services import create_mock_services  # изменение здесь
 
 class Application:
     def __init__(self, config: Optional[CLIConfig] = None):
@@ -12,7 +13,7 @@ class Application:
         self.command_parser = CommandParser()
         self.command_registry = CommandRegistry(self.command_parser)
         
-        # Временно используем моки сервисов для work2
+        # Вызываем функцию напрямую
         self.services = create_mock_services()
         register_commands(self.command_registry, self.services)
 

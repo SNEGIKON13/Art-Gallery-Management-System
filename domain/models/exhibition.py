@@ -12,6 +12,7 @@ class Exhibition(BaseEntity):
     created_at: datetime = field(default_factory=datetime.now)
     artwork_ids: List[int] = field(default_factory=list)
     max_capacity: Optional[int] = None
+    visitors: set[int] = field(default_factory=set)
 
     def __post_init__(self):
         self._validate()
@@ -55,6 +56,18 @@ class Exhibition(BaseEntity):
     def contains_artwork(self, artwork_id: int) -> bool:
         """Проверяет, содержит ли выставка указанный экспонат"""
         return artwork_id in self.artwork_ids
+
+    def add_visitor(self, visitor_id: int) -> None:
+        """Добавляет посетителя на выставку"""
+        self.visitors.add(visitor_id)
+
+    def remove_visitor(self, visitor_id: int) -> None:
+        """Удаляет посетителя с выставки"""
+        self.visitors.discard(visitor_id)
+
+    def get_visitor_count(self) -> int:
+        """Возвращает количество посетителей"""
+        return len(self.visitors)
 
     def __eq__(self, other: object) -> bool:
         """Сравнивает выставки по id"""
