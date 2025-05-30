@@ -8,7 +8,6 @@ class ArtworkType(Enum):
     PAINTING = "painting"
     SCULPTURE = "sculpture"
     PHOTOGRAPH = "photograph"
-    INSTALLATION = "installation"
 
 @dataclass
 class Artwork(BaseEntity):
