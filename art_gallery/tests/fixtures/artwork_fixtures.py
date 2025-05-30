@@ -9,7 +9,7 @@ ARTWORK_FIXTURES = [
         "year": 1871,
         "description": "An anti-war painting depicting a pyramid of human skulls in a desert landscape. A stark reminder of war's consequences.",
         "type": ArtworkType.PAINTING,
-        "image_path": "media/paintings/apotheosis.jpg"  # Теперь этот путь будет относительно папки art_gallery
+        "image_path": "media/paintings/apotheosis.jpg"
     },
     {
         "title": "Black Square",

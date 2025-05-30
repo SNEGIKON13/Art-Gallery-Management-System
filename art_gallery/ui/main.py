@@ -4,7 +4,8 @@ from art_gallery.ui.handlers.error_handler import ConsoleErrorHandler
 from art_gallery.ui.command_registry import CommandRegistry
 from art_gallery.ui.command_parser import CommandParser
 from art_gallery.ui.command_registrar import register_commands
-from art_gallery.ui.services import create_mock_services  # изменение здесь
+from art_gallery.ui.services import create_mock_services
+from art_gallery.tests.utils.database_initializer import initialize_test_database  # Добавляем импорт
 
 class Application:
     def __init__(self, config: Optional[CLIConfig] = None):
@@ -13,8 +14,9 @@ class Application:
         self.command_parser = CommandParser()
         self.command_registry = CommandRegistry(self.command_parser)
         
-        # Вызываем функцию напрямую
         self.services = create_mock_services()
+        # Инициализируем тестовые данные
+        initialize_test_database(self.services)
         register_commands(self.command_registry, self.services)
 
     def run(self) -> None:

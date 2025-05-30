@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 from typing import Dict
+import os
 
 @dataclass
 class CLIConfig:
@@ -12,7 +13,19 @@ class CLIConfig:
     # Формат сообщений
     message_format: Dict[str, str] = field(default_factory=dict)
     
-    def __post_init__(self):
+    def __post_init__(self) -> None:
+        # Путь к корню проекта
+        project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+        # Путь к папке art_gallery/media
+        self.base_media_path = os.path.join(project_root, "art_gallery", "media")
+        
+        # Создаем директории если их нет
+        media_dirs = ["paintings", "sculptures", "photographs"]
+        for dir_name in media_dirs:
+            dir_path = os.path.join(self.base_media_path, dir_name)
+            if not os.path.exists(dir_path):
+                os.makedirs(dir_path)
+
         if not self.colors:
             self.colors = {
                 "error": "\033[91m",  # Красный

@@ -45,7 +45,11 @@ def register_commands(registry: CommandRegistry, services: ServiceCollection) ->
         (GetArtworkCommand, {"artwork_service": services.artwork_service, "user_service": services.user_service}),
         (UpdateArtworkCommand, {"artwork_service": services.artwork_service, "user_service": services.user_service}),
         (DeleteArtworkCommand, {"artwork_service": services.artwork_service, "user_service": services.user_service}),
-        (OpenArtworkImageCommand, {"artwork_service": services.artwork_service, "user_service": services.user_service}),
+        (OpenArtworkImageCommand, {
+            "artwork_service": services.artwork_service, 
+            "user_service": services.user_service,
+            "cli_config": services.cli_config
+        }),
         
         # Exhibition Commands
         (CreateExhibitionCommand, {"exhibition_service": services.exhibition_service, "user_service": services.user_service}),

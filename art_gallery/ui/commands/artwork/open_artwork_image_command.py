@@ -4,12 +4,13 @@ from art_gallery.application.services.artwork_service import IArtworkService
 from art_gallery.ui.utils.image_viewer import ImageViewer
 from art_gallery.ui.exceptions.validation_exceptions import InvalidInputError
 from art_gallery.ui.exceptions.command_exceptions import CommandExecutionError
+from art_gallery.infrastructure.config.cli_config import CLIConfig
 
 class OpenArtworkImageCommand(BaseCommand):
-    def __init__(self, artwork_service: IArtworkService, user_service):
+    def __init__(self, artwork_service: IArtworkService, user_service, cli_config: CLIConfig):
         super().__init__(user_service)
         self._artwork_service = artwork_service
-        self._image_viewer = ImageViewer()
+        self._image_viewer = ImageViewer(cli_config)
 
     def execute(self, args: Sequence[str]) -> None:
         if len(args) < 1:

@@ -27,7 +27,7 @@ class Artwork(BaseEntity):
             raise ValueError("Title cannot be empty")
         if not self.artist or len(self.artist) < 1:
             raise ValueError("Artist cannot be empty")
-        if self.year < 1000 or self.year > datetime.now().year:
+        if self.year < 1 or self.year > datetime.now().year:
             raise ValueError("Invalid year")
         if not self.description:
             raise ValueError("Description cannot be empty")

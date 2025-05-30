@@ -29,11 +29,14 @@ class GetExhibitionCommand(BaseCommand):
                 
                 if exhibition.artwork_ids:
                     print("\nArtworks in this exhibition:")
+                    artwork_ids = []
                     for artwork_id in exhibition.artwork_ids:
                         artwork = self._artwork_service.get_artwork(artwork_id)
                         if artwork:
                             print(f"  - [{artwork.id}] {artwork.title} by {artwork.artist}")
-                    print("\nUse 'get_artwork <id>' to view detailed artwork information")
+                            artwork_ids.append(str(artwork.id))
+                    print(f"\nArtwork IDs for reference: {', '.join(artwork_ids)}")
+                    print("\nUse 'get_artwork <id>' to view details or 'open_image <id>' to view image")
                 else:
                     print("\nNo artworks in this exhibition")
             else:

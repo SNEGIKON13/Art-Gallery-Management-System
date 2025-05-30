@@ -18,6 +18,8 @@ class MockArtworkService(IArtworkService):
             type=type,
             image_path=image_path
         )
+        # Устанавливаем ID до сохранения
+        artwork.id = self._next_id
         self._artworks[self._next_id] = artwork
         self._next_id += 1
         return artwork
