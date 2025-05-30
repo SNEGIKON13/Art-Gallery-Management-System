@@ -1,5 +1,5 @@
 from typing import Sequence
-from ...commands.base_command import BaseCommand
+from commands.base_command import BaseCommand
 from application.services.exhibition_service import IExhibitionService
 
 class ListExhibitionsCommand(BaseCommand):

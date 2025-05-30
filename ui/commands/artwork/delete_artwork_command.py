@@ -2,7 +2,7 @@ from typing import Sequence
 from ...commands.base_command import BaseCommand
 from ...decorators.admin_only import admin_only
 from application.services.artwork_service import IArtworkService
-from ...exceptions.validation_exceptions import InvalidInputError
+from exceptions.validation_exceptions import InvalidInputError
 
 class DeleteArtworkCommand(BaseCommand):
     def __init__(self, artwork_service: IArtworkService, user_service):

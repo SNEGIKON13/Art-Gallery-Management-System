@@ -1,12 +1,12 @@
 import logging
 from datetime import datetime
 from typing import Dict, Type
-from ..interfaces.error_handler import IErrorHandler
-from ..exceptions.base_exception import UIException
-from ..exceptions.command_exceptions import CommandException, CommandNotFoundError
-from ..exceptions.validation_exceptions import ValidationException
-from ..exceptions.auth_exceptions import AuthException
-from ..exceptions.business_exceptions import BusinessException
+from ui.interfaces.error_handler import IErrorHandler
+from ui.exceptions.base_exception import UIException
+from ui.exceptions.command_exceptions import CommandException, CommandNotFoundError
+from ui.exceptions.validation_exceptions import ValidationException
+from ui.exceptions.auth_exceptions import AuthException
+from ui.exceptions.business_exceptions import BusinessException
 
 class ConsoleErrorHandler(IErrorHandler):
     def __init__(self, log_file: str = "errors.log"):

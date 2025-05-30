@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from datetime import datetime
 from typing import Optional
-from .base_entity import BaseEntity
+from base_entity import BaseEntity
 
 class UserRole(Enum):
     ADMIN = "admin"

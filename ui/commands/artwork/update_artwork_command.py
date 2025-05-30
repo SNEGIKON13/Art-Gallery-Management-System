@@ -1,9 +1,9 @@
 from typing import Sequence
-from ...commands.base_command import BaseCommand
-from ...decorators.admin_only import admin_only
+from commands.base_command import BaseCommand
+from decorators.admin_only import admin_only
 from application.services.artwork_service import IArtworkService
 from domain.models.artwork import ArtworkType
-from ...exceptions.validation_exceptions import InvalidInputError
+from exceptions.validation_exceptions import InvalidInputError
 
 class UpdateArtworkCommand(BaseCommand):
     def __init__(self, artwork_service: IArtworkService, user_service):

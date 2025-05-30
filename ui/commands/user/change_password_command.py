@@ -1,7 +1,7 @@
 from typing import Sequence
-from ..base_command import BaseCommand
-from ...exceptions.auth_exceptions import UnauthorizedError, AuthenticationError
-from ...exceptions.validation_exceptions import MissingRequiredArgumentError
+from base_command import BaseCommand
+from exceptions.auth_exceptions import UnauthorizedError, AuthenticationError
+from exceptions.validation_exceptions import MissingRequiredArgumentError
 
 class ChangePasswordCommand(BaseCommand):
     def get_name(self) -> str:

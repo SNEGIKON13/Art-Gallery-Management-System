@@ -1,7 +1,7 @@
 from typing import Dict, Type, List
-from .interfaces.command import ICommand
-from .interfaces.command_parser import ICommandParser
-from .exceptions.command_exceptions import CommandNotFoundError, CommandExecutionError
+from ui.interfaces.command import ICommand
+from ui.interfaces.command_parser import ICommandParser
+from ui.exceptions.command_exceptions import CommandNotFoundError, CommandExecutionError
 
 class CommandRegistry:
     def __init__(self, parser: ICommandParser):

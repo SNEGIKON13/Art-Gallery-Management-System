@@ -1,8 +1,8 @@
 from typing import Sequence
-from ..base_command import BaseCommand
-from ...exceptions.validation_exceptions import InvalidInputError
-from ...exceptions.auth_exceptions import PermissionDeniedError
-from ...exceptions.command_exceptions import CommandExecutionError
+from base_command import BaseCommand
+from exceptions.validation_exceptions import InvalidInputError
+from exceptions.auth_exceptions import PermissionDeniedError
+from exceptions.command_exceptions import CommandExecutionError
 
 class DeactivateUserCommand(BaseCommand):
     def get_name(self) -> str:

@@ -1,5 +1,5 @@
 from typing import Sequence
-from ..base_command import BaseCommand
+from base_command import BaseCommand
 from ui.exceptions.command_exceptions import CommandExecutionError
 from ui.exceptions.validation_exceptions import MissingRequiredArgumentError
 

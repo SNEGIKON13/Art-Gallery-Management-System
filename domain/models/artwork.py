@@ -19,7 +19,6 @@ class Artwork(BaseEntity):
     type: ArtworkType
     image_path: Optional[str] = None
     created_at: datetime = field(default_factory=datetime.now)
-    _id: int = 0  # наследуется от BaseEntity
 
     def __post_init__(self):
         self._validate()

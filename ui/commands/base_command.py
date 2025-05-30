@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional, Sequence
-from ..interfaces.command import ICommand
+from interfaces.command import ICommand
 from application.services.user_service import IUserService
 
 class BaseCommand(ICommand, ABC):

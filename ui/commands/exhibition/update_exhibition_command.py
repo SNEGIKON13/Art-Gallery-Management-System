@@ -1,10 +1,10 @@
 from typing import Sequence
 from datetime import datetime
-from ...commands.base_command import BaseCommand
+from commands.base_command import BaseCommand
 from application.services.exhibition_service import IExhibitionService
-from ...exceptions.validation_exceptions import MissingRequiredArgumentError, InvalidInputError
-from ...exceptions.command_exceptions import CommandExecutionError
-from ...decorators import admin_only, authenticated, transaction, log_command
+from exceptions.validation_exceptions import MissingRequiredArgumentError, InvalidInputError
+from exceptions.command_exceptions import CommandExecutionError
+from decorators import admin_only, authenticated, transaction, log_command
 
 class UpdateExhibitionCommand(BaseCommand):
     def __init__(self, exhibition_service: IExhibitionService, user_service):

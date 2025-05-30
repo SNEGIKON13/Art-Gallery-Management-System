@@ -1,6 +1,6 @@
 from functools import wraps
 from typing import Callable, Any
-from ..exceptions.auth_exceptions import UnauthorizedError, PermissionDeniedError
+from exceptions.auth_exceptions import UnauthorizedError, PermissionDeniedError
 
 def admin_only(command_func: Callable) -> Callable:
     @wraps(command_func)

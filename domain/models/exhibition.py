@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import List, Optional
-from .base_entity import BaseEntity
+from base_entity import BaseEntity
 
 @dataclass
 class Exhibition(BaseEntity):

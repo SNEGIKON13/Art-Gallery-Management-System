@@ -1,6 +1,6 @@
 from typing import Sequence
-from ..base_command import BaseCommand
-from ...exceptions.auth_exceptions import UnauthorizedError
+from base_command import BaseCommand
+from exceptions.auth_exceptions import UnauthorizedError
 
 class LogoutCommand(BaseCommand):
     def get_name(self) -> str:

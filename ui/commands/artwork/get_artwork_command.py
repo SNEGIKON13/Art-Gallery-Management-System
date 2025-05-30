@@ -1,7 +1,7 @@
 from typing import Sequence
-from ...commands.base_command import BaseCommand
+from commands.base_command import BaseCommand
 from application.services.artwork_service import IArtworkService
-from ...exceptions.validation_exceptions import InvalidInputError
+from exceptions.validation_exceptions import InvalidInputError
 
 class GetArtworkCommand(BaseCommand):
     def __init__(self, artwork_service: IArtworkService, user_service):

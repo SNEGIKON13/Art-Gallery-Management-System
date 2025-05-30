@@ -1,7 +1,7 @@
 from typing import Sequence
-from ..base_command import BaseCommand
-from ...exceptions.validation_exceptions import MissingRequiredArgumentError
-from ...exceptions.auth_exceptions import AuthenticationError
+from base_command import BaseCommand
+from exceptions.validation_exceptions import MissingRequiredArgumentError
+from exceptions.auth_exceptions import AuthenticationError
 
 class LoginCommand(BaseCommand):
     def get_name(self) -> str:

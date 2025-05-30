@@ -1,8 +1,8 @@
 from typing import Sequence
-from ...commands.base_command import BaseCommand
+from commands.base_command import BaseCommand
 from application.services.exhibition_service import IExhibitionService
-from ...exceptions.validation_exceptions import MissingRequiredArgumentError, InvalidArgumentTypeError
-from ...exceptions.command_exceptions import CommandExecutionError
+from exceptions.validation_exceptions import MissingRequiredArgumentError, InvalidArgumentTypeError
+from exceptions.command_exceptions import CommandExecutionError
 
 class DeleteExhibitionCommand(BaseCommand):
     def __init__(self, exhibition_service: IExhibitionService, user_service):
