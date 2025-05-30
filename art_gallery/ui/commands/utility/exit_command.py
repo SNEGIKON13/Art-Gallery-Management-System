@@ -15,3 +15,8 @@ class ExitCommand(BaseCommand):
 
     def get_usage(self) -> str:
         return "exit"
+
+    def get_help(self) -> str:
+        return ("Exits the application.\n"
+                "This command will save any pending changes and close the application.\n"
+                "Usage: exit")

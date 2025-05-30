@@ -42,3 +42,18 @@ class UpdateArtworkCommand(BaseCommand):
 
     def get_usage(self) -> str:
         return "update_artwork <id> field=value [field=value ...]"
+        
+    def get_help(self) -> str:
+        return ("Updates information about an existing artwork.\n"
+                "Only administrators can use this command.\n"
+                "Parameters:\n"
+                "  - id: The artwork's unique identifier\n"
+                "  - field=value: One or more field updates\n"
+                "Available fields:\n"
+                "  - title: The artwork's name\n"
+                "  - artist: The creator's name\n"
+                "  - year: Year of creation\n"
+                "  - type: Artwork type (painting/sculpture/photo/other)\n"
+                "  - description: Artwork description\n"
+                "  - image_path: Path to artwork image\n"
+                "Example: update_artwork 1 title='New Title' year=1504")

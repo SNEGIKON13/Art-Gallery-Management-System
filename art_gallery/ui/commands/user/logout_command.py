@@ -16,6 +16,12 @@ class LogoutCommand(BaseCommand):
     def get_usage(self) -> str:
         return "logout"
 
+    def get_help(self) -> str:
+        return ("Logs out the current user from the system.\n"
+                "This will end your current session.\n"
+                "You need to be logged in to use this command.\n"
+                "Usage: logout")
+
     def execute(self, args: Sequence[str]) -> None:
         if not self._current_user:
             raise UnauthorizedError("You are not logged in")

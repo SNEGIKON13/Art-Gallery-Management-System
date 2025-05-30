@@ -16,6 +16,12 @@ class GetUserInfoCommand(BaseCommand):
     def get_usage(self) -> str:
         return "whoami"
 
+    def get_help(self) -> str:
+        return ("Shows information about the currently logged in user.\n"
+                "Displays username and role (user/administrator).\n"
+                "You must be logged in to use this command.\n"
+                "Usage: whoami")
+
     def execute(self, args: Sequence[str]) -> None:
         if not self._current_user:
             raise UnauthorizedError("You are not logged in")

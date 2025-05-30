@@ -49,3 +49,15 @@ class UpdateExhibitionCommand(BaseCommand):
 
     def get_usage(self) -> str:
         return "update_exhibition <exhibition_id> <title> <description> <start_date> <end_date> <max_capacity>"
+        
+    def get_help(self) -> str:
+        return ("Updates an existing exhibition's details.\n"
+                "Only administrators can use this command.\n"
+                "Parameters:\n"
+                "  - exhibition_id: The unique identifier of the exhibition\n"
+                "  - title: New name of the exhibition\n"
+                "  - description: New description\n"
+                "  - start_date: New start date (YYYY-MM-DD)\n"
+                "  - end_date: New end date (YYYY-MM-DD)\n"
+                "  - max_capacity: New maximum capacity (or None)\n"
+                "Example: update_exhibition 1 'Modern Art 2024' 'Updated show' 2024-02-01 2024-03-01 150")

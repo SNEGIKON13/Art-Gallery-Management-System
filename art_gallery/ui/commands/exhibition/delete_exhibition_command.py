@@ -30,3 +30,11 @@ class DeleteExhibitionCommand(BaseCommand):
 
     def get_usage(self) -> str:
         return "delete_exhibition <exhibition_id>"
+        
+    def get_help(self) -> str:
+        return ("Removes an exhibition from the gallery.\n"
+                "Only administrators can use this command.\n"
+                "Parameters:\n"
+                "  - exhibition_id: The unique identifier of the exhibition to delete\n"
+                "Warning: This action cannot be undone.\n"
+                "Example: delete_exhibition 1")

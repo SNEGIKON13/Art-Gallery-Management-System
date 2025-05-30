@@ -37,3 +37,10 @@ class GetArtworkCommand(BaseCommand):
 
     def get_usage(self) -> str:
         return "get_artwork <artwork_id>"
+        
+    def get_help(self) -> str:
+        return ("Displays detailed information about a specific artwork.\n"
+                "Parameters:\n"
+                "  - artwork_id: The unique identifier of the artwork\n"
+                "Shows title, artist, year, type, description and image path if available.\n"
+                "Example: get_artwork 1")

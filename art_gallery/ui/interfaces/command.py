@@ -27,3 +27,8 @@ class ICommand(ABC):
     def set_current_user(self, user: Optional[User]) -> None:
         """Set current user for the command"""
         pass
+
+    @abstractmethod
+    def get_help(self) -> str:
+        """Get detailed help information about the command"""
+        pass

@@ -17,6 +17,12 @@ class CommandRegistry:
         """Выполняет команду"""
         try:
             command_name, args = self._parser.parse(command_input)
+            
+            # Проверяем наличие флага --help
+            if '--help' in args:
+                help_command = self.get_command_instance('help')
+                return help_command.execute([command_name]) or ""
+                
             if command_name not in self._commands:
                 raise CommandNotFoundError(f"Команда '{command_name}' не найдена")
                 

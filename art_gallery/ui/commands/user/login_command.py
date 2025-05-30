@@ -17,6 +17,12 @@ class LoginCommand(BaseCommand):
     def get_usage(self) -> str:
         return "login <username> <password>"
 
+    def get_help(self) -> str:
+        return ("Authenticates a user in the system.\n"
+                "The command requires both username and password.\n"
+                "After successful login, you will have access to user-specific commands.\n"
+                "Usage: login <username> <password>")
+
     def execute(self, args: Sequence[str]) -> None:
         if len(args) != 2:
             raise MissingRequiredArgumentError("Username and password required")

@@ -13,6 +13,12 @@ class ChangePasswordCommand(BaseCommand):
     def get_usage(self) -> str:
         return "change_password <old_password> <new_password>"
 
+    def get_help(self) -> str:
+        return ("Changes the password for the current user.\n"
+                "Requires old password for verification.\n"
+                "You must be logged in to use this command.\n"
+                "Usage: change_password <old_password> <new_password>")
+
     def execute(self, args: Sequence[str]) -> None:
         if not self._current_user:
             raise UnauthorizedError("You are not logged in")

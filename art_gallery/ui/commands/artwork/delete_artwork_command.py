@@ -29,3 +29,11 @@ class DeleteArtworkCommand(BaseCommand):
 
     def get_usage(self) -> str:
         return "delete_artwork <artwork_id>"
+        
+    def get_help(self) -> str:
+        return ("Removes an artwork from the gallery.\n"
+                "Only administrators can use this command.\n"
+                "Parameters:\n"
+                "  - artwork_id: The unique identifier of the artwork to delete\n"
+                "Warning: This action cannot be undone.\n"
+                "Example: delete_artwork 1")

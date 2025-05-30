@@ -28,3 +28,11 @@ class ListExhibitionsCommand(BaseCommand):
 
     def get_usage(self) -> str:
         return "list_exhibitions"
+        
+    def get_help(self) -> str:
+        return ("Shows a list of all exhibitions in the gallery.\n"
+                "Displays basic information about each exhibition including:\n"
+                "  - Exhibition ID\n"
+                "  - Title\n"
+                "  - Start and end dates\n"
+                "Use 'get_exhibition <id>' for more detailed information.")

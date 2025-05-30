@@ -14,6 +14,7 @@ from art_gallery.ui.commands.artwork.add_artwork_command import AddArtworkComman
 from art_gallery.ui.commands.artwork.get_artwork_command import GetArtworkCommand
 from art_gallery.ui.commands.artwork.update_artwork_command import UpdateArtworkCommand
 from art_gallery.ui.commands.artwork.delete_artwork_command import DeleteArtworkCommand
+from art_gallery.ui.commands.artwork.open_artwork_image_command import OpenArtworkImageCommand
 from art_gallery.ui.commands.exhibition.create_exhibition_command import CreateExhibitionCommand
 from art_gallery.ui.commands.exhibition.get_exhibition_command import GetExhibitionCommand
 from art_gallery.ui.commands.exhibition.update_exhibition_command import UpdateExhibitionCommand
@@ -44,10 +45,15 @@ def register_commands(registry: CommandRegistry, services: ServiceCollection) ->
         (GetArtworkCommand, {"artwork_service": services.artwork_service, "user_service": services.user_service}),
         (UpdateArtworkCommand, {"artwork_service": services.artwork_service, "user_service": services.user_service}),
         (DeleteArtworkCommand, {"artwork_service": services.artwork_service, "user_service": services.user_service}),
+        (OpenArtworkImageCommand, {"artwork_service": services.artwork_service, "user_service": services.user_service}),
         
         # Exhibition Commands
         (CreateExhibitionCommand, {"exhibition_service": services.exhibition_service, "user_service": services.user_service}),
-        (GetExhibitionCommand, {"exhibition_service": services.exhibition_service, "user_service": services.user_service}),
+        (GetExhibitionCommand, {
+            "exhibition_service": services.exhibition_service,
+            "artwork_service": services.artwork_service,
+            "user_service": services.user_service
+        }),
         (UpdateExhibitionCommand, {"exhibition_service": services.exhibition_service, "user_service": services.user_service}),
         (DeleteExhibitionCommand, {"exhibition_service": services.exhibition_service, "user_service": services.user_service}),
         (ListExhibitionsCommand, {"exhibition_service": services.exhibition_service, "user_service": services.user_service})

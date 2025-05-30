@@ -16,6 +16,12 @@ class DeactivateUserCommand(BaseCommand):
     def get_usage(self) -> str:
         return "deactivate-user <user_id>"
 
+    def get_help(self) -> str:
+        return ("Deactivates a user account by ID.\n"
+                "This command is only available to administrators.\n"
+                "Deactivated users cannot log in.\n"
+                "Usage: deactivate-user <user_id>")
+
     def execute(self, args: Sequence[str]) -> None:
         if not self._current_user or not self._current_user.is_admin():
             raise PermissionDeniedError("Admin rights required")

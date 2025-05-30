@@ -45,3 +45,14 @@ class CreateExhibitionCommand(BaseCommand):
 
     def get_usage(self) -> str:
         return "create_exhibition <title> <description> <start_date> <end_date> <max_capacity>"
+        
+    def get_help(self) -> str:
+        return ("Creates a new exhibition in the gallery.\n"
+                "Only administrators can use this command.\n"
+                "Parameters:\n"
+                "  - title: Name of the exhibition\n"
+                "  - description: Detailed description\n"
+                "  - start_date: Start date (YYYY-MM-DD)\n"
+                "  - end_date: End date (YYYY-MM-DD)\n"
+                "  - max_capacity: Maximum number of visitors (or None)\n"
+                "Example: create_exhibition 'Modern Art' 'Contemporary pieces' 2024-01-01 2024-02-01 100")

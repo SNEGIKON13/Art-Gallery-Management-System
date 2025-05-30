@@ -14,6 +14,13 @@ class RegisterCommand(BaseCommand):
     def get_usage(self) -> str:
         return "register <username> <password> [--admin]"
 
+    def get_help(self) -> str:
+        return ("Creates a new user account.\n"
+                "Username must be at least 3 characters long.\n"
+                "Optional --admin flag creates an administrator account.\n"
+                "You must be logged out to register.\n"
+                "Usage: register <username> <password> [--admin]")
+
     def execute(self, args: Sequence[str]) -> None:
         if self._current_user:
             raise PermissionDeniedError("You must logout first to register a new user")

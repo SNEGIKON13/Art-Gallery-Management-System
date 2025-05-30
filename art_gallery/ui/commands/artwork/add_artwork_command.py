@@ -40,3 +40,15 @@ class AddArtworkCommand(BaseCommand):
 
     def get_usage(self) -> str:
         return "add_artwork <title> <artist> <year> <type> <description> [image_path]"
+        
+    def get_help(self) -> str:
+        return ("Adds a new artwork to the gallery.\n"
+                "Only administrators can use this command.\n"
+                "Parameters:\n"
+                "  - title: The name of the artwork\n"
+                "  - artist: The creator of the artwork\n"
+                "  - year: Year of creation (number)\n"
+                "  - type: Type of artwork (painting/sculpture/photo/other)\n"
+                "  - description: Detailed description of the artwork\n"
+                "  - image_path: Optional path to artwork image\n"
+                "Example: add_artwork 'Mona Lisa' 'Da Vinci' 1503 painting 'Famous portrait' '/images/mona.jpg'")
