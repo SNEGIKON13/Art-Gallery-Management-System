@@ -7,22 +7,12 @@ from art_gallery.ui.exceptions.command_exceptions import CommandException, Comma
 from art_gallery.ui.exceptions.validation_exceptions import ValidationException
 from art_gallery.ui.exceptions.auth_exceptions import AuthException
 from art_gallery.ui.exceptions.business_exceptions import BusinessException
+from art_gallery.infrastructure.logging.interfaces.logger import ILogger
 
 class ConsoleErrorHandler(IErrorHandler):
-    def __init__(self, log_file: str = "errors.log"):
-        self._logger = self._setup_logger(log_file)
+    def __init__(self, logger: ILogger):
+        self._logger = logger
         self._error_formatters = self._setup_formatters()
-
-    def _setup_logger(self, log_file: str) -> logging.Logger:
-        logger = logging.getLogger('gallery_errors')
-        logger.setLevel(logging.ERROR)
-        
-        handler = logging.FileHandler(log_file)
-        handler.setFormatter(
-            logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-        )
-        logger.addHandler(handler)
-        return logger
 
     def _setup_formatters(self) -> Dict[Type[UIException], str]:
         return {
@@ -53,5 +43,8 @@ class ConsoleErrorHandler(IErrorHandler):
     def log_error(self, error: Exception) -> None:
         """Записать ошибку в лог"""
         error_type = type(error).__name__
-        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        self._logger.error(f"[{timestamp}] {error_type}: {str(error)}")
+        self._logger.error(
+            "Application error occurred",
+            error_type=error_type,
+            error_message=str(error)
+        )
