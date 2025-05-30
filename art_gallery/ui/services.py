@@ -5,16 +5,19 @@ from art_gallery.application.services.mocks.mock_exhibition_service import MockE
 from art_gallery.application.interfaces.user_service import IUserService
 from art_gallery.application.interfaces.artwork_service import IArtworkService
 from art_gallery.application.interfaces.exhibition_service import IExhibitionService
+from art_gallery.infrastructure.config.cli_config import CLIConfig
 
 @dataclass
 class ServiceCollection:
     user_service: IUserService
     artwork_service: IArtworkService
     exhibition_service: IExhibitionService
+    cli_config: CLIConfig
 
 def create_mock_services() -> ServiceCollection:
     return ServiceCollection(
         user_service=MockUserService(),
         artwork_service=MockArtworkService(),
-        exhibition_service=MockExhibitionService()
+        exhibition_service=MockExhibitionService(),
+        cli_config=CLIConfig()
     )

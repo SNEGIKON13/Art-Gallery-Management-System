@@ -9,6 +9,7 @@ from art_gallery.ui.commands.user.logout_command import LogoutCommand
 from art_gallery.ui.commands.user.register_command import RegisterCommand
 from art_gallery.ui.commands.user.change_password_command import ChangePasswordCommand
 from art_gallery.ui.commands.user.deactivate_user_command import DeactivateUserCommand
+from art_gallery.ui.commands.user.get_user_info_command import GetUserInfoCommand
 from art_gallery.ui.commands.artwork.add_artwork_command import AddArtworkCommand
 from art_gallery.ui.commands.artwork.get_artwork_command import GetArtworkCommand
 from art_gallery.ui.commands.artwork.update_artwork_command import UpdateArtworkCommand
@@ -23,7 +24,11 @@ def register_commands(registry: CommandRegistry, services: ServiceCollection) ->
     """Регистрирует все доступные команды"""
     commands: List[Tuple[Type[ICommand], Dict[str, Any]]] = [
         # Utility Commands
-        (HelpCommand, {"command_registry": registry, "user_service": services.user_service}),
+        (HelpCommand, {
+            "command_registry": registry, 
+            "user_service": services.user_service,
+            "cli_config": services.cli_config
+        }),
         (ExitCommand, {"user_service": services.user_service}),
         
         # User Commands
@@ -32,6 +37,7 @@ def register_commands(registry: CommandRegistry, services: ServiceCollection) ->
         (RegisterCommand, {"user_service": services.user_service}),
         (ChangePasswordCommand, {"user_service": services.user_service}),
         (DeactivateUserCommand, {"user_service": services.user_service}),
+        (GetUserInfoCommand, {"user_service": services.user_service}),
         
         # Artwork Commands
         (AddArtworkCommand, {"artwork_service": services.artwork_service, "user_service": services.user_service}),

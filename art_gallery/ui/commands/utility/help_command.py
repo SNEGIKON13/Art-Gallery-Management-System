@@ -1,11 +1,13 @@
 from typing import Sequence
 from art_gallery.ui.commands.base_command import BaseCommand
 from art_gallery.application.services.user_service import IUserService
+from art_gallery.infrastructure.config.cli_config import CLIConfig
 
 class HelpCommand(BaseCommand):
-    def __init__(self, command_registry, user_service: IUserService):
+    def __init__(self, command_registry, user_service: IUserService, cli_config: CLIConfig):
         super().__init__(user_service)
         self._registry = command_registry
+        self._cli_config = cli_config
 
     def execute(self, args: Sequence[str]) -> None:
         available_commands = []
@@ -16,7 +18,8 @@ class HelpCommand(BaseCommand):
                 f"Usage: {cmd_instance.get_usage()}"
             )
         
-        print("\nAvailable commands:\n" + "\n\n".join(available_commands))
+        help_text = "\nAvailable commands:\n" + "\n\n".join(available_commands)
+        print(self._cli_config.format_message(help_text, "success"))
 
     def get_name(self) -> str:
         return "help"

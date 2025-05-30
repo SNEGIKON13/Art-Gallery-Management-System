@@ -30,3 +30,7 @@ class CommandRegistry:
             raise CommandNotFoundError(f"Команда '{command_name}' не найдена")
             
         return self._commands[command_name]
+
+    def get_commands(self) -> List[str]:
+        """Возвращает список всех зарегистрированных команд"""
+        return list(self._commands.keys())
