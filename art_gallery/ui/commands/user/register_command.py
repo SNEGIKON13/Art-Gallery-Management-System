@@ -15,6 +15,9 @@ class RegisterCommand(BaseCommand):
         return "register <username> <password> [--admin]"
 
     def execute(self, args: Sequence[str]) -> None:
+        if self._current_user:
+            raise PermissionDeniedError("You must logout first to register a new user")
+            
         if len(args) < 2:
             raise MissingRequiredArgumentError("Username and password required")
         

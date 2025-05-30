@@ -24,18 +24,14 @@ def register_commands(registry: CommandRegistry, services: ServiceCollection) ->
     """Регистрирует все доступные команды"""
     commands: List[Tuple[Type[ICommand], Dict[str, Any]]] = [
         # Utility Commands
-        (HelpCommand, {
-            "command_registry": registry, 
-            "user_service": services.user_service,
-            "cli_config": services.cli_config
-        }),
-        (ExitCommand, {"user_service": services.user_service, "command_registry": registry}),
+        (HelpCommand, {"command_registry": registry, "user_service": services.user_service, "cli_config": services.cli_config}),
+        (ExitCommand, {"command_registry": registry, "user_service": services.user_service}),
         
         # User Commands
-        (LoginCommand, {"user_service": services.user_service, "command_registry": registry}),
-        (LogoutCommand, {"user_service": services.user_service, "command_registry": registry}),
-        (RegisterCommand, {"user_service": services.user_service, "command_registry": registry}),
-        (ChangePasswordCommand, {"user_service": services.user_service, "command_registry": registry}),
+        (LoginCommand, {"command_registry": registry, "user_service": services.user_service}),
+        (LogoutCommand, {"command_registry": registry, "user_service": services.user_service}),
+        (RegisterCommand, {"command_registry": registry, "user_service": services.user_service}),
+        (ChangePasswordCommand, {"command_registry": registry, "user_service": services.user_service}),
         (DeactivateUserCommand, {"user_service": services.user_service, "command_registry": registry}),
         (GetUserInfoCommand, {
             "user_service": services.user_service, 

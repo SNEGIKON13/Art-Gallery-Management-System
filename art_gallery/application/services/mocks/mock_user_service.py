@@ -27,6 +27,9 @@ class MockUserService(IUserService):
             created_at=datetime.now()
         )
         
+        # Устанавливаем ID пользователя
+        user.id = self._next_id
+        
         self._users[self._next_id] = user
         self._username_to_id[username] = self._next_id
         self._next_id += 1
@@ -54,8 +57,12 @@ class MockUserService(IUserService):
 
     def change_password(self, user_id: int, old_password: str, new_password: str) -> bool:
         user = self.get_user_by_id(user_id)
-        if not user or user.password_hash != self._hash_password(old_password):
+        if not user:
             return False
+            
+        if user.password_hash != self._hash_password(old_password):
+            return False
+            
         user.password_hash = self._hash_password(new_password)
         return True
 

@@ -37,9 +37,7 @@ class CommandRegistry:
         return list(self._commands.keys())
     
     def set_current_user(self, user) -> None:
-        """Устанавливает текущего пользователя"""
-        self._current_user = user
-        # Обновляем текущего пользователя во всех командах
+        """Устанавливает текущего пользователя для всех команд"""
         for command in self._commands.values():
             command.set_current_user(user)
     

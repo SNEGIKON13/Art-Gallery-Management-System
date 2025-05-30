@@ -21,12 +21,11 @@ class LoginCommand(BaseCommand):
         if len(args) != 2:
             raise MissingRequiredArgumentError("Username and password required")
         
-        username: str = args[0]
-        password: str = args[1]
+        username, password = args[0], args[1]
         user = self._user_service.authenticate(username, password)
         
         if not user:
             raise AuthenticationError("Invalid username or password")
         
-        self.set_current_user(user)
+        self._registry.set_current_user(user)  # Обновляем во всем registry
         print(f"Welcome, {username}!")
