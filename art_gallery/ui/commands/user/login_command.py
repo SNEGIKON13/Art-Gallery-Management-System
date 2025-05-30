@@ -4,6 +4,10 @@ from art_gallery.ui.exceptions.validation_exceptions import MissingRequiredArgum
 from art_gallery.ui.exceptions.auth_exceptions import AuthenticationError
 
 class LoginCommand(BaseCommand):
+    def __init__(self, user_service, command_registry):
+        super().__init__(user_service)
+        self._registry = command_registry
+
     def get_name(self) -> str:
         return "login"
 
@@ -17,7 +21,8 @@ class LoginCommand(BaseCommand):
         if len(args) != 2:
             raise MissingRequiredArgumentError("Username and password required")
         
-        username, password = args[0], args[1]
+        username: str = args[0]
+        password: str = args[1]
         user = self._user_service.authenticate(username, password)
         
         if not user:

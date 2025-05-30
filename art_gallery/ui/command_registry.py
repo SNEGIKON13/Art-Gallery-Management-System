@@ -1,4 +1,4 @@
-from typing import Dict, Type, List
+from typing import Dict, Type, List, Optional
 from art_gallery.ui.interfaces.command import ICommand
 from art_gallery.ui.interfaces.command_parser import ICommandParser
 from art_gallery.ui.exceptions.command_exceptions import CommandNotFoundError, CommandExecutionError
@@ -7,6 +7,7 @@ class CommandRegistry:
     def __init__(self, parser: ICommandParser):
         self._commands: Dict[str, ICommand] = {}  # Теперь храним экземпляры
         self._parser = parser
+        self._current_user = None
         
     def register(self, command: ICommand) -> None:
         """Регистрирует команду в реестре"""
@@ -34,3 +35,14 @@ class CommandRegistry:
     def get_commands(self) -> List[str]:
         """Возвращает список всех зарегистрированных команд"""
         return list(self._commands.keys())
+    
+    def set_current_user(self, user) -> None:
+        """Устанавливает текущего пользователя"""
+        self._current_user = user
+        # Обновляем текущего пользователя во всех командах
+        for command in self._commands.values():
+            command.set_current_user(user)
+    
+    def get_current_user(self):
+        """Возвращает текущего пользователя"""
+        return self._current_user

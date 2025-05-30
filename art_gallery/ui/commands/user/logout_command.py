@@ -3,6 +3,10 @@ from art_gallery.ui.commands.base_command import BaseCommand
 from art_gallery.ui.exceptions.auth_exceptions import UnauthorizedError
 
 class LogoutCommand(BaseCommand):
+    def __init__(self, user_service, command_registry):
+        super().__init__(user_service)
+        self._registry = command_registry
+
     def get_name(self) -> str:
         return "logout"
 
@@ -16,5 +20,5 @@ class LogoutCommand(BaseCommand):
         if not self._current_user:
             raise UnauthorizedError("You are not logged in")
         
-        self.set_current_user(None)
+        self._registry.set_current_user(None)
         print("Logged out successfully")

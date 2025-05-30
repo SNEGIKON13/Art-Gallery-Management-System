@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List, Any, Optional, Sequence
+from art_gallery.domain.models import User  # добавим импорт
 
 class ICommand(ABC):
     @abstractmethod
@@ -20,4 +21,9 @@ class ICommand(ABC):
     @abstractmethod
     def get_usage(self) -> str:
         """Получить инструкцию по использованию"""
+        pass
+    
+    @abstractmethod
+    def set_current_user(self, user: Optional[User]) -> None:
+        """Set current user for the command"""
         pass

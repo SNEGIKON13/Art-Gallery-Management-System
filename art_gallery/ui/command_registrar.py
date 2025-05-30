@@ -29,15 +29,19 @@ def register_commands(registry: CommandRegistry, services: ServiceCollection) ->
             "user_service": services.user_service,
             "cli_config": services.cli_config
         }),
-        (ExitCommand, {"user_service": services.user_service}),
+        (ExitCommand, {"user_service": services.user_service, "command_registry": registry}),
         
         # User Commands
-        (LoginCommand, {"user_service": services.user_service}),
-        (LogoutCommand, {"user_service": services.user_service}),
-        (RegisterCommand, {"user_service": services.user_service}),
-        (ChangePasswordCommand, {"user_service": services.user_service}),
-        (DeactivateUserCommand, {"user_service": services.user_service}),
-        (GetUserInfoCommand, {"user_service": services.user_service}),
+        (LoginCommand, {"user_service": services.user_service, "command_registry": registry}),
+        (LogoutCommand, {"user_service": services.user_service, "command_registry": registry}),
+        (RegisterCommand, {"user_service": services.user_service, "command_registry": registry}),
+        (ChangePasswordCommand, {"user_service": services.user_service, "command_registry": registry}),
+        (DeactivateUserCommand, {"user_service": services.user_service, "command_registry": registry}),
+        (GetUserInfoCommand, {
+            "user_service": services.user_service, 
+            "command_registry": registry,
+            "cli_config": services.cli_config
+        }),
         
         # Artwork Commands
         (AddArtworkCommand, {"artwork_service": services.artwork_service, "user_service": services.user_service}),
