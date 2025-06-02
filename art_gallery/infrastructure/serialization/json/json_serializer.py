@@ -1,7 +1,7 @@
 import json
 from typing import Any
 from art_gallery.infrastructure.serialization.interfaces.ISerializer import ISerializer
-from art_gallery.ui.exceptions.serialization_exceptions import SerializationError
+from serialization.serialization_exceptions import SerializationError
 
 class JsonSerializer(ISerializer):
     """Реализация сериализатора для формата JSON"""

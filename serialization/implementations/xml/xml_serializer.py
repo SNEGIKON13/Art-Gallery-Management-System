@@ -1,6 +1,6 @@
 import xml.etree.ElementTree as ET
 from typing import Any, Dict, List
-from art_gallery.infrastructure.serialization.interfaces.ISerializer import ISerializer
+from serialization.interfaces.ISerializer import ISerializer
 from serialization.serialization_exceptions import SerializationError
 
 class XmlSerializer(ISerializer):

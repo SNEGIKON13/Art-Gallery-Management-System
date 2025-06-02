@@ -1,12 +1,12 @@
 from enum import Enum, auto
 from typing import Type, Dict, Tuple
 
-from art_gallery.infrastructure.serialization.interfaces.ISerializer import ISerializer
-from art_gallery.infrastructure.serialization.interfaces.IDeserializer import IDeserializer
-from art_gallery.infrastructure.serialization.implementations.json.json_serializer import JsonSerializer
-from art_gallery.infrastructure.serialization.implementations.json.json_deserializer import JsonDeserializer
-from art_gallery.infrastructure.serialization.implementations.xml.xml_serializer import XmlSerializer
-from art_gallery.infrastructure.serialization.implementations.xml.xml_deserializer import XmlDeserializer
+from serialization.interfaces.ISerializer import ISerializer
+from serialization.interfaces.IDeserializer import IDeserializer
+from serialization.implementations.json.json_serializer import JsonSerializer
+from serialization.implementations.json.json_deserializer import JsonDeserializer
+from serialization.implementations.xml.xml_serializer import XmlSerializer
+from serialization.implementations.xml.xml_deserializer import XmlDeserializer
 
 class SerializationFormat(Enum):
     """Поддерживаемые форматы сериализации"""
