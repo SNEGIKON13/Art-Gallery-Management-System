@@ -78,5 +78,25 @@
         "type": "painting",
         "image_path": "media/paintings/apotheosis.jpg",
         "created_at": "2025-06-02T23:09:50.828756"
+    },
+    {
+        "id": 3,
+        "title": "Apotheosis of War",
+        "artist": "Vasily Vereshchazin",
+        "year": 1894,
+        "description": "An anti-war painting depicting a pyramid of human skulls in a desert landscape. A stark reminder of wars consequences.",
+        "type": "painting",
+        "image_path": "media/paintings/apotheosis.jpg",
+        "created_at": "2025-06-02T23:32:30.181238"
+    },
+    {
+        "id": 4,
+        "title": "Apotheosis of War",
+        "artist": "Vasily Vereshchazin",
+        "year": 1894,
+        "description": "An anti-war painting depicting a pyramid of human skulls in a desert landscape. A stark reminder of wars consequences.",
+        "type": "painting",
+        "image_path": "media/paintings/apotheosis.jpg",
+        "created_at": "2025-06-02T23:32:32.422522"
     }
 ]
