@@ -49,15 +49,15 @@ class ArtworkFileRepository(IArtworkRepository):
             # TODO: Заменить на логирование
 
     def add(self, artwork: Artwork) -> Artwork:
-        # Генерация нового ID
+        # Генерация нового ID (всегда положительный)
         if not self._artworks:
-            new_id = 0  # Или 1, если предпочитаете начинать с 1
+            new_id = 1  # Начинаем с 1, т.к. BaseEntity требует ID > 0
         else:
             # Находим максимальный ID среди существующих арт-объектов
             # Убедимся, что у всех арт-объектов есть ID (на случай поврежденных данных)
             existing_ids = [art.id for art in self._artworks if hasattr(art, 'id') and art.id is not None]
             if not existing_ids:
-                new_id = 0 # Или 1
+                new_id = 1  # Начинаем с 1
             else:
                 new_id = max(existing_ids) + 1
         

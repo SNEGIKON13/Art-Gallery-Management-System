@@ -47,6 +47,8 @@ class UserService(IUserService):
             created_at=datetime.now()
         )
         
+        # Установка ID перед добавлением в репозиторий
+        user.id = self._next_id
         self._next_id += 1
         return self._repository.add(user)
 

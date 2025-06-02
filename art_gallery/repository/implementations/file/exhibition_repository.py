@@ -51,14 +51,14 @@ class ExhibitionFileRepository(IExhibitionRepository):
     def add(self, exhibition: Exhibition) -> Exhibition:
         # Добавляем выставку и сохраняем
         if not exhibition.id:
-            # Генерация ID для нового объекта
+            # Генерация ID для нового объекта (всегда положительный)
             if not self._exhibitions:
-                new_id = 0
+                new_id = 1  # Начинаем с 1, т.к. BaseEntity требует ID > 0
             else:
                 # Находим максимальный ID и увеличиваем на 1
                 existing_ids = [e.id for e in self._exhibitions if hasattr(e, 'id') and e.id is not None]
                 if not existing_ids:
-                    new_id = 0
+                    new_id = 1  # Начинаем с 1
                 else:
                     new_id = max(existing_ids) + 1
             exhibition.id = new_id

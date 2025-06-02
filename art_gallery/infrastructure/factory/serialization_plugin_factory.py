@@ -1,9 +1,6 @@
 import pkg_resources
-from typing import Dict, Type
+from typing import Dict, Type, Optional
 from art_gallery.infrastructure.interfaces.serialization_plugin import ISerializationPlugin
-
-import pkg_resources
-from typing import Dict
 from serialization.interfaces.ISerializer import ISerializer
 from serialization.interfaces.IDeserializer import IDeserializer
 
@@ -13,65 +10,78 @@ class SerializationPluginFactory:
     _serializers: Dict[str, ISerializer] = {}
     _deserializers: Dict[str, IDeserializer] = {}
     _supported_formats_cache: list[str] = []
+    _verbose: bool = False  # Флаг для контроля вывода отладочных сообщений
     
     @classmethod
-    def initialize(cls) -> None:
+    def set_verbose(cls, verbose: bool) -> None:
+        """Установить режим подробного вывода сообщений"""
+        cls._verbose = verbose
+    
+    @classmethod
+    def _log(cls, message: str, level: str = "INFO") -> None:
+        """Выводит сообщение, если включен режим подробного вывода"""
+        if cls._verbose or level in ["ERROR", "WARN"]:
+            print(f"[{level}] {message}")
+    
+    @classmethod
+    def initialize(cls, verbose: bool = False) -> None:
         """Инициализирует доступные плагины сериализации и десериализации"""
+        cls._verbose = verbose
         cls._serializers.clear()
         cls._deserializers.clear()
         cls._supported_formats_cache.clear()
 
-        print(f"[INFO] Initializing serialization plugins...")
+        cls._log("Initializing serialization plugins...")
         # Показываем путь к пакету pkg_resources для отладки
-        print(f"[DEBUG] pkg_resources path: {pkg_resources.__file__}")
+        cls._log(f"pkg_resources path: {pkg_resources.__file__}", "DEBUG")
         
         loaded_serializer_formats = set()
         serializer_entry_points = list(pkg_resources.iter_entry_points('gallery.serialization'))
-        print(f"[INFO] Found {len(serializer_entry_points)} serializer entry points")
+        cls._log(f"Found {len(serializer_entry_points)} serializer entry points")
         
         for entry_point in serializer_entry_points:
             try:
-                print(f"[INFO] Loading serializer plugin: {entry_point.name} from {entry_point.module_name}")
+                cls._log(f"Loading serializer plugin: {entry_point.name} from {entry_point.module_name}")
                 plugin_class = entry_point.load()
                 instance = plugin_class()
                 if isinstance(instance, ISerializer):
                     cls._serializers[entry_point.name] = instance
                     loaded_serializer_formats.add(entry_point.name)
-                    print(f"[INFO] Successfully loaded serializer plugin: {entry_point.name}")
+                    cls._log(f"Successfully loaded serializer plugin: {entry_point.name}")
                 else:
-                    print(f"[WARN] Plugin {entry_point.name} from 'gallery.serialization' is not an ISerializer.")
+                    cls._log(f"Plugin {entry_point.name} from 'gallery.serialization' is not an ISerializer.", "WARN")
             except Exception as e:
-                print(f"[ERROR] Failed to load serializer plugin {entry_point.name}: {e}")
-                import traceback
-                traceback.print_exc()
+                cls._log(f"Failed to load serializer plugin {entry_point.name}: {e}", "ERROR")
+                if cls._verbose:
+                    import traceback
+                    traceback.print_exc()
 
         loaded_deserializer_formats = set()
         deserializer_entry_points = list(pkg_resources.iter_entry_points('gallery.deserialization'))
-        print(f"[INFO] Found {len(deserializer_entry_points)} deserializer entry points")
+        cls._log(f"Found {len(deserializer_entry_points)} deserializer entry points")
         
         for entry_point in deserializer_entry_points:
             try:
-                print(f"[INFO] Loading deserializer plugin: {entry_point.name} from {entry_point.module_name}")
+                cls._log(f"Loading deserializer plugin: {entry_point.name} from {entry_point.module_name}")
                 plugin_class = entry_point.load()
                 instance = plugin_class()
                 if isinstance(instance, IDeserializer):
                     cls._deserializers[entry_point.name] = instance
                     loaded_deserializer_formats.add(entry_point.name)
-                    print(f"[INFO] Successfully loaded deserializer plugin: {entry_point.name}")
+                    cls._log(f"Successfully loaded deserializer plugin: {entry_point.name}")
                 else:
-                    print(f"[WARN] Plugin {entry_point.name} from 'gallery.deserialization' is not an IDeserializer.")
+                    cls._log(f"Plugin {entry_point.name} from 'gallery.deserialization' is not an IDeserializer.", "WARN")
             except Exception as e:
-                print(f"[ERROR] Failed to load deserializer plugin {entry_point.name}: {e}")
-                import traceback
-                traceback.print_exc()
+                cls._log(f"Failed to load deserializer plugin {entry_point.name}: {e}", "ERROR")
+                if cls._verbose:
+                    import traceback
+                    traceback.print_exc()
         
         # Supported formats are those available for BOTH serialization and deserialization
         cls._supported_formats_cache = list(loaded_serializer_formats.intersection(loaded_deserializer_formats))
-        print(f"[INFO] Supported formats: {cls._supported_formats_cache}")
+        cls._log(f"Supported formats: {cls._supported_formats_cache}")
         if not cls._supported_formats_cache:
-            print("[WARN] No common formats supported by both serializers and deserializers.") # Or log
-            # Fallback: list all loaded serializer formats if no common ones, or handle as error
-            # For now, let's keep it as intersection. Or, we might want separate lists.
+            cls._log("No common formats supported by both serializers and deserializers.", "WARN")
 
     @classmethod
     def get_serializer(cls, format_name: str) -> ISerializer:

@@ -54,14 +54,14 @@ class UserFileRepository(IUserRepository):
             
         # Присвоение ID происходит через свойство user.id
         if not user.id:
-            # Генерация ID для нового пользователя
+            # Генерация ID для нового пользователя (всегда положительный)
             if not self._users:
-                new_id = 0
+                new_id = 1  # Начинаем с 1, т.к. BaseEntity требует ID > 0
             else:
                 # Находим максимальный ID и увеличиваем на 1
                 existing_ids = [u.id for u in self._users if hasattr(u, 'id') and u.id is not None]
                 if not existing_ids:
-                    new_id = 0
+                    new_id = 1  # Начинаем с 1
                 else:
                     new_id = max(existing_ids) + 1
             user.id = new_id

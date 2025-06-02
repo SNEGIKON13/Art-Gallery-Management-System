@@ -20,7 +20,9 @@ from art_gallery.ui.commands.exhibition.get_exhibition_command import GetExhibit
 from art_gallery.ui.commands.exhibition.update_exhibition_command import UpdateExhibitionCommand
 from art_gallery.ui.commands.exhibition.delete_exhibition_command import DeleteExhibitionCommand
 from art_gallery.ui.commands.exhibition.list_exhibitions_command import ListExhibitionsCommand
+from art_gallery.ui.commands.utility.format_command import FormatCommand
 from art_gallery.infrastructure.logging.interfaces.logger import ILogger
+from art_gallery.infrastructure.factory.serialization_plugin_factory import SerializationPluginFactory
 
 def register_commands(registry: CommandRegistry, services: ServiceCollection, logger: ILogger) -> None:
     """Регистрирует все доступные команды"""
@@ -64,6 +66,11 @@ def register_commands(registry: CommandRegistry, services: ServiceCollection, lo
         (ListExhibitionsCommand, {"exhibition_service": services.exhibition_service, "user_service": services.user_service}),
         
         # Serialization Commands
+        (FormatCommand, {
+            "command_registry": registry,
+            "user_service": services.user_service,
+            "serialization_factory": SerializationPluginFactory()
+        })
     ]
     
     for command_class, deps in commands:

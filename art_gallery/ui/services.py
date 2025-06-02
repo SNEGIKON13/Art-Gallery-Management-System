@@ -56,8 +56,9 @@ def create_real_services(format_name: str = 'json'):
         Tuple[UserService, ArtworkService, ExhibitionService]: 
             Возвращает три сервиса: пользователей, произведений искусства и выставок
     """
-    # Пути к файлам данных с учетом выбранного формата
-    data_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'data')
+    # Определяем директорию с данными
+    base_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+    data_dir = os.path.join(base_dir, 'data')
     os.makedirs(data_dir, exist_ok=True)
     
     # Проверяем и нормализуем формат
@@ -65,16 +66,19 @@ def create_real_services(format_name: str = 'json'):
         print(f"Предупреждение: Неподдерживаемый формат '{format_name}'. Используем JSON по умолчанию.")
         format_name = 'json'
     
-    file_ext = format_name.lower()
-    users_file = os.path.join(data_dir, f'users.{file_ext}')
-    artworks_file = os.path.join(data_dir, f'artworks.{file_ext}')
-    exhibitions_file = os.path.join(data_dir, f'exhibitions.{file_ext}')
+    # Создаем подпапку для формата
+    format_dir = os.path.join(data_dir, format_name.lower())
+    os.makedirs(format_dir, exist_ok=True)
     
-    print(f"Используем формат данных: {format_name.upper()}")
+    # Создаем пути к файлам в соответствующей подпапке
+    users_file = os.path.join(format_dir, 'users.{}'.format(format_name.lower()))
+    artworks_file = os.path.join(format_dir, 'artworks.{}'.format(format_name.lower()))
+    exhibitions_file = os.path.join(format_dir, 'exhibitions.{}'.format(format_name.lower()))
+    
     
     # Инициализация фабрики плагинов сериализации
     factory = SerializationPluginFactory()
-    factory.initialize()  # Загрузка всех плагинов
+    factory.initialize(verbose=False)  # Загрузка всех плагинов без подробного вывода
     
     # Получаем сериализатор и десериализатор выбранного формата
     serializer = factory.get_serializer(format_name)
