@@ -24,42 +24,21 @@ class JsonDeserializer(IDeserializer):
         except Exception as e:
             raise DeserializationError(f"Ошибка десериализации из JSON: {str(e)}")
 
-    def deserialize_from_file(self, filepath: str) -> Any: # Возвращаемый тип Any, но фактически List[Dict[str, Any]]
+    def deserialize_from_file(self, filepath: str) -> Any:
         """
-        Читает и десериализует данные из JSON файла.
-        Возвращает пустой список, если файл не найден или пуст.
+        Читает и десериализует данные из JSON файла
         
         Args:
             filepath (str): Путь к файлу для чтения
             
         Returns:
-            List[Any]: Десериализованные данные (ожидается список словарей, совместимый с Any)
+            Any: Десериализованные данные
             
         Raises:
-            DeserializationError: Если возникла ошибка при десериализации (кроме пустого/отсутствующего файла)
+            DeserializationError: Если возникла ошибка при чтении или десериализации
         """
-        import os
-        # import json # json уже импортирован на уровне модуля
-        
-        if not os.path.exists(filepath):
-            return [] # Файл не существует
-        
         try:
-            # Сначала проверяем размер файла, чтобы избежать чтения больших пустых файлов
-            if os.path.getsize(filepath) == 0:
-                return [] # Файл пуст (по размеру)
-
             with open(filepath, 'r', encoding='utf-8') as file:
-                content = file.read().strip()
-                if not content:
-                    return [] # Файл содержит только пробелы или пуст после strip
-                return json.loads(content) # Используем json.loads для строки
-        except json.JSONDecodeError as e:
-            # Если файл не пустой, но содержит невалидный JSON
-            raise DeserializationError(f"Ошибка десериализации JSON из файла {filepath}: {str(e)}")
-        except FileNotFoundError:
-            # Эта ветка на случай, если файл удалили между os.path.exists и open, хотя маловероятно
-            return []
+                return json.load(file)
         except Exception as e:
-            # Прочие ошибки чтения/доступа, которые не являются JSONDecodeError
-            raise DeserializationError(f"Ошибка чтения, доступа или другая ошибка при обработке файла {filepath}: {str(e)}")
+            raise DeserializationError(f"Ошибка чтения из JSON файла: {str(e)}")

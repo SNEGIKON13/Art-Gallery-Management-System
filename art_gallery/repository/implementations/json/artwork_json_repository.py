@@ -6,14 +6,9 @@ from art_gallery.domain.models import Artwork, ArtworkType
 from art_gallery.repository.interfaces.artwork_repository import IArtworkRepository
 from art_gallery.repository.specifications.base_specification import Specification
 
-from serialization.interfaces import ISerializer, IDeserializer # Убедитесь, что путь импорта корректен
-
 class ArtworkJsonRepository(IArtworkRepository):
-    def __init__(self, filepath: str, serializer: ISerializer, deserializer: IDeserializer):
+    def __init__(self, filepath: str):
         self._filepath = filepath
-        self._serializer = serializer
-        self._deserializer = deserializer
-        
         # Создаем директорию, если нужно
         file_dir = os.path.dirname(self._filepath)
         if file_dir:
@@ -23,30 +18,37 @@ class ArtworkJsonRepository(IArtworkRepository):
         self._load_data()
 
     def _load_data(self) -> None:
+        if not os.path.exists(self._filepath) or os.path.getsize(self._filepath) == 0:
+            self._artworks = []
+            # Создаем пустой файл, если не существует
+            with open(self._filepath, 'w', encoding='utf-8') as f:
+                json.dump([], f)
+            return
+        
         try:
-            # Используем десериализатор из библиотеки
-            # Он уже обрабатывает FileNotFoundError и пустые файлы, возвращая []
-            list_of_dicts = self._deserializer.deserialize_from_file(self._filepath)
-            loaded_artworks = []
-            for artwork_data_dict in list_of_dicts:
-                try:
-                    loaded_artworks.append(Artwork.from_dict(artwork_data_dict))
-                except Exception as e:
-                    # TODO: Заменить print на логирование
-                    print(f"Error creating Artwork from dict: {artwork_data_dict}, error: {e}")
-            self._artworks = loaded_artworks
-        except Exception as e: # Ловим ошибки от нашего десериализатора или Artwork.from_dict
-            # TODO: Заменить print на логирование
-            print(f"Error loading artworks using plugin deserializer or from_dict: {e}")
-            self._artworks = [] # Начинаем с пустого списка в случае серьезной ошибки
+            with open(self._filepath, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                # Загружаем артефакты из данных
+                loaded_artworks = []
+                for artwork_data in data:
+                    try:
+                        loaded_artworks.append(Artwork.from_dict(artwork_data))
+                    except Exception as e:
+                        print(f"Error deserializing artwork: {e}")
+                self._artworks = loaded_artworks
+        except json.JSONDecodeError:
+            print(f"Invalid JSON in {self._filepath}. Starting with empty artwork list.")
+            self._artworks = []
+        except Exception as e:
+            print(f"Error loading artworks: {e}")
+            self._artworks = []
 
     def _save_data(self) -> None:
         try:
-            data_to_serialize = [artwork.to_dict() for artwork in self._artworks]
-            self._serializer.serialize_to_file(data_to_serialize, self._filepath)
-        except Exception as e: # Ловим ошибки от нашего сериализатора
-            # TODO: Заменить print на логирование
-            print(f"Error saving artworks using plugin serializer: {e}")
+            with open(self._filepath, 'w', encoding='utf-8') as f:
+                json.dump([artwork.to_dict() for artwork in self._artworks], f, indent=4, ensure_ascii=False, default=str)
+        except Exception as e:
+            print(f"Error saving artworks: {e}")
 
     def add(self, artwork: Artwork) -> Artwork:
         # Генерация нового ID
