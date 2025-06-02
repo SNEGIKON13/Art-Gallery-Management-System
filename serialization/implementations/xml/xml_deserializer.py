@@ -20,7 +20,7 @@ class XmlDeserializer(IDeserializer):
         if len(element) == 0:
             return element.text if element.text else ""
         
-        result = {}
+        result: Dict[str, Any] = {}
         # Если все дочерние элементы имеют тег 'item', это список
         if all(child.tag == 'item' for child in element):
             return [self._xml_to_dict(child) for child in element]
@@ -64,14 +64,25 @@ class XmlDeserializer(IDeserializer):
             filepath (str): Путь к файлу для чтения
             
         Returns:
-            Any: Десериализованные данные
-            
-        Raises:
-            DeserializationError: Если возникла ошибка при чтении или десериализации
+            Any: Десериализованные данные или пустой список, если файл не существует или пуст
         """
+        import os
         try:
+            # Проверяем существование файла и его размер
+            if not os.path.exists(filepath) or os.path.getsize(filepath) == 0:
+                print(f"[ИНФО] XML файл {filepath} не существует или пуст. Возвращаем пустой список.")
+                return []
+                
             tree = ET.parse(filepath)
             root = tree.getroot()
-            return self._xml_to_dict(root)
+            result = self._xml_to_dict(root)
+            
+            # Если результат не список, а root пуст, возвращаем пустой список
+            if not isinstance(result, list) and result == {}:
+                return []
+                
+            return result
         except Exception as e:
-            raise DeserializationError(f"Ошибка чтения из XML файла: {str(e)}")
+            print(f"[ОШИБКА] При чтении XML файла {filepath}: {str(e)}")
+            # В случае ошибки возвращаем пустой список вместо исключения
+            return []

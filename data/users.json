@@ -16,5 +16,14 @@
         "created_at": "2025-06-03T00:05:38.926007",
         "last_login": "2025-06-03T00:05:50.206767",
         "is_active": true
+    },
+    {
+        "id": 1,
+        "username": "999",
+        "password_hash": "83cf8b609de60036a8277bd0e96135751bbc07eb234256d4b65b893360651bf2",
+        "role": "user",
+        "created_at": "2025-06-03T00:22:07.751042",
+        "last_login": "2025-06-03T00:22:30.062905",
+        "is_active": true
     }
 ]

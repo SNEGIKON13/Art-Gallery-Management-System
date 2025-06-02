@@ -1,3 +1,4 @@
+import argparse
 from typing import Optional, Dict, Any
 from art_gallery.infrastructure.config.cli_config import CLIConfig
 from art_gallery.infrastructure.logging.implementations.file_logger import FileLogger
@@ -11,8 +12,9 @@ from art_gallery.ui.services import create_real_services # Changed from create_m
 from art_gallery.infrastructure.logging.interfaces.logger import LogLevel
 
 class Application:
-    def __init__(self, config: Optional[CLIConfig] = None):
+    def __init__(self, config: Optional[CLIConfig] = None, data_format: str = 'json'):
         self.config = config or CLIConfig()
+        self.data_format = data_format
         
         # Инициализация логгеров с фильтрацией
         app_logger = FilteredLogger(
@@ -30,7 +32,8 @@ class Application:
         self.command_parser = CommandParser()
         self.command_registry = CommandRegistry(self.command_parser)
         
-        self.services = create_real_services() 
+        # Создаем сервисы с указанным форматом данных
+        self.services = create_real_services(format_name=self.data_format) 
         register_commands(self.command_registry, self.services, self.logger)  
 
     def run(self) -> None:
@@ -59,7 +62,19 @@ class Application:
         self.logger.info("Application stopped")
 
 def main() -> None:
-    app = Application()
+    # Парсинг аргументов командной строки
+    parser = argparse.ArgumentParser(description='Art Gallery Management System')
+    parser.add_argument(
+        '--format', 
+        choices=['json', 'xml'], 
+        default='json',
+        help='Формат данных для хранения (json или xml, по умолчанию json)'
+    )
+    
+    args = parser.parse_args()
+    
+    # Создание приложения с указанным форматом
+    app = Application(data_format=args.format)
     app.run()
 
 if __name__ == "__main__":

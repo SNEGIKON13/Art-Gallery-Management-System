@@ -14,10 +14,10 @@ from art_gallery.application.services.user_service import UserService
 from art_gallery.application.services.artwork_service import ArtworkService
 from art_gallery.application.services.exhibition_service import ExhibitionService
 
-# Предполагаемые реальные репозитории (пути могут потребовать корректировки)
-from art_gallery.repository.implementations.json.user_json_repository import UserJsonRepository
-from art_gallery.repository.implementations.json.artwork_json_repository import ArtworkJsonRepository
-from art_gallery.repository.implementations.json.exhibition_json_repository import ExhibitionJsonRepository
+# Реальные репозитории
+from art_gallery.repository.implementations.file.user_repository import UserFileRepository
+from art_gallery.repository.implementations.file.artwork_repository import ArtworkFileRepository
+from art_gallery.repository.implementations.file.exhibition_repository import ExhibitionFileRepository
 
 # Интерфейсы репозиториев (если нужны для типизации, но сервисы ожидают конкретные реализации или интерфейсы)
 from art_gallery.repository.interfaces.user_repository import IUserRepository
@@ -46,32 +46,45 @@ def create_mock_services() -> ServiceCollection:
         serialization_factory=factory
     )
 
-def create_real_services() -> ServiceCollection:
-    # Инициализируем фабрику плагинов сериализации
+def create_real_services(format_name: str = 'json'):
+    """Создает экземпляры реальных сервисов с рабочими репозиториями
+    
+    Args:
+        format_name (str, optional): Формат данных для хранения ('json' или 'xml'). По умолчанию 'json'.
+    
+    Returns:
+        Tuple[UserService, ArtworkService, ExhibitionService]: 
+            Возвращает три сервиса: пользователей, произведений искусства и выставок
+    """
+    # Пути к файлам данных с учетом выбранного формата
+    data_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'data')
+    os.makedirs(data_dir, exist_ok=True)
+    
+    # Проверяем и нормализуем формат
+    if format_name.lower() not in ['json', 'xml']:
+        print(f"Предупреждение: Неподдерживаемый формат '{format_name}'. Используем JSON по умолчанию.")
+        format_name = 'json'
+    
+    file_ext = format_name.lower()
+    users_file = os.path.join(data_dir, f'users.{file_ext}')
+    artworks_file = os.path.join(data_dir, f'artworks.{file_ext}')
+    exhibitions_file = os.path.join(data_dir, f'exhibitions.{file_ext}')
+    
+    print(f"Используем формат данных: {format_name.upper()}")
+    
+    # Инициализация фабрики плагинов сериализации
     factory = SerializationPluginFactory()
     factory.initialize()  # Загрузка всех плагинов
     
-    # Получаем сериализаторы для JSON
-    serializer = factory.get_serializer('json')
-    deserializer = factory.get_deserializer('json')
+    # Получаем сериализатор и десериализатор выбранного формата
+    serializer = factory.get_serializer(format_name)
+    deserializer = factory.get_deserializer(format_name)
     
-    print(f"[ИНФО] Доступные форматы сериализации: {factory.get_supported_formats()}")
-    
-    # Пути к файлам данных (можно будет вынести в конфигурацию позже)
-    data_dir = "data" 
-    users_file = os.path.join(data_dir, "users.json")
-    artworks_file = os.path.join(data_dir, "artworks.json")
-    exhibitions_file = os.path.join(data_dir, "exhibitions.json")
-
-    # Убедимся, что директория data существует
-    if not os.path.exists(data_dir):
-        os.makedirs(data_dir)
-
     # Инициализация реальных репозиториев
     # Передаем сериализаторы и десериализаторы в репозитории
-    user_repo = UserJsonRepository(users_file, serializer, deserializer)
-    artwork_repo = ArtworkJsonRepository(artworks_file, serializer, deserializer)
-    exhibition_repo = ExhibitionJsonRepository(exhibitions_file, serializer, deserializer)
+    user_repo = UserFileRepository(users_file, serializer, deserializer)
+    artwork_repo = ArtworkFileRepository(artworks_file, serializer, deserializer)
+    exhibition_repo = ExhibitionFileRepository(exhibitions_file, serializer, deserializer)
 
     # Инициализация реальных сервисов
     user_service = UserService(user_repo)
