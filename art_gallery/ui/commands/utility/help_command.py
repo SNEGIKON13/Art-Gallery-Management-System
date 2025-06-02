@@ -11,7 +11,7 @@ class HelpCommand(BaseCommand):
         self._cli_config = cli_config
 
     def execute(self, args: Sequence[str]) -> None:
-        # Если указана конкретная команда (например: help login или login --help)
+        # If a specific command is provided (e.g., help login or login --help)
         if args and (args[0] != '--help'):
             command_name = args[0]
             try:
@@ -20,24 +20,58 @@ class HelpCommand(BaseCommand):
                     f"\nCommand: {cmd.get_name()}\n"
                     f"Description: {cmd.get_description()}\n"
                     f"Usage: {cmd.get_usage()}\n"
-                    f"Details: {cmd.get_help()}\n"  # Новый метод для детального описания
+                    f"Details: {cmd.get_help()}\n"
                 )
                 print(self._cli_config.format_message(help_text, "success"))
             except CommandNotFoundError:
                 print(self._cli_config.format_message(f"Command '{command_name}' not found", "error"))
             return
 
-        # Общий список команд
-        available_commands = []
+        # Command categories in English
+        command_categories = {
+            "General": ["help", "exit"],
+            "Users": ["login", "logout", "register", "change_password", "deactivate-user", "whoami", "list_users", "get_user"],
+            "Artworks": ["add_artwork", "get_artwork", "update_artwork", "delete_artwork", "open_image", "list_artworks", "search_artworks"],
+            "Exhibitions": ["create_exhibition", "get_exhibition", "update_exhibition", "delete_exhibition", "list_exhibitions", "add_artwork_to_exhibition", "remove_artwork_from_exhibition"],
+            "Utilities": ["format", "stats"]
+        }
+        
+        # Create a dictionary for all commands
+        all_commands = {}
         for command in self._registry.get_commands():
             cmd_instance = self._registry.get_command_instance(command)
-            available_commands.append(
-                f"{cmd_instance.get_name()} - {cmd_instance.get_description()}\n"
-                f"Usage: {cmd_instance.get_usage()}"
-            )
+            all_commands[command] = {
+                "name": cmd_instance.get_name(),
+                "description": cmd_instance.get_description(),
+                "usage": cmd_instance.get_usage()
+            }
         
-        help_text = "\nAvailable commands:\n" + "\n\n".join(available_commands)
-        help_text += "\n\nFor detailed help on a specific command, type: <command> --help"
+        # Build help text with categories
+        help_text = "\nAvailable commands:\n"
+        
+        # Add commands by category
+        for category, cmd_list in command_categories.items():
+            # Check if there are registered commands in this category
+            category_commands = [cmd for cmd in cmd_list if cmd in all_commands]
+            if category_commands:
+                help_text += f"\n== {category} ==\n"
+                for cmd_name in category_commands:
+                    cmd_info = all_commands[cmd_name]
+                    help_text += (f"{cmd_info['name']} - {cmd_info['description']}\n"
+                                f"Usage: {cmd_info['usage']}\n\n")
+        
+        # Add uncategorized commands if any
+        all_categorized = [cmd for sublist in command_categories.values() for cmd in sublist]
+        uncategorized = [cmd for cmd in all_commands if cmd not in all_categorized]
+        
+        if uncategorized:
+            help_text += "\n== Other commands ==\n"
+            for cmd_name in uncategorized:
+                cmd_info = all_commands[cmd_name]
+                help_text += (f"{cmd_info['name']} - {cmd_info['description']}\n"
+                            f"Usage: {cmd_info['usage']}\n\n")
+        
+        help_text += "\nFor detailed help on a specific command, enter: <command> --help"
         print(self._cli_config.format_message(help_text, "success"))
 
     def get_name(self) -> str:

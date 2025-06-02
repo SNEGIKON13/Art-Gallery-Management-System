@@ -30,11 +30,7 @@ class CLIConfig:
             if not os.path.exists(dir_path):
                 os.makedirs(dir_path)
 
-        # Создаем директорию для экспорта если её нет
-        export_dir = os.path.join(project_root, self.serialization_config['export_dir'])
-        if not os.path.exists(export_dir):
-            os.makedirs(export_dir)
-            
+
         if not self.colors:
             self.colors = {
                 "error": "\033[91m",  # Красный

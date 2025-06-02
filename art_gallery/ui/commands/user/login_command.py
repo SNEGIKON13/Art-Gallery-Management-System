@@ -27,6 +27,30 @@ class LoginCommand(BaseCommand):
         if len(args) != 2:
             raise MissingRequiredArgumentError("Username and password required")
         
+        current_user_in_registry = self._registry.get_current_user()
+        if current_user_in_registry:
+            # This block should be entered if a user is already logged in.
+            # The bug you observed means this condition is currently not met
+            # when the second user logs in.
+            
+            attempted_username = args[0] # Username for the current login attempt
+
+            # Safely get the username of the already logged-in user
+            logged_in_username = "another user" # Default message part
+            # Ensure current_user_in_registry is an object with a username attribute
+            if hasattr(current_user_in_registry, 'username') and isinstance(getattr(current_user_in_registry, 'username', None), str):
+                logged_in_username = current_user_in_registry.username
+            
+            if logged_in_username == attempted_username:
+                # Case: Trying to log in as the same user who is already logged in.
+                raise AuthenticationError(f"You are already logged in as '{attempted_username}'.")
+            else:
+                # Case: Trying to log in as a different user while someone else is logged in.
+                raise AuthenticationError(
+                    f"User '{logged_in_username}' is already logged in. "
+                    f"Please logout first if you want to login as '{attempted_username}'."
+                )
+    
         username, password = args[0], args[1]
         user = self._user_service.authenticate(username, password)
         

@@ -4,6 +4,10 @@ class ValidationException(UIException):
     """Базовое исключение для ошибок валидации"""
     pass
 
+class ValidationError(ValidationException):
+    """Общая ошибка валидации"""
+    pass
+
 class InvalidInputError(ValidationException):
     """Некорректные входные данные"""
     pass
