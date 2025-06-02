@@ -1,1 +1,26 @@
-[]
+[
+    {
+      "id": 1,
+      "title": "Russian Masters: 19th Century",
+      "description": "A collection of iconic Russian paintings from the 19th century.",
+      "start_date": "2025-06-01",
+      "end_date": "2025-07-01",
+      "artwork_ids": [1, 3, 4, 5, 8]
+    },
+    {
+      "id": 2,
+      "title": "World Photography Awards 2024",
+      "description": "Award-winning wildlife and landscape photographs from the 2024 international competition.",
+      "start_date": "2025-07-10",
+      "end_date": "2025-08-10",
+      "artwork_ids": [9, 10, 11, 12, 13]
+    },
+    {
+      "id": 3,
+      "title": "Myth and Reality: European Sculpture",
+      "description": "Masterpieces of European sculpture from antiquity to the Renaissance.",
+      "start_date": "2025-08-15",
+      "end_date": "2025-09-15",
+      "artwork_ids": [14, 15, 16, 17]
+    }
+  ]

@@ -14,8 +14,7 @@ class CLIConfig:
     message_format: Dict[str, str] = field(default_factory=dict)
       # Настройки сериализации
     serialization_config: Dict[str, str] = field(default_factory=lambda: {
-        'default_format': 'json',  # Формат по умолчанию (json/xml)
-        'export_dir': 'exports'    # Директория для экспорта
+        'default_format': 'json',  # Формат по умолчанию (json/xml)    # Директория для экспорта
     })
     
     def __post_init__(self) -> None:

@@ -1,102 +1,155 @@
 [
     {
-        "id": 0,
-        "title": "Apotheosis of War",
-        "artist": "Vasily Vereshchagin",
-        "year": 1871,
-        "description": "An anti-war painting depicting a pyramid of human skulls in a desert landscape. A stark reminder of wars consequences.",
-        "type": "painting",
-        "image_path": "media/paintings/apotheosis.jpg",
-        "created_at": "2025-06-02T23:04:58.076869"
+      "id": 1,
+      "title": "Apotheosis of War",
+      "artist": "Vasily Vereshchagin",
+      "year": 1871,
+      "type": "Painting",
+      "description": "An anti-war painting depicting a pyramid of human skulls in a desert landscape. A stark reminder of war's consequences.",
+      "image_path": "media/paintings/apotheosis.jpg"
     },
     {
-        "id": 0,
-        "title": "Apotheosis of War",
-        "artist": "Vasily Vereshchagin",
-        "year": 1870,
-        "description": "An anti-war painting depicting a pyramid of human skulls in a desert landscape. A stark reminder of wars consequences.",
-        "type": "painting",
-        "image_path": "media/paintings/apotheosis.jpg",
-        "created_at": "2025-06-02T23:07:03.280133"
+      "id": 2,
+      "title": "Black Square",
+      "artist": "Kazimir Malevich",
+      "year": 1915,
+      "type": "Painting",
+      "description": "A groundbreaking avant-garde artwork featuring a black square on white background, representing the zero point of painting.",
+      "image_path": "media/paintings/black_square.jpg"
     },
     {
-        "id": 0,
-        "title": "Apotheosis of War",
-        "artist": "Vasily Vereshchagin",
-        "year": 1873,
-        "description": "An anti-war painting depicting a pyramid of human skulls in a desert landscape. A stark reminder of wars consequences.",
-        "type": "painting",
-        "image_path": "media/paintings/apotheosis.jpg",
-        "created_at": "2025-06-02T23:07:28.481370"
+      "id": 3,
+      "title": "Morning in a Pine Forest",
+      "artist": "Ivan Shishkin",
+      "year": 1889,
+      "type": "Painting",
+      "description": "A naturalistic scene showing four bear cubs playing in a misty pine forest, one of Russia's most famous landscape paintings.",
+      "image_path": "media/paintings/morning_in_a_pine_forest.jpg"
     },
     {
-        "id": 0,
-        "title": "Apotheosis of War",
-        "artist": "Vasily Vereshchagin",
-        "year": 1873,
-        "description": "An anti-war painting depicting a pyramid of human skulls in a desert landscape. A stark reminder of wars consequences.",
-        "type": "painting",
-        "image_path": "media/paintings/apotheosis.jpg",
-        "created_at": "2025-06-02T23:07:30.208509"
+      "id": 4,
+      "title": "Portrait of Lopukhina",
+      "artist": "Vladimir Borovikovsky",
+      "year": 1797,
+      "type": "Painting",
+      "description": "A romantic portrait of Maria Lopukhina, representing the beauty ideals of Russian nobility in the 18th century.",
+      "image_path": "media/paintings/portrait_of_lopukhina.jpg"
     },
     {
-        "id": 0,
-        "title": "Apotheosis of War",
-        "artist": "Vasily Vereshchagin",
-        "year": 1873,
-        "description": "An anti-war painting depicting a pyramid of human skulls in a desert landscape. A stark reminder of wars consequences.",
-        "type": "painting",
-        "image_path": "media/paintings/apotheosis.jpg",
-        "created_at": "2025-06-02T23:07:30.624844"
+      "id": 5,
+      "title": "Ship Grove",
+      "artist": "Ivan Aivazovsky",
+      "year": 1898,
+      "type": "Painting",
+      "description": "A maritime landscape showcasing Aivazovsky's mastery of seascapes and atmospheric effects.",
+      "image_path": "media/paintings/ship_grove.jpg"
     },
     {
-        "id": 0,
-        "title": "Apotheosis of War",
-        "artist": "Vasily Vereshchagin",
-        "year": 1873,
-        "description": "An anti-war painting depicting a pyramid of human skulls in a desert landscape. A stark reminder of wars consequences.",
-        "type": "painting",
-        "image_path": "media/paintings/apotheosis.jpg",
-        "created_at": "2025-06-02T23:07:31.000439"
+      "id": 6,
+      "title": "The Starry Night",
+      "artist": "Vincent van Gogh",
+      "year": 1889,
+      "type": "Painting",
+      "description": "An iconic post-impressionist painting depicting a night scene with swirling clouds, bright stars, and a crescent moon over a village.",
+      "image_path": "media/paintings/starry_night.jpg"
     },
     {
-        "id": 1,
-        "title": "Apotheosis of War",
-        "artist": "Vasily Vereshchagin",
-        "year": 1870,
-        "description": "An anti-war painting depicting a pyramid of human skulls in a desert landscape. A stark reminder of wars consequences.",
-        "type": "painting",
-        "image_path": "media/paintings/apotheosis.jpg",
-        "created_at": "2025-06-02T23:09:35.627405"
+      "id": 7,
+      "title": "The Appearance of Christ to the People",
+      "artist": "Alexander Ivanov",
+      "year": 1857,
+      "type": "Painting",
+      "description": "A monumental religious painting depicting John the Baptist's revelation of Christ to the people, took 20 years to complete.",
+      "image_path": "media/paintings/the_appearance_of_christ_to_the_people.jpg"
     },
     {
-        "id": 2,
-        "title": "Apotheosis of War",
-        "artist": "Vasily Vereshchagin",
-        "year": 1890,
-        "description": "An anti-war painting depicting a pyramid of human skulls in a desert landscape. A stark reminder of wars consequences.",
-        "type": "painting",
-        "image_path": "media/paintings/apotheosis.jpg",
-        "created_at": "2025-06-02T23:09:50.828756"
+      "id": 8,
+      "title": "The Unknown Woman",
+      "artist": "Ivan Kramskoi",
+      "year": 1883,
+      "type": "Painting",
+      "description": "A mysterious portrait of an elegant unknown woman in a carriage, symbolizing the allure and sophistication of urban life in 19th century Russia.",
+      "image_path": "media/paintings/unknown.jpg"
     },
     {
-        "id": 3,
-        "title": "Apotheosis of War",
-        "artist": "Vasily Vereshchazin",
-        "year": 1894,
-        "description": "An anti-war painting depicting a pyramid of human skulls in a desert landscape. A stark reminder of wars consequences.",
-        "type": "painting",
-        "image_path": "media/paintings/apotheosis.jpg",
-        "created_at": "2025-06-02T23:32:30.181238"
+      "id": 9,
+      "title": "A Moment of Peace",
+      "artist": "Shane Gross",
+      "year": 2024,
+      "type": "Photograph",
+      "description": "Grand Prize winning photograph capturing Western Toad tadpoles in a Vancouver lake, Canada. The image titled 'Swarm of Life' demonstrates the incredible biodiversity of wetland ecosystems.",
+      "image_path": "media/photographs/a_moment_of_peace.jpg"
     },
     {
-        "id": 4,
-        "title": "Apotheosis of War",
-        "artist": "Vasily Vereshchazin",
-        "year": 1894,
-        "description": "An anti-war painting depicting a pyramid of human skulls in a desert landscape. A stark reminder of wars consequences.",
-        "type": "painting",
-        "image_path": "media/paintings/apotheosis.jpg",
-        "created_at": "2025-06-02T23:32:32.422522"
+      "id": 10,
+      "title": "Among the Trees",
+      "artist": "Thomas Peschak",
+      "year": 2024,
+      "type": "Photograph",
+      "description": "Award-winning photo story category winner showing Amazon river dolphins swimming through flooded forests, capturing their mysterious behavior in their natural habitat.",
+      "image_path": "media/photographs/among_the_trees.jpg"
+    },
+    {
+      "id": 11,
+      "title": "Hope for Nina",
+      "artist": "Yannico Kelk",
+      "year": 2024,
+      "type": "Photograph",
+      "description": "Impact Award winning photograph of the Greater Bilby (Nina), showcasing this rare Australian marsupial in its natural environment, highlighting wildlife conservation efforts.",
+      "image_path": "media/photographs/hope_for_nina.jpg"
+    },
+    {
+      "id": 12,
+      "title": "Lynx Border",
+      "artist": "Igor Metelsky",
+      "year": 2024,
+      "type": "Photograph",
+      "description": "Award-winning camera trap photograph of a lynx in its natural habitat, captured in the Lazovsky District of Primorsky Krai, Russia. Winner in the 'Animals in their Environment' category.",
+      "image_path": "media/photographs/lynx_border.jpg"
+    },
+    {
+      "id": 13,
+      "title": "Under Water",
+      "artist": "Matthew Smith",
+      "year": 2024,
+      "type": "Photograph",
+      "description": "Winning photograph in the 'Underwater' category featuring a curious leopard seal in Antarctica, capturing the unique marine life of the polar regions.",
+      "image_path": "media/photographs/under_water.jpg"
+    },
+    {
+      "id": 14,
+      "title": "Christ's Entry into Jerusalem",
+      "artist": "Giovanni Della Robbia",
+      "year": 1521,
+      "type": "Sculpture",
+      "description": "A masterful glazed terracotta relief sculpture depicting Christ's triumphant entry into Jerusalem. Part of the Renaissance tradition of religious architectural decoration.",
+      "image_path": "media/sculptures/christs_entry_into_jerusalem.jpg"
+    },
+    {
+      "id": 15,
+      "title": "Leda and the Swan",
+      "artist": "Bartolomeo Ammannati",
+      "year": 1535,
+      "type": "Sculpture",
+      "description": "A marble sculpture depicting the mythological scene of Zeus transformed into a swan approaching Leda. This Renaissance masterpiece demonstrates the period's fascination with classical mythology.",
+      "image_path": "media/sculptures/leda_and_the_swan.jpg"
+    },
+    {
+      "id": 16,
+      "title": "The Abduction of Ganymede",
+      "artist": "Benvenuto Cellini",
+      "year": 1547,
+      "type": "Sculpture",
+      "description": "A bronze sculpture depicting the mythological scene of Zeus, in the form of an eagle, carrying away the young Ganymede. This work exemplifies Mannerist sculpture.",
+      "image_path": "media/sculptures/the_abduction_of_ganymede.jpg"
+    },
+    {
+      "id": 17,
+      "title": "The Dying Gladiator",
+      "artist": "Unknown Roman Artist",
+      "year": 230,
+      "type": "Sculpture",
+      "description": "Also known as the Dying Gaul, this ancient Roman marble copy of a lost Hellenistic bronze original depicts a wounded Celtic warrior in his final moments.",
+      "image_path": "media/sculptures/the_dying_gladiator.jpg"
     }
-]
+  ]
