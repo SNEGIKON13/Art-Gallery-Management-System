@@ -8,8 +8,12 @@ setup(
         'lxml>=4.9.0',  # для XML сериализации
     ],    entry_points={
         'gallery.serialization': [
-            'json = serialization.implementations.json:JsonSerializer',
-            'xml = serialization.implementations.xml:XmlSerializer',
+            'json = serialization.implementations.json.json_serializer:JsonSerializer',
+            'xml = serialization.implementations.xml.xml_serializer:XmlSerializer',
+        ],
+        'gallery.deserialization': [
+            'json = serialization.implementations.json.json_deserializer:JsonDeserializer',
+            'xml = serialization.implementations.xml.xml_deserializer:XmlDeserializer',
         ],
     },
     python_requires='>=3.8',

@@ -7,8 +7,7 @@ from art_gallery.ui.handlers.error_handler import ConsoleErrorHandler
 from art_gallery.ui.command_registry import CommandRegistry
 from art_gallery.ui.command_parser import CommandParser
 from art_gallery.ui.command_registrar import register_commands
-from art_gallery.ui.services import create_mock_services
-from art_gallery.tests.utils.database_initializer import initialize_test_database  # Добавляем импорт
+from art_gallery.ui.services import create_real_services # Changed from create_mock_services
 from art_gallery.infrastructure.logging.interfaces.logger import LogLevel
 
 class Application:
@@ -31,10 +30,8 @@ class Application:
         self.command_parser = CommandParser()
         self.command_registry = CommandRegistry(self.command_parser)
         
-        self.services = create_mock_services()
-        # Инициализируем тестовые данные
-        initialize_test_database(self.services)
-        register_commands(self.command_registry, self.services)
+        self.services = create_real_services() 
+        register_commands(self.command_registry, self.services, self.logger)  
 
     def run(self) -> None:
         self.logger.info("Application started")

@@ -98,3 +98,54 @@ class ExhibitionService(IExhibitionService):
         if not exhibition:
             raise ValueError(f"Exhibition with id {exhibition_id} not found")
         return exhibition.has_space()
+        
+    def add_imported_exhibition(self, title: str, description: str, 
+                             start_date: datetime, end_date: datetime,
+                             created_at: Optional[datetime] = None,
+                             max_capacity: Optional[int] = None,
+                             artwork_ids: Optional[List[int]] = None,
+                             visitors: Optional[List[int]] = None,
+                             id: Optional[int] = None) -> Exhibition:
+        """
+        Добавляет импортированную выставку с заданными значениями полей.
+        Отличие от create_exhibition в том, что позволяет устанавливать дополнительные поля, 
+        такие как created_at, artwork_ids, visitors и id, что необходимо при импорте данных.
+        """
+        # Проверка бизнес-правил
+        BusinessRuleValidator.validate_exhibition_dates(start_date, end_date)
+        
+        # Создаем объект с указанными параметрами
+        exhibition = Exhibition(
+            title=title,
+            description=description,
+            start_date=start_date,
+            end_date=end_date,
+            created_at=created_at or datetime.now(),
+            max_capacity=max_capacity
+        )
+        
+        # Устанавливаем ID, если он предоставлен
+        if id is not None:
+            exhibition.id = id
+            
+        # Добавляем экспонаты, если они есть
+        if artwork_ids:
+            for artwork_id in artwork_ids:
+                # Проверяем существование экспоната при необходимости
+                if self._artwork_repository and not self._artwork_repository.get_by_id(artwork_id):
+                    # Пропускаем несуществующие экспонаты при импорте
+                    continue
+                exhibition.add_artwork(artwork_id)
+                
+        # Добавляем посетителей, если они есть
+        if visitors:
+            for visitor_id in visitors:
+                exhibition.add_visitor(visitor_id)
+                
+        # Проверяем, существует ли уже выставка с таким ID
+        if id is not None and self._exhibition_repository.get_by_id(id):
+            # Если существует, выполняем обновление
+            return self._exhibition_repository.update(exhibition)
+        else:
+            # Если не существует, добавляем новую
+            return self._exhibition_repository.add(exhibition)

@@ -15,6 +15,23 @@ class UserService(IUserService):
         """Хеширует пароль"""
         return hashlib.sha256(password.encode()).hexdigest()
 
+    def add_imported_user(self, username: str, password_hash: str, role: UserRole, created_at: datetime, last_login: Optional[datetime], is_active: bool) -> User:
+        """
+        Добавляет пользователя из импортированных данных с предварительно хешированным паролем.
+        Предполагается, что проверка на существование имени пользователя выполняется вызывающей стороной.
+        """
+        user = User(
+            username=username,
+            password_hash=password_hash,  # Используем предоставленный хеш напрямую
+            role=role,
+            created_at=created_at,        # Используем предоставленное время создания
+            last_login=last_login,        # Используем предоставленное время последнего входа
+            is_active=is_active
+        )
+        # Предполагаем, что self._repository.add() обрабатывает назначение ID (например, через BaseEntity)
+        # и не требует self._next_id += 1 здесь
+        return self._repository.add(user)
+
     def register(self, username: str, password: str, is_admin: bool = False, current_user: Optional[User] = None) -> User:
         """Регистрирует нового пользователя"""
         if is_admin and current_user:

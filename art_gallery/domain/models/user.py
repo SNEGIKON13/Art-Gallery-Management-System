@@ -72,3 +72,49 @@ class User(BaseEntity):
             'last_login': self.last_login.isoformat() if self.last_login else None,
             'is_active': self.is_active
         }
+        
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> 'User':
+        """Создает объект User из словаря"""
+        # Обработка обязательных полей
+        username = data['username']
+        password_hash = data['password_hash']
+        
+        # Обработка роли: может быть как строкой ("admin", "user"), так и значением перечисления
+        role_data = data['role']
+        if isinstance(role_data, str):
+            role = UserRole(role_data) # Используем конструктор Enum с raw value
+        else:
+            role = role_data
+            
+        # Обработка дат: преобразование из ISO формата
+        created_at_str = data.get('created_at')
+        created_at = datetime.fromisoformat(created_at_str) if created_at_str else datetime.now()
+        
+        last_login_str = data.get('last_login')
+        last_login = datetime.fromisoformat(last_login_str) if last_login_str else None
+        
+        # Обработка активности
+        is_active = data.get('is_active', True)
+        
+        # Создание объекта
+        user = cls(
+            username=username,
+            password_hash=password_hash,
+            role=role,
+            created_at=created_at,
+            last_login=last_login,
+            is_active=is_active
+        )
+        
+        # Установка ID, если он есть в данных и валидный
+        if 'id' in data:
+            try:
+                id_value = int(data['id'])
+                if id_value > 0:
+                    user.id = id_value
+            except (ValueError, TypeError):
+                # Если ID не может быть преобразован в int или невалидный, игнорируем его
+                pass
+            
+        return user

@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional, Union
+from datetime import datetime
 from art_gallery.domain.models.artwork import Artwork, ArtworkType
 
 class IArtworkService(ABC):
@@ -44,4 +45,17 @@ class IArtworkService(ABC):
     @abstractmethod
     def filter_by_year(self, start_year: int, end_year: Optional[int] = None) -> List[Artwork]:
         """Фильтрует экспонаты по году создания"""
+        pass
+        
+    @abstractmethod
+    def add_imported_artwork(self, title: str, artist: str, year: int, 
+                          description: str, type: ArtworkType, 
+                          image_path: Optional[str] = None, 
+                          created_at: Optional[datetime] = None, 
+                          id: Optional[int] = None) -> Artwork:
+        """
+        Добавляет импортированный экспонат с заданными значениями полей.
+        Отличие от add_artwork в том, что позволяет устанавливать дополнительные поля, 
+        такие как created_at и id, что необходимо при импорте данных.
+        """
         pass

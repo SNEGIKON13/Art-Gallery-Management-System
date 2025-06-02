@@ -24,13 +24,14 @@ class JsonSerializer(ISerializer):
         except Exception as e:
             raise SerializationError(f"Ошибка сериализации в JSON: {str(e)}")
 
-    def serialize_to_file(self, data: Any, filepath: str) -> None:
+    def serialize_to_file(self, data: Any, filepath: str, format: str = None) -> None:
         """
         Сериализует данные и записывает их в JSON файл
         
         Args:
             data: Данные для сериализации
             filepath (str): Путь к файлу для сохранения
+            format (str, optional): Игнорируется для JSON сериализатора
             
         Raises:
             SerializationError: Если возникла ошибка при сериализации или записи

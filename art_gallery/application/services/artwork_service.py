@@ -77,3 +77,36 @@ class ArtworkService(IArtworkService):
             artwork for artwork in self._repository.get_all()
             if start_year <= artwork.year <= end_year
         ]
+        
+    def add_imported_artwork(self, title: str, artist: str, year: int, 
+                          description: str, type: ArtworkType, 
+                          image_path: Optional[str] = None, 
+                          created_at: Optional[datetime] = None, 
+                          id: Optional[int] = None) -> Artwork:
+        """
+        Добавляет импортированный экспонат с заданными значениями полей.
+        Отличие от add_artwork в том, что позволяет устанавливать дополнительные поля, 
+        такие как created_at и id, что необходимо при импорте данных.
+        """
+        # Создаем объект с указанными параметрами
+        artwork = Artwork(
+            title=title,
+            artist=artist,
+            year=year,
+            description=description,
+            type=type,
+            image_path=image_path,
+            created_at=created_at or datetime.now()
+        )
+        
+        # Устанавливаем ID, если он предоставлен
+        if id is not None:
+            artwork.id = id
+            
+        # Проверяем, существует ли уже экспонат с таким ID
+        if id is not None and self._repository.get_by_id(id):
+            # Если существует, выполняем обновление
+            return self._repository.update(artwork)
+        else:
+            # Если не существует, добавляем новый
+            return self._repository.add(artwork)

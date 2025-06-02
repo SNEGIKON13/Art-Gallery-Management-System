@@ -1,9 +1,16 @@
 from abc import ABC, abstractmethod
 from typing import Optional, List
-from art_gallery.domain.models import User
+from art_gallery.domain.models import User, UserRole # Добавили UserRole
+from datetime import datetime # Добавили datetime
 
 class IUserService(ABC):
 
+    @abstractmethod
+    def add_imported_user(self, username: str, password_hash: str, role: UserRole, created_at: datetime, last_login: Optional[datetime], is_active: bool) -> User:
+        """
+        Добавляет пользователя из импортированных данных с предварительно хешированным паролем.
+        """
+        pass
 
     @abstractmethod
     def authenticate(self, username: str, password: str) -> Optional[User]:

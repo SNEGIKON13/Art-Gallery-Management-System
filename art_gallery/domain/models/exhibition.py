@@ -81,6 +81,63 @@ class Exhibition(BaseEntity):
             'max_capacity': self.max_capacity,
             'visitors': list(self.visitors)  # Преобразуем set в list для сериализации
         }
+        
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> 'Exhibition':
+        """Создает объект Exhibition из словаря"""
+        # Обработка обязательных полей
+        title = data['title']
+        description = data['description']
+        
+        # Обработка дат начала и окончания выставки
+        start_date_str = data['start_date']
+        end_date_str = data['end_date']
+        
+        start_date = datetime.fromisoformat(start_date_str)
+        end_date = datetime.fromisoformat(end_date_str)
+        
+        # Обработка даты создания
+        created_at_str = data.get('created_at')
+        created_at = datetime.fromisoformat(created_at_str) if created_at_str else datetime.now()
+        
+        # Обработка опциональных полей
+        max_capacity = data.get('max_capacity')
+        
+        # Обработка списка идентификаторов экспонатов
+        artwork_ids = data.get('artwork_ids', [])
+        
+        # Обработка посетителей - преобразуем список в множество
+        visitors_list = data.get('visitors', [])
+        visitors_set = set(visitors_list) if visitors_list else set()
+        
+        # Создание объекта
+        exhibition = cls(
+            title=title,
+            description=description,
+            start_date=start_date,
+            end_date=end_date,
+            created_at=created_at,
+            max_capacity=max_capacity
+        )
+        
+        # Установка ID, если он есть в данных и валидный
+        if 'id' in data:
+            try:
+                id_value = int(data['id'])
+                if id_value > 0:
+                    exhibition.id = id_value
+            except (ValueError, TypeError):
+                # Если ID не может быть преобразован в int или невалидный, игнорируем его
+                pass
+        
+        # Добавление экспонатов и посетителей после создания объекта
+        if artwork_ids:
+            exhibition.artwork_ids = artwork_ids  # Можем напрямую присвоить список
+        
+        if visitors_set:
+            exhibition.visitors = visitors_set  # Присваиваем множество
+            
+        return exhibition
 
     def __eq__(self, other: object) -> bool:
         """Сравнивает выставки по id"""

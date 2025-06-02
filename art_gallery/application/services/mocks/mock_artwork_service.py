@@ -1,4 +1,5 @@
 from typing import List, Optional, Dict
+from datetime import datetime
 from art_gallery.domain.models.artwork import Artwork, ArtworkType
 from art_gallery.application.interfaces.artwork_service import IArtworkService
 
@@ -61,3 +62,47 @@ class MockArtworkService(IArtworkService):
         end_year = end_year or start_year
         return [a for a in self._artworks.values() 
                 if start_year <= a.year <= end_year]
+                
+    def add_imported_artwork(self, title: str, artist: str, year: int, 
+                          description: str, type: ArtworkType, 
+                          image_path: Optional[str] = None, 
+                          created_at: Optional[datetime] = None, 
+                          id: Optional[int] = None) -> Artwork:
+        """
+        Добавляет импортированный экспонат с заданными значениями полей.
+        """
+        # Убедимся, что created_at имеет правильный тип
+        if created_at is None:
+            artwork_created_at = datetime.now()
+        else:
+            artwork_created_at = created_at
+            
+        artwork = Artwork(
+            title=title,
+            artist=artist,
+            year=year,
+            description=description,
+            type=type,
+            image_path=image_path,
+            created_at=artwork_created_at
+        )
+        
+        # Если задан ID, используем его, иначе генерируем новый
+        if id is not None:
+            artwork.id = id
+            # Если существует экспонат с таким ID, обновляем
+            if id in self._artworks:
+                self._artworks[id] = artwork
+                return artwork
+            # В противном случае добавляем с указанным ID
+            self._artworks[id] = artwork
+            # Обновляем next_id если необходимо
+            if id >= self._next_id:
+                self._next_id = id + 1
+        else:
+            # Если ID не задан, генерируем новый
+            artwork.id = self._next_id
+            self._artworks[self._next_id] = artwork
+            self._next_id += 1
+            
+        return artwork

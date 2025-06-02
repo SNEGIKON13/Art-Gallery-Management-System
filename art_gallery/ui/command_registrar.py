@@ -21,9 +21,12 @@ from art_gallery.ui.commands.exhibition.update_exhibition_command import UpdateE
 from art_gallery.ui.commands.exhibition.delete_exhibition_command import DeleteExhibitionCommand
 from art_gallery.ui.commands.exhibition.list_exhibitions_command import ListExhibitionsCommand
 from art_gallery.ui.commands.serialization.export_data_command import ExportDataCommand
+from art_gallery.ui.commands.serialization.import_data_command import ImportDataCommand
 from art_gallery.ui.commands.serialization.config_serialization_command import ConfigSerializationCommand
+from art_gallery.ui.commands.serialization.list_exports_command import ListExportsCommand
+from art_gallery.infrastructure.logging.interfaces.logger import ILogger
 
-def register_commands(registry: CommandRegistry, services: ServiceCollection) -> None:
+def register_commands(registry: CommandRegistry, services: ServiceCollection, logger: ILogger) -> None:
     """Регистрирует все доступные команды"""
     commands: List[Tuple[Type[ICommand], Dict[str, Any]]] = [
         # Utility Commands
@@ -69,12 +72,26 @@ def register_commands(registry: CommandRegistry, services: ServiceCollection) ->
             "user_service": services.user_service,
             "artwork_service": services.artwork_service,
             "exhibition_service": services.exhibition_service,
-            "serialization_factory": services.serialization_factory
+            "serialization_factory": services.serialization_factory,
+            "cli_config": services.cli_config,
+            "logger": logger  # Added logger
         }),
         (ConfigSerializationCommand, {
             "user_service": services.user_service,
             "cli_config": services.cli_config,
             "serialization_factory": services.serialization_factory
+        }),
+        (ImportDataCommand, {
+            "user_service": services.user_service,
+            "artwork_service": services.artwork_service,
+            "exhibition_service": services.exhibition_service,
+            "serialization_factory": services.serialization_factory,
+            "logger": logger,
+            "cli_config": services.cli_config  # Added cli_config
+        }),
+        (ListExportsCommand, {
+            "user_service": services.user_service,
+            "logger": logger
         }),
     ]
     

@@ -49,6 +49,21 @@ class IExhibitionService(ABC):
     def get_active_exhibitions(self) -> List[Exhibition]:
         """Получает активные выставки"""
         pass
+        
+    @abstractmethod
+    def add_imported_exhibition(self, title: str, description: str, 
+                             start_date: datetime, end_date: datetime,
+                             created_at: Optional[datetime] = None,
+                             max_capacity: Optional[int] = None,
+                             artwork_ids: Optional[List[int]] = None,
+                             visitors: Optional[List[int]] = None,
+                             id: Optional[int] = None) -> Exhibition:
+        """
+        Добавляет импортированную выставку с заданными значениями полей.
+        Отличие от create_exhibition в том, что позволяет устанавливать дополнительные поля, 
+        такие как created_at, artwork_ids, visitors и id, что необходимо при импорте данных.
+        """
+        pass
 
     @abstractmethod
     def check_availability(self, exhibition_id: int) -> bool:

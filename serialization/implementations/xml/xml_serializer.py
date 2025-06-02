@@ -1,5 +1,5 @@
 import xml.etree.ElementTree as ET
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 from serialization.interfaces.ISerializer import ISerializer
 from serialization.serialization_exceptions import SerializationError
 
@@ -53,7 +53,7 @@ class XmlSerializer(ISerializer):
         except Exception as e:
             raise SerializationError(f"Ошибка сериализации в XML: {str(e)}")
 
-    def serialize_to_file(self, data: Any, filepath: str) -> None:
+    def serialize_to_file(self, data: Any, filepath: str, format: Optional[str] = None) -> None:
         """
         Сериализует данные и записывает их в XML файл
         

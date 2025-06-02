@@ -66,3 +66,54 @@ class MockExhibitionService(IExhibitionService):
         if exhibition_id not in self._exhibitions:
             raise ValueError(f"Exhibition {exhibition_id} not found")
         return self._exhibitions[exhibition_id].has_space()
+        
+    def add_imported_exhibition(self, title: str, description: str, 
+                             start_date: datetime, end_date: datetime,
+                             created_at: Optional[datetime] = None,
+                             max_capacity: Optional[int] = None,
+                             artwork_ids: Optional[List[int]] = None,
+                             visitors: Optional[List[int]] = None,
+                             id: Optional[int] = None) -> Exhibition:
+        """
+        Добавляет импортированную выставку с заданными значениями полей.
+        """
+        # Создаем выставку с указанными параметрами
+        exhibition = Exhibition(
+            title=title,
+            description=description,
+            start_date=start_date,
+            end_date=end_date,
+            created_at=created_at or datetime.now(),
+            max_capacity=max_capacity
+        )
+        
+        # Устанавливаем ID
+        if id is not None:
+            exhibition.id = id
+            # Если существует выставка с таким ID, обновляем
+            if id in self._exhibitions:
+                # Сохраняем в словарь
+                self._exhibitions[id] = exhibition
+            else:
+                # Добавляем с указанным ID
+                self._exhibitions[id] = exhibition
+                # Обновляем next_id если необходимо
+                if id >= self._next_id:
+                    self._next_id = id + 1
+        else:
+            # Если ID не задан, генерируем новый
+            exhibition.id = self._next_id
+            self._exhibitions[self._next_id] = exhibition
+            self._next_id += 1
+        
+        # Добавляем экспонаты, если они указаны
+        if artwork_ids:
+            for artwork_id in artwork_ids:
+                exhibition.add_artwork(artwork_id)
+                
+        # Добавляем посетителей, если они указаны
+        if visitors:
+            for visitor_id in visitors:
+                exhibition.add_visitor(visitor_id)
+                
+        return exhibition

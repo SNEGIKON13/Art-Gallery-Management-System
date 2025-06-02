@@ -82,3 +82,53 @@ class Artwork(BaseEntity):
             'image_path': self.image_path,
             'created_at': self.created_at.isoformat()
         }
+        
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> 'Artwork':
+        """Создает объект Artwork из словаря"""
+        # Обработка обязательных полей
+        title = data['title']
+        artist = data['artist']
+        year = int(data['year']) if isinstance(data['year'], str) else data['year']
+        description = data['description']
+        
+        # Обработка типа произведения искусства
+        type_data = data['type']
+        if isinstance(type_data, str):
+            try:
+                artwork_type = ArtworkType(type_data)
+            except ValueError:
+                # Если строка не совпадает с точным значением, пробуем с учетом регистра
+                artwork_type = ArtworkType[type_data.upper()]
+        else:
+            artwork_type = type_data
+        
+        # Обработка опционального пути к изображению
+        image_path = data.get('image_path')
+        
+        # Обработка даты создания
+        created_at_str = data.get('created_at')
+        created_at = datetime.fromisoformat(created_at_str) if created_at_str else datetime.now()
+        
+        # Создание объекта
+        artwork = cls(
+            title=title,
+            artist=artist,
+            year=year,
+            description=description,
+            type=artwork_type,
+            image_path=image_path,
+            created_at=created_at
+        )
+        
+        # Установка ID, если он есть в данных и валидный
+        if 'id' in data:
+            try:
+                id_value = int(data['id'])
+                if id_value > 0:
+                    artwork.id = id_value
+            except (ValueError, TypeError):
+                # Если ID не может быть преобразован в int или невалидный, игнорируем его
+                pass
+            
+        return artwork
