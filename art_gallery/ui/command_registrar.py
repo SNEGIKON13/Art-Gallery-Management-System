@@ -21,6 +21,7 @@ from art_gallery.ui.commands.exhibition.update_exhibition_command import UpdateE
 from art_gallery.ui.commands.exhibition.delete_exhibition_command import DeleteExhibitionCommand
 from art_gallery.ui.commands.exhibition.list_exhibitions_command import ListExhibitionsCommand
 from art_gallery.ui.commands.serialization.export_data_command import ExportDataCommand
+from art_gallery.ui.commands.serialization.config_serialization_command import ConfigSerializationCommand
 
 def register_commands(registry: CommandRegistry, services: ServiceCollection) -> None:
     """Регистрирует все доступные команды"""
@@ -61,7 +62,20 @@ def register_commands(registry: CommandRegistry, services: ServiceCollection) ->
         }),
         (UpdateExhibitionCommand, {"exhibition_service": services.exhibition_service, "user_service": services.user_service}),
         (DeleteExhibitionCommand, {"exhibition_service": services.exhibition_service, "user_service": services.user_service}),
-        (ListExhibitionsCommand, {"exhibition_service": services.exhibition_service, "user_service": services.user_service})
+        (ListExhibitionsCommand, {"exhibition_service": services.exhibition_service, "user_service": services.user_service}),
+        
+        # Serialization Commands
+        (ExportDataCommand, {
+            "user_service": services.user_service,
+            "artwork_service": services.artwork_service,
+            "exhibition_service": services.exhibition_service,
+            "serialization_factory": services.serialization_factory
+        }),
+        (ConfigSerializationCommand, {
+            "user_service": services.user_service,
+            "cli_config": services.cli_config,
+            "serialization_factory": services.serialization_factory
+        }),
     ]
     
     for command_class, deps in commands:

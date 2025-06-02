@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from enum import Enum
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Dict, Any
 from art_gallery.domain.models.base_entity import BaseEntity
 
 class UserRole(Enum):
@@ -61,3 +61,14 @@ class User(BaseEntity):
     def __hash__(self) -> int:
         """Хеширует пользователя по id"""
         return hash(self.id)
+
+    def _get_entity_data(self) -> Dict[str, Any]:
+        """Получает данные пользователя для сериализации"""
+        return {
+            'username': self.username,
+            'password_hash': self.password_hash,
+            'role': self.role.value,
+            'created_at': self.created_at.isoformat(),
+            'last_login': self.last_login.isoformat() if self.last_login else None,
+            'is_active': self.is_active
+        }

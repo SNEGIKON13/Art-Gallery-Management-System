@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Optional
+from typing import Optional, Dict, Any
 from art_gallery.domain.models.base_entity import BaseEntity
 
 class ArtworkType(Enum):
@@ -70,3 +70,15 @@ class Artwork(BaseEntity):
     def __hash__(self) -> int:
         """Хеширует экспонат по id"""
         return hash(self.id)
+
+    def _get_entity_data(self) -> Dict[str, Any]:
+        """Получает данные экспоната для сериализации"""
+        return {
+            'title': self.title,
+            'artist': self.artist,
+            'year': self.year,
+            'description': self.description,
+            'type': self.type.value,
+            'image_path': self.image_path,
+            'created_at': self.created_at.isoformat()
+        }

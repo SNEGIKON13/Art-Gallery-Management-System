@@ -12,6 +12,11 @@ class CLIConfig:
     
     # Формат сообщений
     message_format: Dict[str, str] = field(default_factory=dict)
+      # Настройки сериализации
+    serialization_config: Dict[str, str] = field(default_factory=lambda: {
+        'default_format': 'json',  # Формат по умолчанию (json/xml)
+        'export_dir': 'exports'    # Директория для экспорта
+    })
     
     def __post_init__(self) -> None:
         # Путь к корню проекта
@@ -26,6 +31,11 @@ class CLIConfig:
             if not os.path.exists(dir_path):
                 os.makedirs(dir_path)
 
+        # Создаем директорию для экспорта если её нет
+        export_dir = os.path.join(project_root, self.serialization_config['export_dir'])
+        if not os.path.exists(export_dir):
+            os.makedirs(export_dir)
+            
         if not self.colors:
             self.colors = {
                 "error": "\033[91m",  # Красный

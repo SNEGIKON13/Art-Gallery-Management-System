@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 from art_gallery.domain.models.base_entity import BaseEntity
 
 @dataclass
@@ -68,6 +68,19 @@ class Exhibition(BaseEntity):
     def get_visitor_count(self) -> int:
         """Возвращает количество посетителей"""
         return len(self.visitors)
+
+    def _get_entity_data(self) -> Dict[str, Any]:
+        """Получает данные выставки для сериализации"""
+        return {
+            'title': self.title,
+            'description': self.description,
+            'start_date': self.start_date.isoformat(),
+            'end_date': self.end_date.isoformat(),
+            'created_at': self.created_at.isoformat(),
+            'artwork_ids': self.artwork_ids,
+            'max_capacity': self.max_capacity,
+            'visitors': list(self.visitors)  # Преобразуем set в list для сериализации
+        }
 
     def __eq__(self, other: object) -> bool:
         """Сравнивает выставки по id"""

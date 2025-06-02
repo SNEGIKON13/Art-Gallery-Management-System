@@ -6,13 +6,10 @@ setup(
     packages=find_packages(),
     install_requires=[
         'lxml>=4.9.0',  # для XML сериализации
-    ],
-    entry_points={
+    ],    entry_points={
         'gallery.serialization': [
-            'json = serialization.implementations.json.json_serializer:JsonSerializer',
-            'json_deserializer = serialization.implementations.json.json_deserializer:JsonDeserializer',
-            'xml = serialization.implementations.xml.xml_serializer:XmlSerializer',
-            'xml_deserializer = serialization.implementations.xml.xml_deserializer:XmlDeserializer',
+            'json = serialization.implementations.json:JsonSerializer',
+            'xml = serialization.implementations.xml:XmlSerializer',
         ],
     },
     python_requires='>=3.8',
