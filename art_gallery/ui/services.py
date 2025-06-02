@@ -47,6 +47,16 @@ def create_mock_services() -> ServiceCollection:
     )
 
 def create_real_services() -> ServiceCollection:
+    # Инициализируем фабрику плагинов сериализации
+    factory = SerializationPluginFactory()
+    factory.initialize()  # Загрузка всех плагинов
+    
+    # Получаем сериализаторы для JSON
+    serializer = factory.get_serializer('json')
+    deserializer = factory.get_deserializer('json')
+    
+    print(f"[ИНФО] Доступные форматы сериализации: {factory.get_supported_formats()}")
+    
     # Пути к файлам данных (можно будет вынести в конфигурацию позже)
     data_dir = "data" 
     users_file = os.path.join(data_dir, "users.json")
@@ -58,19 +68,17 @@ def create_real_services() -> ServiceCollection:
         os.makedirs(data_dir)
 
     # Инициализация реальных репозиториев
-    # Убедитесь, что конструкторы репозиториев соответствуют (например, принимают filepath)
-    user_repo = UserJsonRepository(users_file)
-    artwork_repo = ArtworkJsonRepository(artworks_file)
-    exhibition_repo = ExhibitionJsonRepository(exhibitions_file)
+    # Передаем сериализаторы и десериализаторы в репозитории
+    user_repo = UserJsonRepository(users_file, serializer, deserializer)
+    artwork_repo = ArtworkJsonRepository(artworks_file, serializer, deserializer)
+    exhibition_repo = ExhibitionJsonRepository(exhibitions_file, serializer, deserializer)
 
     # Инициализация реальных сервисов
     user_service = UserService(user_repo)
     artwork_service = ArtworkService(artwork_repo) # ArtworkService ожидает IBaseRepository[Artwork]
     exhibition_service = ExhibitionService(exhibition_repo, artwork_repo) # ExhibitionService требует IExhibitionRepository и IArtworkRepository
 
-    # Инициализируем фабрику плагинов сериализации и CLIConfig
-    factory = SerializationPluginFactory()
-    factory.initialize()
+    # Создаем CLIConfig
     cli_config = CLIConfig()
     
     return ServiceCollection(

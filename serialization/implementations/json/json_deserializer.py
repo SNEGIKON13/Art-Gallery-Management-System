@@ -32,13 +32,25 @@ class JsonDeserializer(IDeserializer):
             filepath (str): Путь к файлу для чтения
             
         Returns:
-            Any: Десериализованные данные
+            Any: Десериализованные данные (пустой список, если файл не существует или пуст)
             
         Raises:
             DeserializationError: Если возникла ошибка при чтении или десериализации
         """
+        import os
+        
+        # Проверяем существование файла
+        if not os.path.exists(filepath):
+            return []  # Возвращаем пустой список, если файл не существует
+            
+        # Проверяем, что файл не пустой
+        if os.path.getsize(filepath) == 0:
+            return []  # Возвращаем пустой список для пустого файла
+        
         try:
             with open(filepath, 'r', encoding='utf-8') as file:
                 return json.load(file)
+        except json.JSONDecodeError as e:
+            raise DeserializationError(f"Ошибка формата JSON в файле {filepath}: {str(e)}")
         except Exception as e:
-            raise DeserializationError(f"Ошибка чтения из JSON файла: {str(e)}")
+            raise DeserializationError(f"Ошибка чтения из JSON файла {filepath}: {str(e)}")

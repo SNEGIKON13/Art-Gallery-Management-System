@@ -1,14 +1,18 @@
-import json
 import os
 from typing import List, Optional, Dict, Any
 from datetime import datetime
 from art_gallery.domain.models import Exhibition
 from art_gallery.repository.interfaces.exhibition_repository import IExhibitionRepository
 from art_gallery.repository.specifications.base_specification import Specification
+from serialization.interfaces.ISerializer import ISerializer
+from serialization.interfaces.IDeserializer import IDeserializer
 
 class ExhibitionJsonRepository(IExhibitionRepository):
-    def __init__(self, filepath: str):
+    def __init__(self, filepath: str, serializer: ISerializer, deserializer: IDeserializer):
         self._filepath = filepath
+        self._serializer = serializer  # Сериализатор из плагина
+        self._deserializer = deserializer  # Десериализатор из плагина
+        
         # Создаем директорию, если нужно
         file_dir = os.path.dirname(self._filepath)
         if file_dir:
@@ -18,37 +22,31 @@ class ExhibitionJsonRepository(IExhibitionRepository):
         self._load_data()
 
     def _load_data(self) -> None:
-        if not os.path.exists(self._filepath) or os.path.getsize(self._filepath) == 0:
-            self._exhibitions = []
-            # Создаем пустой файл, если не существует
-            with open(self._filepath, 'w', encoding='utf-8') as f:
-                json.dump([], f)
-            return
-        
         try:
-            with open(self._filepath, 'r', encoding='utf-8') as f:
-                data = json.load(f)
-                # Загружаем выставки из данных
-                loaded_exhibitions = []
-                for exhibition_data in data:
-                    try:
-                        loaded_exhibitions.append(Exhibition.from_dict(exhibition_data))
-                    except Exception as e:
-                        print(f"Error deserializing exhibition: {e}")
-                self._exhibitions = loaded_exhibitions
-        except json.JSONDecodeError:
-            print(f"Invalid JSON in {self._filepath}. Starting with empty exhibition list.")
-            self._exhibitions = []
+            # Используем десериализатор из плагина
+            list_of_dicts = self._deserializer.deserialize_from_file(self._filepath)
+            loaded_exhibitions = []
+            for exhibition_data_dict in list_of_dicts:
+                try:
+                    loaded_exhibitions.append(Exhibition.from_dict(exhibition_data_dict))
+                except Exception as e:
+                    print(f"Error creating Exhibition from dict: {exhibition_data_dict}, error: {e}")
+                    # TODO: Заменить на логирование
+            self._exhibitions = loaded_exhibitions
         except Exception as e:
-            print(f"Error loading exhibitions: {e}")
+            # В случае ошибки считаем, что данных нет
+            print(f"Error loading data from {self._filepath} using deserializer: {e}")
+            # TODO: Заменить на логирование
             self._exhibitions = []
 
     def _save_data(self) -> None:
         try:
-            with open(self._filepath, 'w', encoding='utf-8') as f:
-                json.dump([exhibition.to_dict() for exhibition in self._exhibitions], f, indent=4, ensure_ascii=False, default=str)
+            # Используем сериализатор из плагина
+            data_to_serialize = [exhibition.to_dict() for exhibition in self._exhibitions]
+            self._serializer.serialize_to_file(data_to_serialize, self._filepath)
         except Exception as e:
-            print(f"Error saving exhibitions: {e}")
+            print(f"Error saving data to {self._filepath} using serializer: {e}")
+            # TODO: Заменить на логирование
 
     def add(self, exhibition: Exhibition) -> Exhibition:
         # Добавляем выставку и сохраняем

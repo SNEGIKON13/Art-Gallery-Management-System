@@ -85,6 +85,14 @@ class SerializationPluginFactory:
         return cls._serializers[format_name]
 
     @classmethod
+    def create_serializer(cls, format_name: str) -> ISerializer:
+        """
+        Возвращает плагин сериализатора для указанного формата.
+        Синоним для get_serializer для совместимости с API.
+        """
+        return cls.get_serializer(format_name)
+
+    @classmethod
     def get_deserializer(cls, format_name: str) -> IDeserializer:
         """
         Возвращает плагин десериализатора для указанного формата.
@@ -94,6 +102,14 @@ class SerializationPluginFactory:
         if format_name not in cls._deserializers:
             raise ValueError(f"Неподдерживаемый формат для десериализации: {format_name}. Доступные: {list(cls._deserializers.keys())}")
         return cls._deserializers[format_name]
+
+    @classmethod
+    def create_deserializer(cls, format_name: str) -> IDeserializer:
+        """
+        Возвращает плагин десериализатора для указанного формата.
+        Синоним для get_deserializer для совместимости с API.
+        """
+        return cls.get_deserializer(format_name)
     
     @classmethod
     def get_supported_formats(cls) -> list[str]:

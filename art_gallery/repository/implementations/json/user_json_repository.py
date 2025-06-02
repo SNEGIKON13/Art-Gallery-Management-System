@@ -1,14 +1,18 @@
-import json
 import os
 from typing import List, Optional, Dict, Any
 from datetime import datetime
 from art_gallery.domain.models import User, UserRole
 from art_gallery.repository.interfaces.user_repository import IUserRepository
 from art_gallery.repository.specifications.base_specification import Specification
+from serialization.interfaces.ISerializer import ISerializer
+from serialization.interfaces.IDeserializer import IDeserializer
 
 class UserJsonRepository(IUserRepository):
-    def __init__(self, filepath: str):
+    def __init__(self, filepath: str, serializer: ISerializer, deserializer: IDeserializer):
         self._filepath = filepath
+        self._serializer = serializer  # Сериализатор из плагина
+        self._deserializer = deserializer  # Десериализатор из плагина
+        
         # Создаем директорию, если нужно
         file_dir = os.path.dirname(self._filepath)
         if file_dir:
@@ -18,37 +22,31 @@ class UserJsonRepository(IUserRepository):
         self._load_data()
 
     def _load_data(self) -> None:
-        if not os.path.exists(self._filepath) or os.path.getsize(self._filepath) == 0:
-            self._users = []
-            # Создаем пустой файл, если не существует
-            with open(self._filepath, 'w', encoding='utf-8') as f:
-                json.dump([], f)
-            return
-        
         try:
-            with open(self._filepath, 'r', encoding='utf-8') as f:
-                data = json.load(f)
-                # Загружаем пользователей из данных
-                loaded_users = []
-                for user_data in data:
-                    try:
-                        loaded_users.append(User.from_dict(user_data))
-                    except Exception as e:
-                        print(f"Error deserializing user: {e}")
-                self._users = loaded_users
-        except json.JSONDecodeError:
-            print(f"Invalid JSON in {self._filepath}. Starting with empty user list.")
-            self._users = []
+            # Используем десериализатор из плагина
+            list_of_dicts = self._deserializer.deserialize_from_file(self._filepath)
+            loaded_users = []
+            for user_data_dict in list_of_dicts:
+                try:
+                    loaded_users.append(User.from_dict(user_data_dict))
+                except Exception as e:
+                    print(f"Error creating User from dict: {user_data_dict}, error: {e}")
+                    # TODO: Заменить на логирование
+            self._users = loaded_users
         except Exception as e:
-            print(f"Error loading users: {e}")
+            # В случае ошибки считаем, что данных нет
+            print(f"Error loading data from {self._filepath} using deserializer: {e}")
+            # TODO: Заменить на логирование
             self._users = []
 
     def _save_data(self) -> None:
         try:
-            with open(self._filepath, 'w', encoding='utf-8') as f:
-                json.dump([user.to_dict() for user in self._users], f, indent=4, ensure_ascii=False, default=str)
+            # Используем сериализатор из плагина
+            data_to_serialize = [user.to_dict() for user in self._users]
+            self._serializer.serialize_to_file(data_to_serialize, self._filepath)
         except Exception as e:
-            print(f"Error saving users: {e}")
+            print(f"Error saving data to {self._filepath} using serializer: {e}")
+            # TODO: Заменить на логирование
 
     def add(self, user: User) -> User:
         if self.username_exists(user.username):
