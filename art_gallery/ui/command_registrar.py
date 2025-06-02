@@ -20,6 +20,7 @@ from art_gallery.ui.commands.exhibition.get_exhibition_command import GetExhibit
 from art_gallery.ui.commands.exhibition.update_exhibition_command import UpdateExhibitionCommand
 from art_gallery.ui.commands.exhibition.delete_exhibition_command import DeleteExhibitionCommand
 from art_gallery.ui.commands.exhibition.list_exhibitions_command import ListExhibitionsCommand
+from art_gallery.ui.commands.serialization.export_data_command import ExportDataCommand
 
 def register_commands(registry: CommandRegistry, services: ServiceCollection) -> None:
     """Регистрирует все доступные команды"""
