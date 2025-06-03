@@ -1,3 +1,5 @@
+import os
+import logging
 from dataclasses import dataclass
 from art_gallery.application.services.mocks.mock_user_service import MockUserService
 from art_gallery.application.services.mocks.mock_artwork_service import MockArtworkService
@@ -5,9 +7,10 @@ from art_gallery.application.services.mocks.mock_exhibition_service import MockE
 from art_gallery.application.interfaces.user_service import IUserService
 from art_gallery.application.interfaces.artwork_service import IArtworkService
 from art_gallery.application.interfaces.exhibition_service import IExhibitionService
+from art_gallery.application.interfaces.cloud.i_file_storage_strategy import IFileStorageStrategy
+from art_gallery.application.services.cloud.file_storage_strategy_factory import FileStorageStrategyFactory
 from art_gallery.infrastructure.config.cli_config import CLIConfig
 from art_gallery.infrastructure.factory.serialization_plugin_factory import SerializationPluginFactory
-import os
 
 # Реальные сервисы
 from art_gallery.application.services.file.user_service import UserService
@@ -38,11 +41,27 @@ def create_mock_services() -> ServiceCollection:
     factory = SerializationPluginFactory()
     factory.initialize()
     
+    # Создаем конфигурацию CLI
+    cli_config = CLIConfig()
+    
+    # Создаем стратегию хранения файлов для мок-сервисов
+    try:
+        # Для тестового режима используем локальную стратегию
+        strategy_factory = FileStorageStrategyFactory()
+        file_storage = strategy_factory.create_strategy("local")
+        logging.info("Mock services using local file storage strategy")
+    except Exception as e:
+        logging.warning(f"Failed to create file storage strategy for mock services: {str(e)}")
+        file_storage = None
+    
+    # Создаем мок-сервисы со стратегией хранения файлов
+    artwork_service = MockArtworkService(file_storage_strategy=file_storage)
+    
     return ServiceCollection(
         user_service=MockUserService(),
-        artwork_service=MockArtworkService(),
+        artwork_service=artwork_service,
         exhibition_service=MockExhibitionService(),
-        cli_config=CLIConfig(),
+        cli_config=cli_config,
         serialization_factory=factory
     )
 
@@ -90,13 +109,26 @@ def create_real_services(format_name: str = 'json'):
     artwork_repo = ArtworkFileRepository(artworks_file, serializer, deserializer)
     exhibition_repo = ExhibitionFileRepository(exhibitions_file, serializer, deserializer)
 
-    # Инициализация реальных сервисов
-    user_service = UserService(user_repo)
-    artwork_service = ArtworkService(artwork_repo) # ArtworkService ожидает IBaseRepository[Artwork]
-    exhibition_service = ExhibitionService(exhibition_repo, artwork_repo) # ExhibitionService требует IExhibitionRepository и IArtworkRepository
-
     # Создаем CLIConfig
     cli_config = CLIConfig()
+    
+    # Создаем стратегию хранения файлов
+    try:
+        # По умолчанию используем локальное хранилище
+        # В будущем можно добавить настройку из конфигурации
+        strategy_factory = FileStorageStrategyFactory()
+        strategy_type = "local"  # Здесь можно сделать выбор между "local" и "cloud"
+        
+        file_storage = strategy_factory.create_strategy(strategy_type)
+        logging.info(f"Created {strategy_type} file storage strategy")
+    except Exception as e:
+        logging.warning(f"Failed to create file storage strategy: {str(e)}")
+        file_storage = None
+    
+    # Инициализация реальных сервисов
+    user_service = UserService(user_repo)
+    artwork_service = ArtworkService(artwork_repo, file_storage_strategy=file_storage)
+    exhibition_service = ExhibitionService(exhibition_repo, artwork_repo)
     
     return ServiceCollection(
         user_service=user_service,
