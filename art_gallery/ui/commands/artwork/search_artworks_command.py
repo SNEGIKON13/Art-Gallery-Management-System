@@ -1,7 +1,7 @@
 from typing import Sequence, List
 from art_gallery.ui.commands.base_command import BaseCommand
-from art_gallery.application.services.artwork_service import IArtworkService
-from art_gallery.domain.models.artwork import Artwork, ArtworkType
+from art_gallery.application.interfaces.artwork_service import IArtworkService
+from art_gallery.domain.artwork import Artwork, ArtworkType
 from art_gallery.ui.exceptions.validation_exceptions import ValidationError
 
 class SearchArtworksCommand(BaseCommand):

@@ -1,6 +1,6 @@
 from typing import List, Optional, Dict
 from datetime import datetime
-from art_gallery.domain.models.exhibition import Exhibition
+from art_gallery.domain.exhibition import Exhibition
 from art_gallery.application.interfaces.exhibition_service import IExhibitionService
 
 class MockExhibitionService(IExhibitionService):

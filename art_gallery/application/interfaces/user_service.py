@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Optional, List
-from art_gallery.domain.models import User, UserRole # Добавили UserRole
+from art_gallery.domain import User, UserRole # Добавили UserRole
 from datetime import datetime # Добавили datetime
 
 class IUserService(ABC):

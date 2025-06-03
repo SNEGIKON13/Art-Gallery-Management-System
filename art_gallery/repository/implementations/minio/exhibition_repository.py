@@ -5,7 +5,7 @@ MinIO-реализация репозитория для выставок.
 from typing import List, Dict, Any, Optional, Union
 from datetime import datetime
 
-from art_gallery.domain.models import Exhibition
+from art_gallery.domain import Exhibition
 from art_gallery.repository.interfaces.exhibition_repository import IExhibitionRepository
 from art_gallery.repository.implementations.minio.base_minio_repository import BaseMinioRepository
 from art_gallery.repository.specifications.base_specification import Specification

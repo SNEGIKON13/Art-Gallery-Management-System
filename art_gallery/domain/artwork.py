@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from typing import Optional, Dict, Any
-from art_gallery.domain.models.base_entity import BaseEntity
+from art_gallery.domain.base_entity import BaseEntity
 
 class ArtworkType(Enum):
     PAINTING = "painting"

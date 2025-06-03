@@ -1,7 +1,7 @@
 import os
 from typing import List, Optional, Dict, Any
 from datetime import datetime
-from art_gallery.domain.models import Exhibition
+from art_gallery.domain import Exhibition
 from art_gallery.repository.interfaces.exhibition_repository import IExhibitionRepository
 from art_gallery.repository.specifications.base_specification import Specification
 from serialization.interfaces.ISerializer import ISerializer

@@ -1,5 +1,5 @@
 from typing import Optional, List, Dict
-from art_gallery.domain.models import User, UserRole
+from art_gallery.domain import User, UserRole
 from art_gallery.application.interfaces.user_service import IUserService
 import hashlib
 from datetime import datetime
@@ -72,3 +72,25 @@ class MockUserService(IUserService):
             return False
         user.is_active = False
         return True
+        
+    def add_imported_user(self, username: str, password_hash: str, role: UserRole, created_at: datetime, last_login: Optional[datetime], is_active: bool) -> User:
+        """Adds a user from imported data with pre-hashed password."""
+        if username in self._username_to_id:
+            raise ValueError("Username already exists")
+            
+        user = User(
+            username=username,
+            password_hash=password_hash,
+            role=role,
+            created_at=created_at,
+            last_login=last_login,
+            is_active=is_active
+        )
+        
+        # Set user ID
+        user.id = self._next_id
+        
+        self._users[self._next_id] = user
+        self._username_to_id[username] = self._next_id
+        self._next_id += 1
+        return user

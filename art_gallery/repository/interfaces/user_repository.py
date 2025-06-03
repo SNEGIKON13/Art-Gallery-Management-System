@@ -1,6 +1,6 @@
 from abc import abstractmethod
 from typing import Optional
-from domain.models import User
+from domain import User
 from .base_repository import IBaseRepository
 
 class IUserRepository(IBaseRepository[User]):

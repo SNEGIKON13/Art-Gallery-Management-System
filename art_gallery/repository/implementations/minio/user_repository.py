@@ -4,7 +4,7 @@ MinIO-реализация репозитория для пользовател�
 """
 from typing import List, Dict, Any, Optional, Union
 
-from art_gallery.domain.models import User, UserRole
+from art_gallery.domain import User, UserRole
 from art_gallery.repository.interfaces.user_repository import IUserRepository
 from art_gallery.repository.implementations.minio.base_minio_repository import BaseMinioRepository
 from art_gallery.repository.specifications.base_specification import Specification

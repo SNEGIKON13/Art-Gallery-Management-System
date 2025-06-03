@@ -1,7 +1,7 @@
 from typing import Optional
-from domain.models import User
-from repository.interfaces.user_repository import IUserRepository
-from .base_memory_repository import BaseMemoryRepository
+from art_gallery.domain import User
+from art_gallery.repository.interfaces.user_repository import IUserRepository
+from art_gallery.repository.implementations.base_memory_repository import BaseMemoryRepository
 
 class UserMemoryRepository(BaseMemoryRepository[User], IUserRepository):
     def get_by_username(self, username: str) -> Optional[User]:

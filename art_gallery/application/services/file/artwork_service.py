@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import List, Optional, Union
-from art_gallery.domain.models.artwork import Artwork, ArtworkType
+from art_gallery.domain.artwork import Artwork, ArtworkType
 from art_gallery.repository.interfaces.base_repository import IBaseRepository
 from art_gallery.application.interfaces.artwork_service import IArtworkService
 

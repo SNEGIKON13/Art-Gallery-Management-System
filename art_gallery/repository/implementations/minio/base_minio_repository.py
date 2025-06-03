@@ -6,7 +6,7 @@ import os
 from typing import List, Optional, Dict, Any, TypeVar, Generic, Union, Protocol, cast
 from abc import ABC, abstractmethod
 
-from art_gallery.domain.models.base_entity import BaseEntity
+from art_gallery.domain.base_entity import BaseEntity
 from art_gallery.repository.interfaces.base_repository import IBaseRepository
 from art_gallery.repository.specifications.base_specification import Specification
 from art_gallery.infrastructure.config.minio_config import MinioConfig

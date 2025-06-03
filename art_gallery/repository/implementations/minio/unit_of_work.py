@@ -2,7 +2,7 @@
 Модуль реализует Unit of Work для работы с MinIO репозиториями.
 """
 from typing import Optional, Dict, List, Type
-from art_gallery.domain.models import BaseEntity
+from art_gallery.domain import BaseEntity
 from art_gallery.repository.interfaces.user_repository import IUserRepository
 from art_gallery.repository.interfaces.artwork_repository import IArtworkRepository
 from art_gallery.repository.interfaces.exhibition_repository import IExhibitionRepository

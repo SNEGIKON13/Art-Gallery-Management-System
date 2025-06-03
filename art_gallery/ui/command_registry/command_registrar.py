@@ -1,11 +1,11 @@
 from typing import List, Type, Tuple, Dict, Any
-from art_gallery.ui.command_registry import CommandRegistry
+from art_gallery.ui.commands.utility.format_command import FormatCommand
+from art_gallery.ui.command_registry.command_registry import CommandRegistry
 from art_gallery.ui.services import ServiceCollection
 from art_gallery.ui.interfaces.command import ICommand
 from art_gallery.ui.commands.utility.help_command import HelpCommand
 from art_gallery.ui.commands.utility.exit_command import ExitCommand
 from art_gallery.ui.commands.utility.stats_command import StatsCommand
-from art_gallery.ui.commands.utility.format_command import FormatCommand
 
 from art_gallery.ui.commands.user.login_command import LoginCommand
 from art_gallery.ui.commands.user.logout_command import LogoutCommand

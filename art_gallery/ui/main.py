@@ -7,12 +7,12 @@ from art_gallery.infrastructure.logging.implementations.file_logger import FileL
 from art_gallery.infrastructure.logging.implementations.composite_logger import CompositeLogger
 from art_gallery.infrastructure.logging.implementations.filtered_logger import FilteredLogger
 from art_gallery.ui.handlers.error_handler import ConsoleErrorHandler
-from art_gallery.ui.command_registry import CommandRegistry
-from art_gallery.ui.command_parser import CommandParser
-from art_gallery.ui.command_registrar import register_commands
-from art_gallery.ui.services import create_real_services, create_mock_services
+from art_gallery.ui.command_registry.command_registry import CommandRegistry
+from art_gallery.ui.command_registry.command_parser import CommandParser
+from art_gallery.ui.services import create_real_services, create_mock_services  
 from art_gallery.infrastructure.config.config_manager import ConfigManager
 from art_gallery.infrastructure.logging.interfaces.logger import LogLevel
+from art_gallery.ui.command_registry.command_registrar import register_commands
 
 class Application:
     def __init__(self, args: Optional[argparse.Namespace] = None):

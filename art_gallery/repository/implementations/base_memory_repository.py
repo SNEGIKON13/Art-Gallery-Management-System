@@ -1,5 +1,5 @@
 from typing import Dict, List, Optional, TypeVar, Generic
-from domain.models.base_entity import BaseEntity
+from domain.base_entity import BaseEntity
 from ..specifications.base_specification import Specification
 
 T = TypeVar('T', bound=BaseEntity)

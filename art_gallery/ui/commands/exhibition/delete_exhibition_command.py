@@ -1,6 +1,6 @@
 from typing import Sequence
 from art_gallery.ui.commands.base_command import BaseCommand
-from art_gallery.application.services.exhibition_service import IExhibitionService
+from art_gallery.application.interfaces.exhibition_service import IExhibitionService
 from art_gallery.ui.exceptions.validation_exceptions import MissingRequiredArgumentError, InvalidArgumentTypeError
 from art_gallery.ui.exceptions.command_exceptions import CommandExecutionError
 

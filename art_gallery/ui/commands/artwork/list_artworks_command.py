@@ -1,6 +1,6 @@
 from typing import Sequence
 from art_gallery.ui.commands.base_command import BaseCommand
-from art_gallery.application.services.artwork_service import IArtworkService
+from art_gallery.application.interfaces.artwork_service import IArtworkService
 
 class ListArtworksCommand(BaseCommand):
     def __init__(self, artwork_service: IArtworkService, user_service):

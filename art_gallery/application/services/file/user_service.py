@@ -1,7 +1,7 @@
 from datetime import datetime
 import hashlib
 from typing import Optional, List
-from art_gallery.domain.models import User, UserRole
+from art_gallery.domain import User, UserRole
 from art_gallery.repository.interfaces.user_repository import IUserRepository
 from art_gallery.application.interfaces.user_service import IUserService
 from art_gallery.application.validation.validators import BusinessRuleValidator

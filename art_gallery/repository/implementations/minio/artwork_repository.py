@@ -4,7 +4,7 @@ MinIO-реализация репозитория для экспонатов.
 """
 from typing import List, Dict, Any, Optional
 
-from art_gallery.domain.models import Artwork, ArtworkType
+from art_gallery.domain import Artwork, ArtworkType
 from art_gallery.repository.interfaces.artwork_repository import IArtworkRepository
 from art_gallery.repository.implementations.minio.base_minio_repository import BaseMinioRepository
 from art_gallery.repository.specifications.base_specification import Specification

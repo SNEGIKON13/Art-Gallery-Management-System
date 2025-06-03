@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Generic, TypeVar, Optional, List
-from art_gallery.domain.models.base_entity import BaseEntity
+from art_gallery.domain.base_entity import BaseEntity
 from art_gallery.repository.specifications.base_specification import Specification 
 
 T = TypeVar('T', bound=BaseEntity)

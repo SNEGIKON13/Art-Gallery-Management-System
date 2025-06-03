@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import TypeVar, Generic, List
-from domain.models.base_entity import BaseEntity
+from domain.base_entity import BaseEntity
 
 T = TypeVar('T', bound=BaseEntity)
 

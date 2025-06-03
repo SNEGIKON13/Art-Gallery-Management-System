@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional, Union
 from datetime import datetime
-from art_gallery.domain.models.artwork import Artwork, ArtworkType
+from art_gallery.domain.artwork import Artwork, ArtworkType
 
 class IArtworkService(ABC):
     @abstractmethod

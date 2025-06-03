@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import List
-from art_gallery.domain.models import User, Exhibition, UserRole
+from art_gallery.domain import User, Exhibition, UserRole
 
 class BusinessRuleValidator:
     @staticmethod

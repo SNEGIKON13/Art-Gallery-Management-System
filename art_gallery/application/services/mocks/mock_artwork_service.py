@@ -1,6 +1,6 @@
 from typing import List, Optional, Dict
 from datetime import datetime
-from art_gallery.domain.models.artwork import Artwork, ArtworkType
+from art_gallery.domain.artwork import Artwork, ArtworkType
 from art_gallery.application.interfaces.artwork_service import IArtworkService
 
 class MockArtworkService(IArtworkService):
