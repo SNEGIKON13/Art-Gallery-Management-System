@@ -3,7 +3,7 @@
 Предоставляет общую функциональность для загрузки и сохранения данных через MinIO.
 """
 import os
-from typing import List, Optional, Dict, Any, TypeVar, Generic
+from typing import List, Optional, Dict, Any, TypeVar, Generic, Union, Protocol, cast
 from abc import ABC, abstractmethod
 
 from art_gallery.domain.models.base_entity import BaseEntity
@@ -15,6 +15,7 @@ from art_gallery.infrastructure.storage.minio_service import MinioService
 from serialization.interfaces.ISerializer import ISerializer
 from serialization.interfaces.IDeserializer import IDeserializer
 
+# Определяем T как BaseEntity с методом clone
 T = TypeVar('T', bound=BaseEntity)
 
 
@@ -29,8 +30,8 @@ class BaseMinioRepository(Generic[T], IBaseRepository[T], ABC):
                  object_path: str, 
                  serializer: ISerializer, 
                  deserializer: IDeserializer,
-                 minio_service: MinioService = None,
-                 config: MinioConfig = None):
+                 minio_service: Optional[MinioService] = None,
+                 config: Optional[MinioConfig] = None):
         """
         Инициализирует базовый MinIO репозиторий.
         
@@ -75,7 +76,7 @@ class BaseMinioRepository(Generic[T], IBaseRepository[T], ABC):
                 return
             
             # Десериализуем данные
-            list_of_dicts = self._deserializer.deserialize_from_string(data_bytes.decode('utf-8'))
+            list_of_dicts = self._deserializer.deserialize(data_bytes.decode('utf-8'))
             
             # Преобразуем словари в сущности
             loaded_items = {}
@@ -100,7 +101,7 @@ class BaseMinioRepository(Generic[T], IBaseRepository[T], ABC):
             data_to_serialize = [item.to_dict() for item in self._items.values()]
             
             # Сериализуем данные
-            serialized_data = self._serializer.serialize_to_string(data_to_serialize)
+            serialized_data = self._serializer.serialize(data_to_serialize)
             
             # Загружаем данные в MinIO
             success = self._minio_service.upload_data(
@@ -217,4 +218,25 @@ class BaseMinioRepository(Generic[T], IBaseRepository[T], ABC):
         Returns:
             List[T]: Список найденных сущностей.
         """
-        return [item for item in self._items.values() if specification.is_satisfied_by(item)]
+        return [entity for entity in self._items.values() if specification.is_satisfied_by(entity)]
+        
+    def get_all_items_copy(self) -> Dict[int, T]:
+        """
+        Возвращает копию словаря всех элементов для создания снимка состояния.
+        Используется для транзакционности в UnitOfWork.
+        
+        Returns:
+            Dict[int, T]: Копия словаря всех элементов.
+        """
+        # Используем явное приведение типа, чтобы указать, что clone() возвращает T
+        return {entity_id: cast(T, entity.clone()) for entity_id, entity in self._items.items()}
+    
+    def restore_items_state(self, items_state: Dict[int, T]) -> None:
+        """
+        Восстанавливает состояние элементов из сохраненного снимка.
+        Используется для отката транзакций в UnitOfWork.
+        
+        Args:
+            items_state: Снимок состояния для восстановления.
+        """
+        self._items = items_state

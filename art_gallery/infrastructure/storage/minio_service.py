@@ -4,7 +4,7 @@
 """
 import io
 import os
-from typing import Optional, BinaryIO, List, Dict, Any, Tuple
+from typing import Optional, BinaryIO, List, Dict, Any, Tuple, Union, cast
 from urllib.parse import urljoin
 
 from minio import Minio
@@ -19,7 +19,7 @@ class MinioService:
     Предоставляет методы для выполнения базовых операций с объектами в MinIO.
     """
 
-    def __init__(self, config: MinioConfig = None):
+    def __init__(self, config: Optional[MinioConfig] = None):
         """
         Инициализирует сервис для работы с MinIO.
         
@@ -54,7 +54,7 @@ class MinioService:
             print(f"Ошибка при проверке/создании бакета '{bucket_name}': {err}")
             return False
 
-    def upload_data(self, bucket_name: str, object_name: str, data: bytes or BinaryIO,
+    def upload_data(self, bucket_name: str, object_name: str, data: Union[bytes, BinaryIO],
                     content_type: str = "application/octet-stream") -> bool:
         """
         Загружает данные в MinIO.

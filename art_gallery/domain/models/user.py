@@ -73,6 +73,19 @@ class User(BaseEntity):
             'is_active': self.is_active
         }
         
+    def clone(self) -> 'User':
+        """Создает глубокую копию объекта"""
+        user = User(
+            username=self.username,
+            password_hash=self.password_hash,
+            role=self.role,
+        )
+        user.created_at = self.created_at
+        user.last_login = self.last_login
+        user.is_active = self.is_active
+        user.id = self.id
+        return user
+        
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> 'User':
         """Создает объект User из словаря"""

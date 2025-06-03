@@ -2,7 +2,7 @@
 MinIO-реализация репозитория для выставок.
 Реализует интерфейс IExhibitionRepository с использованием MinIO для хранения данных.
 """
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Union
 from datetime import datetime
 
 from art_gallery.domain.models import Exhibition
@@ -25,8 +25,8 @@ class ExhibitionMinioRepository(BaseMinioRepository[Exhibition], IExhibitionRepo
     def __init__(self, 
                  serializer: ISerializer, 
                  deserializer: IDeserializer,
-                 minio_service: MinioService = None,
-                 config: MinioConfig = None):
+                 minio_service: Optional[MinioService] = None,
+                 config: Optional[MinioConfig] = None):
         """
         Инициализирует репозиторий выставок с использованием MinIO.
         

@@ -24,8 +24,8 @@ class ArtworkMinioRepository(BaseMinioRepository[Artwork], IArtworkRepository):
     def __init__(self, 
                  serializer: ISerializer, 
                  deserializer: IDeserializer,
-                 minio_service: MinioService = None,
-                 config: MinioConfig = None):
+                 minio_service: Optional[MinioService] = None,
+                 config: Optional[MinioConfig] = None):
         """
         Инициализирует репозиторий экспонатов с использованием MinIO.
         

@@ -5,7 +5,7 @@
 import io
 import os
 import uuid
-from typing import Optional, BinaryIO, Tuple
+from typing import Optional, BinaryIO, Tuple, Union
 from pathlib import Path
 
 from art_gallery.infrastructure.config.minio_config import MinioConfig
@@ -18,7 +18,7 @@ class MediaService:
     Предоставляет методы для работы с изображениями экспонатов.
     """
 
-    def __init__(self, minio_service: MinioService = None, config: MinioConfig = None):
+    def __init__(self, minio_service: Optional[MinioService] = None, config: Optional[MinioConfig] = None):
         """
         Инициализирует сервис для работы с медиафайлами.
         
@@ -48,7 +48,7 @@ class MediaService:
         unique_name = f"{uuid.uuid4()}{extension}"
         return unique_name
 
-    def upload_artwork_image(self, artwork_id: str, image_data: bytes or BinaryIO, 
+    def upload_artwork_image(self, artwork_id: str, image_data: Union[bytes, BinaryIO], 
                             original_filename: str) -> Optional[str]:
         """
         Загружает изображение для экспоната.

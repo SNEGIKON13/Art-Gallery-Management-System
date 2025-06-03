@@ -2,7 +2,7 @@
 MinIO-реализация репозитория для пользователей.
 Реализует интерфейс IUserRepository с использованием MinIO для хранения данных.
 """
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Union
 
 from art_gallery.domain.models import User, UserRole
 from art_gallery.repository.interfaces.user_repository import IUserRepository
@@ -24,8 +24,8 @@ class UserMinioRepository(BaseMinioRepository[User], IUserRepository):
     def __init__(self, 
                  serializer: ISerializer, 
                  deserializer: IDeserializer,
-                 minio_service: MinioService = None,
-                 config: MinioConfig = None):
+                 minio_service: Optional[MinioService] = None,
+                 config: Optional[MinioConfig] = None):
         """
         Инициализирует репозиторий пользователей с использованием MinIO.
         

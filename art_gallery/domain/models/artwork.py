@@ -83,6 +83,20 @@ class Artwork(BaseEntity):
             'created_at': self.created_at.isoformat()
         }
         
+    def clone(self) -> 'Artwork':
+        """Создает глубокую копию объекта"""
+        artwork = Artwork(
+            title=self.title,
+            artist=self.artist,
+            year=self.year,
+            description=self.description,
+            type=self.type,
+            image_path=self.image_path
+        )
+        artwork.created_at = self.created_at
+        artwork.id = self.id
+        return artwork
+        
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> 'Artwork':
         """Создает объект Artwork из словаря"""
