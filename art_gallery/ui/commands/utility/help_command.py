@@ -31,10 +31,23 @@ class HelpCommand(BaseCommand):
         command_categories = {
             "General": ["help", "exit"],
             "Users": ["login", "logout", "register", "change_password", "deactivate-user", "whoami", "list_users", "get_user"],
-            "Artworks": ["add_artwork", "get_artwork", "update_artwork", "delete_artwork", "open_image", "list_artworks", "search_artworks"],
+            "Artworks": ["add_artwork", "get_artwork", "update_artwork", "delete_artwork", "open_image", "list_artworks", "search_artworks", "upload_image"],
             "Exhibitions": ["create_exhibition", "get_exhibition", "update_exhibition", "delete_exhibition", "list_exhibitions", "add_artwork_to_exhibition", "remove_artwork_from_exhibition"],
-            "Utilities": ["format", "stats"]
+            "Utilities": ["format", "stats", "convert_data"]
         }
+        
+        # Команды, требующие прав администратора
+        admin_commands = [
+            # Artworks
+            "add_artwork", "update_artwork", "delete_artwork", "upload_image", 
+            # Users
+            "deactivate-user", "list_users", "get_user", 
+            # Exhibitions
+            "create_exhibition", "update_exhibition", "delete_exhibition",
+            "add_artwork_to_exhibition", "remove_artwork_from_exhibition",
+            # Utilities
+            "format", "stats", "convert_data"
+        ]
         
         # Create a dictionary for all commands
         all_commands = {}
@@ -57,7 +70,9 @@ class HelpCommand(BaseCommand):
                 help_text += f"\n== {category} ==\n"
                 for cmd_name in category_commands:
                     cmd_info = all_commands[cmd_name]
-                    help_text += (f"{cmd_info['name']} - {cmd_info['description']}\n"
+                    # Добавляем пометку (admin only) для команд администратора
+                    admin_suffix = " (admin only)" if cmd_name in admin_commands else ""
+                    help_text += (f"{cmd_info['name']}{admin_suffix} - {cmd_info['description']}\n"
                                 f"Usage: {cmd_info['usage']}\n\n")
         
         # Add uncategorized commands if any
@@ -68,7 +83,9 @@ class HelpCommand(BaseCommand):
             help_text += "\n== Other commands ==\n"
             for cmd_name in uncategorized:
                 cmd_info = all_commands[cmd_name]
-                help_text += (f"{cmd_info['name']} - {cmd_info['description']}\n"
+                # Добавляем пометку (admin only) для команд администратора
+                admin_suffix = " (admin only)" if cmd_name in admin_commands else ""
+                help_text += (f"{cmd_info['name']}{admin_suffix} - {cmd_info['description']}\n"
                             f"Usage: {cmd_info['usage']}\n\n")
         
         help_text += "\nFor detailed help on a specific command, enter: <command> --help"
