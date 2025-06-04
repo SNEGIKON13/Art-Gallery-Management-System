@@ -2,11 +2,11 @@ import logging
 from datetime import datetime
 from typing import Dict, Type
 from art_gallery.ui.interfaces.error_handler import IErrorHandler
-from art_gallery.ui.exceptions.base_exception import UIException
-from art_gallery.ui.exceptions.command_exceptions import CommandException, CommandNotFoundError
-from art_gallery.ui.exceptions.validation_exceptions import ValidationException
-from art_gallery.ui.exceptions.auth_exceptions import AuthException
-from art_gallery.ui.exceptions.business_exceptions import BusinessException
+from art_gallery.exceptions.base_exception import UIException
+from art_gallery.exceptions.command_exceptions import CommandException, CommandNotFoundError
+from art_gallery.exceptions.validation_exceptions import ValidationException
+from art_gallery.exceptions.auth_exceptions import AuthException
+from art_gallery.exceptions.business_exceptions import BusinessException
 from art_gallery.infrastructure.logging.interfaces.logger import ILogger
 
 class ConsoleErrorHandler(IErrorHandler):

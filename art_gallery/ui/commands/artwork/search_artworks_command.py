@@ -2,7 +2,7 @@ from typing import Sequence, List
 from art_gallery.ui.commands.base_command import BaseCommand
 from art_gallery.application.interfaces.artwork_service import IArtworkService
 from art_gallery.domain.artwork import Artwork, ArtworkType
-from art_gallery.ui.exceptions.validation_exceptions import ValidationError
+from art_gallery.exceptions.validation_exceptions import ValidationError
 
 class SearchArtworksCommand(BaseCommand):
     def __init__(self, artwork_service: IArtworkService, user_service):

@@ -3,7 +3,7 @@ from art_gallery.ui.commands.base_command import BaseCommand
 from art_gallery.ui.decorators.admin_only import admin_only
 from art_gallery.application.interfaces.artwork_service import IArtworkService
 from art_gallery.domain.artwork import ArtworkType
-from art_gallery.ui.exceptions.validation_exceptions import MissingRequiredArgumentError, InvalidArgumentTypeError
+from art_gallery.exceptions.validation_exceptions import MissingRequiredArgumentError, InvalidArgumentTypeError
 
 class AddArtworkCommand(BaseCommand):
     def __init__(self, artwork_service: IArtworkService, user_service):

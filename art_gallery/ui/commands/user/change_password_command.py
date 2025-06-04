@@ -1,7 +1,7 @@
 from typing import Sequence
 from art_gallery.ui.commands.base_command import BaseCommand
-from art_gallery.ui.exceptions.auth_exceptions import UnauthorizedError, AuthenticationError
-from art_gallery.ui.exceptions.validation_exceptions import MissingRequiredArgumentError
+from art_gallery.exceptions.auth_exceptions import UnauthorizedError, AuthenticationError
+from art_gallery.exceptions.validation_exceptions import MissingRequiredArgumentError
 
 class ChangePasswordCommand(BaseCommand):
     def get_name(self) -> str:

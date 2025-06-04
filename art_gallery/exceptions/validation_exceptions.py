@@ -1,4 +1,4 @@
-from art_gallery.ui.exceptions.base_exception import UIException
+from art_gallery.exceptions.base_exception import UIException
 
 class ValidationException(UIException):
     """Базовое исключение для ошибок валидации"""

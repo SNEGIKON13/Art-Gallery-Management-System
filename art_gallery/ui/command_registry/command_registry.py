@@ -1,7 +1,7 @@
 from typing import Dict, Type, List, Optional
 from art_gallery.ui.interfaces.command import ICommand
 from art_gallery.ui.interfaces.command_parser import ICommandParser
-from art_gallery.ui.exceptions.command_exceptions import CommandNotFoundError, CommandExecutionError
+from art_gallery.exceptions.command_exceptions import CommandNotFoundError, CommandExecutionError
 
 class CommandRegistry:
     def __init__(self, parser: ICommandParser):

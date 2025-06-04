@@ -3,8 +3,8 @@ from typing import Sequence
 from art_gallery.ui.commands.base_command import BaseCommand
 from art_gallery.application.interfaces.artwork_service import IArtworkService
 from art_gallery.ui.utils.image_viewer import ImageViewer
-from art_gallery.ui.exceptions.validation_exceptions import InvalidInputError
-from art_gallery.ui.exceptions.command_exceptions import CommandExecutionError
+from art_gallery.exceptions.validation_exceptions import InvalidInputError
+from art_gallery.exceptions.command_exceptions import CommandExecutionError
 from art_gallery.infrastructure.config.cli_config import CLIConfig
 
 class OpenArtworkImageCommand(BaseCommand):

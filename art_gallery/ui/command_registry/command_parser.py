@@ -1,7 +1,7 @@
 import shlex
 from typing import Tuple, List
 from art_gallery.ui.interfaces.command_parser import ICommandParser
-from art_gallery.ui.exceptions.command_exceptions import InvalidCommandFormatError
+from art_gallery.exceptions.command_exceptions import InvalidCommandFormatError
 
 class CommandParser(ICommandParser):
     def parse(self, input_string: str) -> Tuple[str, List[str]]:

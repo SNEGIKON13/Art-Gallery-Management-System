@@ -11,7 +11,7 @@ from minio.error import S3Error
 
 from art_gallery.infrastructure.interfaces.cloud.i_storage_service import IStorageService
 from art_gallery.infrastructure.config.minio_config import MinioConfig
-from art_gallery.infrastructure.exceptions.cloud_exceptions import (
+from art_gallery.exceptions.cloud_exceptions import (
     BucketCreationError, 
     ObjectUploadError, 
     ObjectDownloadError,

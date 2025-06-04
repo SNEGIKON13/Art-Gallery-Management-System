@@ -1,6 +1,6 @@
 from typing import Sequence
 from art_gallery.ui.commands.base_command import BaseCommand
-from art_gallery.ui.exceptions.auth_exceptions import UnauthorizedError
+from art_gallery.exceptions.auth_exceptions import UnauthorizedError
 
 class LogoutCommand(BaseCommand):
     def __init__(self, user_service, command_registry):

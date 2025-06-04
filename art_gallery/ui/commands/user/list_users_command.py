@@ -1,6 +1,6 @@
 from typing import Sequence
 from art_gallery.ui.commands.base_command import BaseCommand
-from art_gallery.ui.exceptions.auth_exceptions import PermissionDeniedError
+from art_gallery.exceptions.auth_exceptions import PermissionDeniedError
 from art_gallery.domain import UserRole
 
 class ListUsersCommand(BaseCommand):

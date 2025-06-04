@@ -2,7 +2,7 @@ from typing import Sequence
 from art_gallery.ui.commands.base_command import BaseCommand
 from art_gallery.application.interfaces.user_service import IUserService
 from art_gallery.infrastructure.config.cli_config import CLIConfig
-from art_gallery.ui.exceptions.command_exceptions import CommandNotFoundError
+from art_gallery.exceptions.command_exceptions import CommandNotFoundError
 
 class HelpCommand(BaseCommand):
     def __init__(self, command_registry, user_service: IUserService, cli_config: CLIConfig):

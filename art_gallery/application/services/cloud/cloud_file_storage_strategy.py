@@ -6,7 +6,7 @@ from typing import Optional, Union, BinaryIO
 
 from art_gallery.application.interfaces.cloud.i_file_storage_strategy import IFileStorageStrategy
 from art_gallery.infrastructure.interfaces.cloud.i_storage_service import IStorageService
-from art_gallery.infrastructure.exceptions.cloud_exceptions import CloudStorageError
+from art_gallery.exceptions.cloud_exceptions import CloudStorageError
 
 
 class CloudFileStorageStrategy(IFileStorageStrategy):
