@@ -11,6 +11,27 @@ class ImageViewer:
         self._config = config
         self._logger = logging.getLogger(__name__)
 
+    def _is_file_uri(self, path: str) -> bool:
+        """Checks if the path is a file URI."""
+        parsed = urlparse(path)
+        return parsed.scheme == "file"
+
+    def _get_path_from_file_uri(self, file_uri: str) -> str:
+        """Converts a file URI to an OS-specific local path."""
+        parsed = urlparse(file_uri)
+        # On Windows, urlparse result for 'file:///C:/path/...' is parsed.path='/C:/path/...'
+        # We need to strip the leading '/' if it's followed by a drive letter like 'C:'
+        # to avoid os.path.normpath turning '/C:/path' into '\C:\path'.
+        path = parsed.path
+        if os.name == 'nt' and path.startswith('/') and len(path) > 2 and path[1].isalpha() and path[2] == ':':
+            # Path is like '/C:/Windows', convert to 'C:/Windows'
+            path = path[1:]
+        # For other paths like '/usr/local' (on POSIX, or if such a URI was made on Win)
+        # or 'C:/Windows' (after stripping), normpath will correctly format them.
+        # os.path.normpath('C:/Windows') -> 'C:\Windows'
+        # os.path.normpath('/usr/local') -> '/usr/local' (POSIX) or '\usr\local' (Win)
+        return os.path.normpath(path)
+
     def _create_html_viewer(self, image_src: str, title: str = "Artwork View") -> str:
         """Creates a temporary HTML file to view the image
         
@@ -129,65 +150,71 @@ class ImageViewer:
     
     def open_image(self, image_path: str, use_web: bool = False) -> Optional[str]:
         """Opens image in default viewer or web browser
-        
+
         Args:
             image_path: Path or URL to the image
             use_web: Whether to open in web browser
-            
+
         Returns:
             Optional[str]: Error message or None if successful
         """
         try:
-            # Проверяем, является ли путь URL-адресом
-            is_url = self._is_url(image_path)
-            
-            if is_url:
-                # Если это URL, то не открываем браузер автоматически,
-                # а только выводим ссылку с инструкцией
-                self._logger.info(f"Image URL: {image_path}")
+            final_os_path: str  # OS-specific path for opening directly
+            path_for_html_src: str  # Path for <img src=...>, C:/style/path for local files
+
+            if self._is_file_uri(image_path):
+                # Input is like "file:///C:/path/image.jpg" or "file:///path/image.jpg"
+                final_os_path = self._get_path_from_file_uri(image_path)
+                # _create_html_viewer expects a plain path (C:/path/img.jpg) for local files to add file:/// itself
+                path_for_html_src = final_os_path.replace('\\', '/')
+                self._logger.info(f"Processing file URI: '{image_path}' -> OS path: '{final_os_path}'")
+            elif self._is_url(image_path):  # Checks for http/https schemes with netloc
+                self._logger.info(f"Image is a web URL: {image_path}")
                 print(f"Image URL: {image_path}")
                 print("\nUse Ctrl+click on the link above to open the image in your browser.")
-                return None  # Успешно обработали URL
+                return None
             else:
-                # Для локальных файлов проверяем существование
-                full_path = self._get_local_path(image_path)
-                
-                if not os.path.exists(full_path):
-                    return f"Image file not found: {full_path}"
-                    
-                image_src = os.path.abspath(full_path).replace('\\', '/')
-                title = os.path.basename(full_path)
-                
-            # Открываем изображение
+                # Input is a relative or absolute local path without a scheme, e.g., "subdir/img.jpg" or "C:\\path\\img.jpg"
+                final_os_path = self._get_local_path(image_path) # Resolves relative to base_media_path
+                # _create_html_viewer expects a plain path (C:/path/img.jpg) for local files
+                path_for_html_src = os.path.abspath(final_os_path).replace('\\', '/')
+                self._logger.info(f"Processing local path: '{image_path}' -> OS path: '{final_os_path}'")
+
+            if not os.path.exists(final_os_path):
+                self._logger.error(f"Image file not found at resolved path: {final_os_path}")
+                return f"Image file not found: {final_os_path}"
+
+            title = os.path.basename(final_os_path)
+
             if use_web:
-                # Создаем HTML просмотрщик
-                # Проверяем, что base_media_path не None
-                base_path = self._config.base_media_path or os.getcwd()
-                temp_dir = os.path.join(base_path, "temp")
+                # self._create_html_viewer expects path_for_html_src to be either a web URL
+                # or a plain local path like 'C:/path/to/image.jpg'.
+                # It will add 'file:///' prefix for local paths itself.
+                html_content_string = self._create_html_viewer(path_for_html_src, title)
+
+                base_temp_dir = self._config.base_media_path or os.getcwd()
+                temp_dir = os.path.join(base_temp_dir, "temp")
                 os.makedirs(temp_dir, exist_ok=True)
-                
-                # Используем временное имя для HTML файла
-                temp_name = f"viewer_{os.urandom(4).hex()}.html"
-                html_path = os.path.join(temp_dir, temp_name)
-                
-                # Создаем HTML просмотрщик
-                html_content = self._create_html_viewer(image_src, title)
-                
-                with open(html_path, 'w', encoding='utf-8') as f:
-                    f.write(html_content)
-                    
-                # Преобразуем путь для URL
-                html_path_url = html_path.replace('\\', '/')
-                webbrowser.open(f'file:///{html_path_url}', new=2)
+
+                temp_html_filename = f"viewer_{os.urandom(4).hex()}.html"
+                html_file_path = os.path.join(temp_dir, temp_html_filename)
+
+                with open(html_file_path, 'w', encoding='utf-8') as f:
+                    f.write(html_content_string)
+
+                # Construct file URI for the browser to open the temporary HTML file
+                html_url_for_browser = "file:///" + os.path.abspath(html_file_path).replace('\\', '/')
+                webbrowser.open(html_url_for_browser, new=2)
+                self._logger.info(f"Opened image '{final_os_path}' in web viewer: {html_url_for_browser}")
             else:
-                # Используем системный просмотрщик для локальных файлов
+                # Use system's default viewer for the OS-specific path
                 if os.name == 'nt':  # Windows
-                    os.startfile(full_path)
+                    os.startfile(final_os_path)
                 elif os.name == 'posix':  # Linux/Mac
-                    subprocess.run(['xdg-open' if os.name == 'posix' else 'open', full_path])
-                    
+                    subprocess.run(['xdg-open', final_os_path], check=False)
+                self._logger.info(f"Opened image '{final_os_path}' in system viewer.")
+
             return None
         except Exception as e:
-            error_message = f"Failed to open image: {str(e)}"
-            self._logger.error(error_message)
-            return error_message
+            self._logger.error(f"Failed to open image '{image_path}': {str(e)}", exc_info=True)
+            return f"Failed to open image: {str(e)}"

@@ -1,3 +1,4 @@
+import os
 from typing import Sequence
 from art_gallery.ui.commands.base_command import BaseCommand
 from art_gallery.ui.decorators.admin_only import admin_only
@@ -9,6 +10,12 @@ class AddArtworkCommand(BaseCommand):
     def __init__(self, artwork_service: IArtworkService, user_service):
         super().__init__(user_service)
         self._artwork_service = artwork_service
+        # Assuming logger is available from BaseCommand or initialized here
+        # For simplicity, if BaseCommand doesn't have self._logger, it should be added.
+        # Or get it directly: import logging; self._logger = logging.getLogger(__name__)
+        if not hasattr(self, '_logger'):
+            import logging
+            self._logger = logging.getLogger(__name__)
 
     @admin_only
     def execute(self, args: Sequence[str]) -> None:
@@ -23,12 +30,47 @@ class AddArtworkCommand(BaseCommand):
             year = int(args[2])
             artwork_type = ArtworkType(args[3].lower())
             description = args[4]
-            image_path = args[5] if len(args) > 5 else None
+            raw_image_path_arg = args[5] if len(args) > 5 else None
+            artwork = None
 
-            artwork = self._artwork_service.add_artwork(
-                title, artist, year, description, artwork_type, image_path
-            )
-            print(f"Artwork added successfully with ID: {artwork.id}")
+            if raw_image_path_arg and os.path.isfile(raw_image_path_arg):
+                self._logger.info(f"Attempting to add artwork with image: {raw_image_path_arg}")
+                try:
+                    with open(raw_image_path_arg, 'rb') as image_file:
+                        image_data = image_file.read()
+                    image_filename = os.path.basename(raw_image_path_arg)
+                    
+                    artwork = self._artwork_service.add_artwork_with_image(
+                        title, artist, year, description, artwork_type, 
+                        image_data, image_filename
+                    )
+                    print(f"Artwork with image added successfully with ID: {artwork.id}")
+                    if artwork.image_path:
+                        print(f"Image stored at: {artwork.image_path}")
+                    else:
+                        print("Artwork added, but image processing might have failed. Check logs.")
+
+                except FileNotFoundError:
+                    self._logger.warning(f"Image file not found at {raw_image_path_arg}. Adding artwork without image.")
+                    # Fallback to adding artwork without image if file operation fails mid-way
+                    artwork = self._artwork_service.add_artwork(
+                        title, artist, year, description, artwork_type, image_path=None
+                    )
+                    print(f"Artwork added (image not found) successfully with ID: {artwork.id}")
+                except Exception as e:
+                    self._logger.error(f"Error processing image file {raw_image_path_arg}: {e}", exc_info=True)
+                    # Fallback to adding artwork without image on other errors
+                    artwork = self._artwork_service.add_artwork(
+                        title, artist, year, description, artwork_type, image_path=None
+                    )
+                    print(f"Artwork added (image processing error) successfully with ID: {artwork.id}. Error: {e}")
+            else:
+                if raw_image_path_arg:
+                    self._logger.warning(f"Provided image path '{raw_image_path_arg}' is not a file or not provided. Adding artwork without image.")
+                artwork = self._artwork_service.add_artwork(
+                    title, artist, year, description, artwork_type, image_path=None
+                )
+                print(f"Artwork added successfully (without image) with ID: {artwork.id}")
         except ValueError as e:
             raise InvalidArgumentTypeError(str(e))
 
