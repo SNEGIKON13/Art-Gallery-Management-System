@@ -1,11 +1,11 @@
 from typing import List, Type, Tuple, Dict, Any
-from art_gallery.ui.command_registry import CommandRegistry
+from art_gallery.ui.commands.utility.format_command import FormatCommand
+from art_gallery.ui.command_registry.command_registry import CommandRegistry
 from art_gallery.ui.services import ServiceCollection
 from art_gallery.ui.interfaces.command import ICommand
 from art_gallery.ui.commands.utility.help_command import HelpCommand
 from art_gallery.ui.commands.utility.exit_command import ExitCommand
 from art_gallery.ui.commands.utility.stats_command import StatsCommand
-from art_gallery.ui.commands.utility.format_command import FormatCommand
 
 from art_gallery.ui.commands.user.login_command import LoginCommand
 from art_gallery.ui.commands.user.logout_command import LogoutCommand
@@ -23,6 +23,7 @@ from art_gallery.ui.commands.artwork.delete_artwork_command import DeleteArtwork
 from art_gallery.ui.commands.artwork.open_artwork_image_command import OpenArtworkImageCommand
 from art_gallery.ui.commands.artwork.list_artworks_command import ListArtworksCommand
 from art_gallery.ui.commands.artwork.search_artworks_command import SearchArtworksCommand
+from art_gallery.ui.commands.artwork.upload_artwork_image_command import UploadArtworkImageCommand
 
 from art_gallery.ui.commands.exhibition.create_exhibition_command import CreateExhibitionCommand
 from art_gallery.ui.commands.exhibition.get_exhibition_command import GetExhibitionCommand
@@ -70,6 +71,10 @@ def register_commands(registry: CommandRegistry, services: ServiceCollection, lo
             "artwork_service": services.artwork_service, 
             "user_service": services.user_service,
             "cli_config": services.cli_config
+        }),
+        (UploadArtworkImageCommand, {
+            "artwork_service": services.artwork_service, 
+            "user_service": services.user_service
         }),
         (ListArtworksCommand, {"artwork_service": services.artwork_service, "user_service": services.user_service}),
         (SearchArtworksCommand, {"artwork_service": services.artwork_service, "user_service": services.user_service}),

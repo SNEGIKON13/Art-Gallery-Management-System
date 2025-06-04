@@ -1,7 +1,7 @@
 from typing import List
-from domain.models import Artwork, ArtworkType
-from repository.interfaces.artwork_repository import IArtworkRepository
-from .base_memory_repository import BaseMemoryRepository
+from art_gallery.domain import Artwork, ArtworkType
+from art_gallery.repository.interfaces.artwork_repository import IArtworkRepository
+from art_gallery.repository.implementations.base_memory_repository import BaseMemoryRepository
 
 class ArtworkMemoryRepository(BaseMemoryRepository[Artwork], IArtworkRepository):
     def get_by_artist(self, artist: str) -> List[Artwork]:

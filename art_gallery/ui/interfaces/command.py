@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List, Any, Optional, Sequence
-from art_gallery.domain.models import User  # добавим импорт
+from art_gallery.domain import User  # добавим импорт
 
 class ICommand(ABC):
     @abstractmethod

@@ -3,7 +3,7 @@ from art_gallery.ui.interfaces.command import ICommand
 from art_gallery.infrastructure.factory.serialization_plugin_factory import SerializationPluginFactory
 from art_gallery.ui.command_registry import CommandRegistry
 from art_gallery.application.interfaces.user_service import IUserService
-from art_gallery.domain.models import User
+from art_gallery.domain import User
 import os
 import json
 import shutil

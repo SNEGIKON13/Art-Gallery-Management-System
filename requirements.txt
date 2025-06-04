@@ -1,1 +1,2 @@
 gallery-serialization==0.1.0
+minio==7.2.0

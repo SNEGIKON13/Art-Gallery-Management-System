@@ -1,6 +1,6 @@
 from abc import abstractmethod
 from typing import List
-from art_gallery.domain.models import Artwork, ArtworkType
+from art_gallery.domain import Artwork, ArtworkType
 from art_gallery.repository.interfaces.base_repository import IBaseRepository
 
 class IArtworkRepository(IBaseRepository[Artwork]):

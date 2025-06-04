@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from typing import Optional, Dict, Any
-from art_gallery.domain.models.base_entity import BaseEntity
+from art_gallery.domain.base_entity import BaseEntity
 
 class ArtworkType(Enum):
     PAINTING = "painting"
@@ -82,6 +82,20 @@ class Artwork(BaseEntity):
             'image_path': self.image_path,
             'created_at': self.created_at.isoformat()
         }
+        
+    def clone(self) -> 'Artwork':
+        """Создает глубокую копию объекта"""
+        artwork = Artwork(
+            title=self.title,
+            artist=self.artist,
+            year=self.year,
+            description=self.description,
+            type=self.type,
+            image_path=self.image_path
+        )
+        artwork.created_at = self.created_at
+        artwork.id = self.id
+        return artwork
         
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> 'Artwork':

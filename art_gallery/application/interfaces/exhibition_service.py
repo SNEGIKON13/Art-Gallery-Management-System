@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional
 from datetime import datetime
-from art_gallery.domain.models import Exhibition
+from art_gallery.domain import Exhibition
 
 class IExhibitionService(ABC):
     @abstractmethod

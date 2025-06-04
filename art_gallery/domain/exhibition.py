@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import List, Optional, Dict, Any
-from art_gallery.domain.models.base_entity import BaseEntity
+from art_gallery.domain.base_entity import BaseEntity
 
 @dataclass
 class Exhibition(BaseEntity):
@@ -81,6 +81,21 @@ class Exhibition(BaseEntity):
             'max_capacity': self.max_capacity,
             'visitors': list(self.visitors)  # Преобразуем set в list для сериализации
         }
+        
+    def clone(self) -> 'Exhibition':
+        """Создает глубокую копию объекта"""
+        exhibition = Exhibition(
+            title=self.title,
+            description=self.description,
+            start_date=self.start_date,
+            end_date=self.end_date,
+        )
+        exhibition.created_at = self.created_at
+        exhibition.artwork_ids = self.artwork_ids.copy()  # Копируем список
+        exhibition.max_capacity = self.max_capacity
+        exhibition.visitors = self.visitors.copy()  # Копируем множество
+        exhibition.id = self.id
+        return exhibition
         
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> 'Exhibition':

@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional, Sequence
 from art_gallery.ui.interfaces.command import ICommand
-from art_gallery.application.services.user_service import IUserService
+from art_gallery.application.interfaces.user_service import IUserService
 
 class BaseCommand(ICommand, ABC):
     def __init__(self, user_service: IUserService, command_registry=None):

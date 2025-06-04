@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from typing import List
 from datetime import datetime
-from domain.models import Exhibition
+from domain import Exhibition
 from .base_repository import IBaseRepository
 
 class IExhibitionRepository(IBaseRepository[Exhibition]):

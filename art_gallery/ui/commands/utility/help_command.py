@@ -1,6 +1,6 @@
 from typing import Sequence
 from art_gallery.ui.commands.base_command import BaseCommand
-from art_gallery.application.services.user_service import IUserService
+from art_gallery.application.interfaces.user_service import IUserService
 from art_gallery.infrastructure.config.cli_config import CLIConfig
 from art_gallery.ui.exceptions.command_exceptions import CommandNotFoundError
 

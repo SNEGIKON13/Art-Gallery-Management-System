@@ -1,8 +1,8 @@
-from typing import Sequence
+from typing import Sequence, Optional
 from art_gallery.ui.commands.base_command import BaseCommand
 from art_gallery.ui.decorators.admin_only import admin_only
-from art_gallery.application.services.artwork_service import IArtworkService
-from art_gallery.domain.models.artwork import ArtworkType
+from art_gallery.application.interfaces.artwork_service import IArtworkService
+from art_gallery.domain.artwork import ArtworkType
 from art_gallery.ui.exceptions.validation_exceptions import InvalidInputError
 
 class UpdateArtworkCommand(BaseCommand):
@@ -19,17 +19,39 @@ class UpdateArtworkCommand(BaseCommand):
         
         try:
             artwork_id = int(args[0])
-            updates = {}
+            title_arg: Optional[str] = None
+            artist_arg: Optional[str] = None
+            year_arg: Optional[int] = None
+            description_arg: Optional[str] = None
+            type_arg: Optional[ArtworkType] = None
+            image_path_arg: Optional[str] = None
 
-            for arg in args[1:]:
-                field, value = arg.split('=')
-                if field == 'type':
-                    value = ArtworkType(value.lower())
+            for arg_pair in args[1:]:
+                field, value_str = arg_pair.split('=')
+                if field == 'title':
+                    title_arg = value_str
+                elif field == 'artist':
+                    artist_arg = value_str
                 elif field == 'year':
-                    value = int(value)
-                updates[field] = value
+                    year_arg = int(value_str)
+                elif field == 'description':
+                    description_arg = value_str
+                elif field == 'type':
+                    type_arg = ArtworkType(value_str.lower())
+                elif field == 'image_path':
+                    image_path_arg = value_str
+                # else: # Optionally handle unknown fields, e.g., raise error or log warning
+                #     pass
 
-            artwork = self._artwork_service.update_artwork(artwork_id, **updates)
+            artwork = self._artwork_service.update_artwork(
+                artwork_id,
+                title=title_arg,
+                artist=artist_arg,
+                year=year_arg,
+                description=description_arg,
+                type=type_arg,
+                image_path=image_path_arg
+            )
             print(f"Artwork {artwork.id} updated successfully")
         except ValueError as e:
             raise InvalidInputError(str(e))

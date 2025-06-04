@@ -1,9 +1,9 @@
 from typing import Sequence
 from art_gallery.ui.commands.base_command import BaseCommand
-from art_gallery.application.services.user_service import IUserService
-from art_gallery.application.services.artwork_service import IArtworkService
-from art_gallery.application.services.exhibition_service import IExhibitionService
-from art_gallery.domain.models.artwork import ArtworkType
+from art_gallery.application.interfaces.user_service import IUserService
+from art_gallery.application.interfaces.artwork_service import IArtworkService
+from art_gallery.application.interfaces.exhibition_service import IExhibitionService
+from art_gallery.domain.artwork import ArtworkType
 
 class StatsCommand(BaseCommand):
     def __init__(self, user_service: IUserService, artwork_service: IArtworkService, exhibition_service: IExhibitionService):

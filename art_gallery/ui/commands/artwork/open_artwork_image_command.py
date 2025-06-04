@@ -1,6 +1,7 @@
+import logging
 from typing import Sequence
 from art_gallery.ui.commands.base_command import BaseCommand
-from art_gallery.application.services.artwork_service import IArtworkService
+from art_gallery.application.interfaces.artwork_service import IArtworkService
 from art_gallery.ui.utils.image_viewer import ImageViewer
 from art_gallery.ui.exceptions.validation_exceptions import InvalidInputError
 from art_gallery.ui.exceptions.command_exceptions import CommandExecutionError
@@ -11,6 +12,7 @@ class OpenArtworkImageCommand(BaseCommand):
         super().__init__(user_service)
         self._artwork_service = artwork_service
         self._image_viewer = ImageViewer(cli_config)
+        self._logger = logging.getLogger(__name__)
 
     def execute(self, args: Sequence[str]) -> None:
         if len(args) < 1:
@@ -23,15 +25,26 @@ class OpenArtworkImageCommand(BaseCommand):
             artwork = self._artwork_service.get_artwork(artwork_id)
             if not artwork:
                 raise CommandExecutionError(f"Artwork {artwork_id} not found")
+            
+            # Пытаемся получить URL или путь к изображению через сервис
+            image_url = self._artwork_service.get_artwork_image_url(artwork_id)
+            
+            # Если изображение отсутствует, пытаемся использовать классическое свойство image_path
+            if not image_url and hasattr(artwork, 'image_path') and artwork.image_path:
+                self._logger.info(f"Используем классический путь для изображения: {artwork.image_path}")
+                image_url = artwork.image_path
                 
-            if not artwork.image_path:
+            # Проверяем наличие изображения
+            if not image_url:
                 raise CommandExecutionError(f"Artwork {artwork_id} has no image")
-                
-            error = self._image_viewer.open_image(artwork.image_path, use_web)
+            
+            # Открываем изображение через просмотрщик
+            error = self._image_viewer.open_image(image_url, use_web)
             if error:
                 raise CommandExecutionError(error)
                 
             print(f"Opening image for artwork {artwork_id}" + (" in web browser" if use_web else ""))
+            print(f"Image URL: {image_url}")
             
         except ValueError:
             raise InvalidInputError("Artwork ID must be a number")

@@ -1,8 +1,8 @@
 from typing import List
 from datetime import datetime
-from domain.models import Exhibition
-from repository.interfaces.exhibition_repository import IExhibitionRepository
-from .base_memory_repository import BaseMemoryRepository
+from art_gallery.domain import Exhibition
+from art_gallery.repository.interfaces.exhibition_repository import IExhibitionRepository
+from art_gallery.repository.implementations.base_memory_repository import BaseMemoryRepository
 
 class ExhibitionMemoryRepository(BaseMemoryRepository[Exhibition], IExhibitionRepository):
     def get_active(self) -> List[Exhibition]:

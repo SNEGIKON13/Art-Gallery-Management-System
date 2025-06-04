@@ -1,5 +1,5 @@
 from datetime import datetime
-from domain.models import Exhibition
+from domain import Exhibition
 from .base_specification import Specification
 
 class ActiveExhibitionSpecification(Specification[Exhibition]):

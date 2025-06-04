@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from datetime import datetime
 from typing import Optional, Dict, Any
-from art_gallery.domain.models.base_entity import BaseEntity
+from art_gallery.domain.base_entity import BaseEntity
 
 class UserRole(Enum):
     ADMIN = "admin"
@@ -72,6 +72,19 @@ class User(BaseEntity):
             'last_login': self.last_login.isoformat() if self.last_login else None,
             'is_active': self.is_active
         }
+        
+    def clone(self) -> 'User':
+        """Создает глубокую копию объекта"""
+        user = User(
+            username=self.username,
+            password_hash=self.password_hash,
+            role=self.role,
+        )
+        user.created_at = self.created_at
+        user.last_login = self.last_login
+        user.is_active = self.is_active
+        user.id = self.id
+        return user
         
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> 'User':

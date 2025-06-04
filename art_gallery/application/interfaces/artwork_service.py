@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import List, Optional, Union
+from typing import List, Optional, Union, BinaryIO
 from datetime import datetime
-from art_gallery.domain.models.artwork import Artwork, ArtworkType
+from art_gallery.domain.artwork import Artwork, ArtworkType
 
 class IArtworkService(ABC):
     @abstractmethod
@@ -9,6 +9,13 @@ class IArtworkService(ABC):
                    description: str, type: ArtworkType, 
                    image_path: Optional[str] = None) -> Artwork:
         """Добавляет новый экспонат"""
+        pass
+        
+    @abstractmethod
+    def add_artwork_with_image(self, title: str, artist: str, year: int, 
+                            description: str, type: ArtworkType,
+                            image_data: Union[bytes, BinaryIO], image_filename: str) -> Artwork:
+        """Добавляет новый экспонат с изображением"""
         pass
 
     @abstractmethod
@@ -20,6 +27,17 @@ class IArtworkService(ABC):
                       type: Optional[ArtworkType] = None,
                       image_path: Optional[str] = None) -> Artwork:
         """Обновляет существующий экспонат"""
+        pass
+        
+    @abstractmethod
+    def update_artwork_image(self, artwork_id: int, image_data: Union[bytes, BinaryIO], 
+                            image_filename: str) -> Artwork:
+        """Обновляет изображение существующего экспоната"""
+        pass
+        
+    @abstractmethod
+    def get_artwork_image_url(self, artwork_id: int) -> Optional[str]:
+        """Получает URL изображения экспоната"""
         pass
 
     @abstractmethod

@@ -1,5 +1,5 @@
 from typing import Optional, Dict, TypeVar, Generic, List
-from domain.models import User, Artwork, Exhibition, BaseEntity
+from domain import User, Artwork, Exhibition, BaseEntity
 from repository.interfaces.user_repository import IUserRepository
 from repository.interfaces.artwork_repository import IArtworkRepository
 from repository.interfaces.exhibition_repository import IExhibitionRepository

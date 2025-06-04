@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import List, Optional
-from art_gallery.domain.models import Exhibition
+from art_gallery.domain import Exhibition
 from art_gallery.repository.interfaces.exhibition_repository import IExhibitionRepository
 from art_gallery.repository.interfaces.artwork_repository import IArtworkRepository
 from art_gallery.application.interfaces.exhibition_service import IExhibitionService

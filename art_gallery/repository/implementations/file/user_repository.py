@@ -1,7 +1,7 @@
 import os
 from typing import List, Optional, Dict, Any
 from datetime import datetime
-from art_gallery.domain.models import User, UserRole
+from art_gallery.domain import User, UserRole
 from art_gallery.repository.interfaces.user_repository import IUserRepository
 from art_gallery.repository.specifications.base_specification import Specification
 from serialization.interfaces.ISerializer import ISerializer
