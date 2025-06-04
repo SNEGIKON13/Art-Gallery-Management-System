@@ -4,7 +4,7 @@ from art_gallery.ui.commands.base_command import BaseCommand
 from art_gallery.application.interfaces.exhibition_service import IExhibitionService
 from art_gallery.exceptions.validation_exceptions import MissingRequiredArgumentError, InvalidInputError
 from art_gallery.exceptions.command_exceptions import CommandExecutionError
-from art_gallery.ui.decorators import admin_only, authenticated, transaction, log_command
+from art_gallery.ui.decorators import admin_only, authenticated, log_command
 
 class UpdateExhibitionCommand(BaseCommand):
     def __init__(self, exhibition_service: IExhibitionService, user_service):
@@ -13,7 +13,6 @@ class UpdateExhibitionCommand(BaseCommand):
 
     @admin_only
     @authenticated
-    @transaction
     @log_command
     def execute(self, args: Sequence[str]) -> None:
         if len(args) != 6:

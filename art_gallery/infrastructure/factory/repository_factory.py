@@ -1,7 +1,7 @@
 """
-Фабрика для создания репозиториев и UnitOfWork в зависимости от выбранного типа хранилища.
+Фабрика для создания репозиториев в зависимости от выбранного типа хранилища.
 """
-from typing import Optional, Union, Literal
+from typing import Optional, Literal
 
 from art_gallery.repository.interfaces.user_repository import IUserRepository
 from art_gallery.repository.interfaces.artwork_repository import IArtworkRepository
@@ -10,12 +10,10 @@ from art_gallery.repository.interfaces.exhibition_repository import IExhibitionR
 from art_gallery.repository.implementations.file.user_repository import UserFileRepository
 from art_gallery.repository.implementations.file.artwork_repository import ArtworkFileRepository
 from art_gallery.repository.implementations.file.exhibition_repository import ExhibitionFileRepository
-from art_gallery.repository.implementations.unit_of_work import UnitOfWork
 
 from art_gallery.repository.implementations.minio.user_repository import UserMinioRepository
 from art_gallery.repository.implementations.minio.artwork_repository import ArtworkMinioRepository
 from art_gallery.repository.implementations.minio.exhibition_repository import ExhibitionMinioRepository
-from art_gallery.repository.implementations.minio.unit_of_work import MinioUnitOfWork
 
 from art_gallery.infrastructure.config.minio_config import MinioConfig
 from art_gallery.infrastructure.cloud.minio_service import MinioService
@@ -27,7 +25,7 @@ import os
 
 class RepositoryFactory:
     """
-    Фабрика для создания репозиториев и UnitOfWork в зависимости от выбранного типа хранилища.
+    Фабрика для создания репозиториев в зависимости от выбранного типа хранилища.
     """
     
     # Константы для типов хранилищ
@@ -163,38 +161,4 @@ class RepositoryFactory:
         else:
             raise ValueError(f"Неизвестный тип хранилища: {storage_type}")
     
-    @classmethod
-    def create_unit_of_work(cls, 
-                           storage_type: Literal["file", "minio"] = "file", 
-                           format_name: str = "json",
-                           minio_service: Optional[MinioService] = None,
-                           config: Optional[MinioConfig] = None) -> Union[UnitOfWork, MinioUnitOfWork]:
-        """
-        Создает Unit of Work для указанного типа хранилища.
-        
-        Args:
-            storage_type: Тип хранилища ("file" или "minio").
-            format_name: Формат сериализации (json, xml).
-            minio_service: Сервис MinIO для репозиториев MinIO.
-            config: Конфигурация MinIO для репозиториев MinIO.
-            
-        Returns:
-            Union[UnitOfWork, MinioUnitOfWork]: Unit of Work для работы с репозиториями.
-            
-        Raises:
-            ValueError: Если указан неизвестный тип хранилища.
-        """
-        if storage_type == cls.STORAGE_FILE:
-            # Создаем и возвращаем стандартный UnitOfWork
-            # TODO: Обновить UnitOfWork для поддержки файловых репозиториев с сериализацией
-            return UnitOfWork()
-            
-        elif storage_type == cls.STORAGE_MINIO:
-            # Используем фабрику для MinIO UnitOfWork
-            return MinioRepositoryFactory.create_unit_of_work(
-                format_name=format_name,
-                minio_service=minio_service,
-                config=config
-            )
-        else:
-            raise ValueError(f"Неизвестный тип хранилища: {storage_type}")
+

@@ -1,4 +1,9 @@
-o# Byte-compiled / optimized / DLL files
+o# Папки проекта Art Gallery Management System
+data/
+media/
+logs/
+
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class

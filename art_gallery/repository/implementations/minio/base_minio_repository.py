@@ -223,7 +223,6 @@ class BaseMinioRepository(Generic[T], IBaseRepository[T], ABC):
     def get_all_items_copy(self) -> Dict[int, T]:
         """
         Возвращает копию словаря всех элементов для создания снимка состояния.
-        Используется для транзакционности в UnitOfWork.
         
         Returns:
             Dict[int, T]: Копия словаря всех элементов.
@@ -234,7 +233,6 @@ class BaseMinioRepository(Generic[T], IBaseRepository[T], ABC):
     def restore_items_state(self, items_state: Dict[int, T]) -> None:
         """
         Восстанавливает состояние элементов из сохраненного снимка.
-        Используется для отката транзакций в UnitOfWork.
         
         Args:
             items_state: Снимок состояния для восстановления.
