@@ -13,7 +13,7 @@ from art_gallery.repository.implementations.minio.unit_of_work import MinioUnitO
 
 from art_gallery.application.interfaces.cloud.i_media_service import IMediaService
 from art_gallery.infrastructure.cloud.minio_service import MinioService
-from art_gallery.infrastructure.cloud.minio_config import MinioConfig
+from art_gallery.infrastructure.config.minio_config import MinioConfig
 from art_gallery.infrastructure.cloud.media_service import MediaService
 from art_gallery.infrastructure.factory.serialization_plugin_factory import SerializationPluginFactory
 

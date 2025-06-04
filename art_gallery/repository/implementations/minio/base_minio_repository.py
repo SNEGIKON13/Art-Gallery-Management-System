@@ -9,7 +9,7 @@ from abc import ABC, abstractmethod
 from art_gallery.domain.base_entity import BaseEntity
 from art_gallery.repository.interfaces.base_repository import IBaseRepository
 from art_gallery.repository.specifications.base_specification import Specification
-from art_gallery.infrastructure.cloud.minio_config import MinioConfig
+from art_gallery.infrastructure.config.minio_config import MinioConfig
 from art_gallery.infrastructure.cloud.minio_service import MinioService
 
 from serialization.interfaces.ISerializer import ISerializer

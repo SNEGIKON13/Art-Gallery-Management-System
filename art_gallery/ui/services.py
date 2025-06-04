@@ -3,6 +3,8 @@ import logging
 from dataclasses import dataclass
 from typing import Optional
 
+from art_gallery.infrastructure.config.config_registry import ConfigRegistry
+
 # Сервисы и интерфейсы приложения
 from art_gallery.application.services.mocks.mock_user_service import MockUserService
 from art_gallery.application.services.mocks.mock_artwork_service import MockArtworkService
@@ -17,7 +19,7 @@ from art_gallery.application.interfaces.cloud.i_media_service import IMediaServi
 from art_gallery.application.services.cloud.local_file_storage_strategy import LocalFileStorageStrategy
 from art_gallery.application.services.cloud.cloud_file_storage_strategy import CloudFileStorageStrategy
 from art_gallery.infrastructure.cloud.minio_service import MinioService
-from art_gallery.infrastructure.cloud.minio_config import MinioConfig
+from art_gallery.infrastructure.config.minio_config import MinioConfig
 from art_gallery.infrastructure.interfaces.cloud.i_storage_service import IStorageService
 
 # Конфигурация
@@ -133,9 +135,27 @@ def create_real_services(format_name: str = 'json'):
     artwork_repo = ArtworkFileRepository(artworks_file, serializer, deserializer)
     exhibition_repo = ExhibitionFileRepository(exhibitions_file, serializer, deserializer)
 
-    # Создаем конфигурации
-    cli_config = CLIConfig()
-    storage_config = StorageConfig.from_env()
+    # Получаем конфигурации из централизованного реестра
+    config_registry = ConfigRegistry()
+    
+    # Если реестр не прошел валидацию в run.py, то мы сюда не дойдем,
+    # но на всякий случай проверим
+    if not config_registry.is_valid():
+        logging.error("Configuration registry is not valid. Using default configurations.")
+        # Создадим резервные конфигурации
+        cli_config = CLIConfig()
+        storage_config = StorageConfig.from_env()
+        minio_config = None
+    else:
+        # Получаем проверенные конфигурации
+        cli_config = config_registry.get_cli_config()
+        storage_config = config_registry.get_storage_config()
+        minio_config = config_registry.get_minio_config()
+        
+        # Логируем информацию о конфигурации
+        logging.debug(f"Storage config: type={storage_config.storage_type}, path={storage_config.local_storage_path}")
+        if minio_config:
+            logging.debug(f"MinIO config: endpoint={minio_config.endpoint}, bucket={minio_config.default_bucket}")
     
     # Инициализируем сервисы для хранения файлов
     storage_service = None
@@ -144,32 +164,26 @@ def create_real_services(format_name: str = 'json'):
     
     try:
         # Настраиваем стратегию хранения файлов в соответствии с конфигурацией
-        if storage_config.storage_type.lower() == "cloud":
+        if storage_config.storage_type.lower() == "cloud" and minio_config:
             try:
-                logging.debug("Attempting to initialize MinIO services...")
-                minio_config = MinioConfig.from_env()
-                logging.debug(f"MinIO Config: Endpoint={minio_config.endpoint}, Bucket={minio_config.default_bucket}, Secure={minio_config.secure}")
-                
+                logging.debug("Initializing MinIO services from registry configuration...")
                 storage_service = MinioService(minio_config)
                 logging.debug("MinioService initialized successfully.")
                 
-                if storage_service is not None:
-                    logging.debug("Storage service is initialized. Creating CloudFileStorageStrategy...")
-                    file_storage = CloudFileStorageStrategy(storage_service, minio_config.default_bucket)
-                    # Установим media_service в None, так как мы не используем этот интерфейс
-                    media_service = None
-                    logging.info("Successfully initialized cloud (MinIO) file storage strategy.")
-                else:
-                    logging.error("Media service object is None after MinioService initialization!")
-                    raise ValueError("Media service is None, cannot create cloud storage strategy")
+                # Создаем стратегию облачного хранения с правильным бакетом
+                logging.debug("Creating CloudFileStorageStrategy with bucket: " + minio_config.default_bucket)
+                file_storage = CloudFileStorageStrategy(storage_service, minio_config.default_bucket)
+                
+                # Установим media_service в None, так как мы не используем этот интерфейс
+                media_service = None
+                logging.info("Successfully initialized cloud (MinIO) file storage strategy.")
             except Exception as cloud_error:
                 logging.warning(f"Failed to initialize cloud storage: {str(cloud_error)}", exc_info=True)
-                # Если произошла ошибка, используем локальную стратегию
-                # Создаем локальную стратегию как запасной вариант
+                # Если произошла ошибка, используем локальную стратегию как запасной вариант
                 file_storage = LocalFileStorageStrategy(storage_config.local_storage_path)
                 logging.info("Using local file storage as fallback after cloud init failure")
         else:
-            logging.info("Storage type is not 'cloud'. Initializing local file storage strategy.")
+            logging.info("Using local file storage strategy (from configuration or as fallback)")
             file_storage = LocalFileStorageStrategy(storage_config.local_storage_path)
             logging.info("Initialized local file storage strategy")
     except Exception as e:

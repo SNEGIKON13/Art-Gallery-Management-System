@@ -8,7 +8,7 @@ from art_gallery.domain import Artwork, ArtworkType
 from art_gallery.repository.interfaces.artwork_repository import IArtworkRepository
 from art_gallery.repository.implementations.minio.base_minio_repository import BaseMinioRepository
 from art_gallery.repository.specifications.base_specification import Specification
-from art_gallery.infrastructure.cloud.minio_config import MinioConfig
+from art_gallery.infrastructure.config.minio_config import MinioConfig
 from art_gallery.infrastructure.cloud.minio_service import MinioService
 
 from serialization.interfaces.ISerializer import ISerializer

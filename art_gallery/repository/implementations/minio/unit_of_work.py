@@ -9,7 +9,7 @@ from art_gallery.repository.interfaces.exhibition_repository import IExhibitionR
 from art_gallery.repository.implementations.minio.user_repository import UserMinioRepository
 from art_gallery.repository.implementations.minio.artwork_repository import ArtworkMinioRepository
 from art_gallery.repository.implementations.minio.exhibition_repository import ExhibitionMinioRepository
-from art_gallery.infrastructure.cloud.minio_config import MinioConfig
+from art_gallery.infrastructure.config.minio_config import MinioConfig
 from art_gallery.infrastructure.factory.serialization_plugin_factory import SerializationPluginFactory
 from art_gallery.infrastructure.cloud.minio_service import MinioService
 
