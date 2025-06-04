@@ -1,0 +1,28 @@
+"""
+Константы и значения по умолчанию для конфигурации
+"""
+
+# StorageConfig defaults
+DEFAULT_STORAGE_TYPE = 'local'
+DEFAULT_LOCAL_STORAGE_PATH = 'media/artworks'
+DEFAULT_ENABLE_IMAGE_THUMBNAILS = True 
+DEFAULT_ENABLE_DIRECT_URLS = True
+DEFAULT_ENABLE_CACHING = False
+DEFAULT_PRESIGNED_URL_EXPIRY = 3600
+
+# MinioConfig defaults
+DEFAULT_MINIO_ENDPOINT = 'localhost:9000'
+DEFAULT_MINIO_SECURE = False
+DEFAULT_MINIO_BUCKET = 'art-gallery'
+DEFAULT_ARTWORK_PREFIX = 'artworks/'
+DEFAULT_USER_PREFIX = 'users/'
+DEFAULT_EXHIBITION_PREFIX = 'exhibitions/'
+
+# CLIConfig defaults
+DEFAULT_MAX_RETRIES = 3
+DEFAULT_TIMEOUT = 30
+DEFAULT_DEBUG_MODE = False
+
+# SerializationConfig defaults
+DEFAULT_SERIALIZATION_FORMAT = 'json'
+SUPPORTED_SERIALIZATION_FORMATS = ['json', 'xml']

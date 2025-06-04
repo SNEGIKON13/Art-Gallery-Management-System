@@ -1,13 +1,15 @@
-from typing import List, Optional, Sequence
+from typing import List, Sequence, Optional
+import os
+import logging
+import json
+import xml.etree.ElementTree as ET
 from art_gallery.ui.interfaces.command import ICommand
-from art_gallery.infrastructure.factory.serialization_plugin_factory import SerializationPluginFactory
 from art_gallery.ui.command_registry import CommandRegistry
 from art_gallery.application.interfaces.user_service import IUserService
 from art_gallery.domain import User
-import os
-import json
-import shutil
+from art_gallery.infrastructure.factory.serialization_plugin_factory import SerializationPluginFactory
 from art_gallery.infrastructure.config.config_manager import ConfigManager
+from art_gallery.infrastructure.config import ConfigRegistry, SerializationConfig
 
 class FormatCommand(ICommand):
     """Команда для переключения формата данных между JSON и XML"""
@@ -18,7 +20,13 @@ class FormatCommand(ICommand):
         self._user_service = user_service
         self._serialization_factory = serialization_factory
         self._config_manager = ConfigManager()
-        self._current_format = self._config_manager.get("format", "json")
+        self._config_registry = ConfigRegistry()
+        # Получаем формат из нового ConfigRegistry, с fallback на старый механизм
+        try:
+            serialization_config = self._config_registry.get_serialization_config()
+            self._current_format = serialization_config.format
+        except Exception:
+            self._current_format = self._config_manager.get("format", "json")
         self._current_user: Optional[User] = None
     
     def get_name(self) -> str:
@@ -122,15 +130,29 @@ class FormatCommand(ICommand):
                 print(f"Format will not be changed.")
                 return
 
-        # Update the current format and save it to the configuration
+        # Update the current format in all configuration systems
         self._current_format = requested_format
+        
+        # 1. Update in old config_manager for backward compatibility
         self._config_manager.set("format", requested_format)
         self._config_manager.save()
         
-        print(f"Data format changed to: {requested_format.upper()}")
+        # 2. Update in .env file for new ConfigRegistry
+        try:
+            success = ConfigRegistry.update_env_variable("SERIALIZATION_FORMAT", requested_format)
+            print(f"Data format changed to: {requested_format.upper()}")
+            if success:
+                print(f"The .env file has been updated with SERIALIZATION_FORMAT={requested_format}")
+            else:
+                print(f"Warning: Could not update .env file. Manual update is required.")
+        except Exception as e:
+            logging.error(f"Error updating .env file: {e}")
+            print(f"Data format changed to: {requested_format.upper()}")
+            print(f"Warning: Could not update .env file. Manual update is required.")
+        
         print("To apply changes, restart the application")
         return
-        
+
     def _export_data(self, source_format: str, target_format: str) -> None:
         """Exports data from one format to another"""
         base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))

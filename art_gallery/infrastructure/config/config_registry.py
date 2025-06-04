@@ -10,6 +10,11 @@ from dataclasses import dataclass, field
 from art_gallery.infrastructure.config.cli_config import CLIConfig
 from art_gallery.infrastructure.config.storage_config import StorageConfig
 from art_gallery.infrastructure.config.minio_config import MinioConfig
+from art_gallery.infrastructure.config.serialization_config import SerializationConfig
+from art_gallery.infrastructure.config.constants import (
+    DEFAULT_SERIALIZATION_FORMAT,
+    SUPPORTED_SERIALIZATION_FORMATS
+)
 
 # Тип для аннотирования любого конфига
 T = TypeVar('T')
@@ -49,6 +54,54 @@ class ConfigRegistry:
     # Единственный экземпляр (Singleton)
     _instance = None
     
+    @staticmethod
+    def update_env_variable(key: str, value: str) -> bool:
+        """
+        Обновляет переменную окружения в .env файле.
+        
+        Args:
+            key: Имя переменной окружения
+            value: Новое значение
+            
+        Returns:
+            bool: True если обновление выполнено успешно
+        """
+        base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+        env_path = os.path.join(base_dir, '.env')
+        
+        if not os.path.exists(env_path):
+            logging.warning(f"Cannot update environment variable: .env file not found at {env_path}")
+            return False
+            
+        try:
+            # Чтение текущего содержимого
+            with open(env_path, 'r', encoding='utf-8') as f:
+                lines = f.readlines()
+            
+            # Обновление или добавление переменной
+            updated = False
+            for i, line in enumerate(lines):
+                if line.strip() and not line.strip().startswith('#') and (line.startswith(f"{key}=") or line.startswith(f"{key} =")):
+                    lines[i] = f"{key}={value}\n"
+                    updated = True
+                    break
+            
+            if not updated:
+                # Добавление новой переменной в конец файла
+                if lines and not lines[-1].endswith('\n'):
+                    lines[-1] += '\n'
+                lines.append(f"{key}={value}\n")
+            
+            # Запись обновлённого содержимого
+            with open(env_path, 'w', encoding='utf-8') as f:
+                f.writelines(lines)
+                
+            logging.debug(f"Environment variable {key} updated in .env file")
+            return True
+        except Exception as e:
+            logging.error(f"Error updating environment variable {key}: {str(e)}")
+            return False
+    
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:
             cls._instance = super(ConfigRegistry, cls).__new__(cls)
@@ -63,6 +116,7 @@ class ConfigRegistry:
         self._cli_config: Optional[CLIConfig] = None
         self._storage_config: Optional[StorageConfig] = None
         self._minio_config: Optional[MinioConfig] = None
+        self._serialization_config: Optional[SerializationConfig] = None
         
         # Словарь с результатами валидации
         self._validation_results: Dict[str, List[str]] = {}
@@ -79,6 +133,15 @@ class ConfigRegistry:
                 default_value="local",
                 validator=lambda x: x in ["local", "cloud"],
                 description="Тип хранилища (local/cloud)",
+            ),
+            
+            # Настройки сериализации
+            "SERIALIZATION_FORMAT": ConfigItem(
+                key="SERIALIZATION_FORMAT",
+                required=False,
+                default_value=DEFAULT_SERIALIZATION_FORMAT,
+                validator=lambda x: x in SUPPORTED_SERIALIZATION_FORMATS,
+                description="Формат сериализации данных (json, xml, yaml, pickle)",
             ),
             "LOCAL_STORAGE_PATH": ConfigItem(
                 key="LOCAL_STORAGE_PATH",
@@ -140,8 +203,9 @@ class ConfigRegistry:
             self._validate_environment_variables()
             
             # Загружаем конфигурации из окружения
-            self._cli_config = CLIConfig()
+            self._cli_config = CLIConfig.from_env()
             self._storage_config = StorageConfig.from_env()
+            self._serialization_config = SerializationConfig.from_env()
             
             # Загружаем MinIO конфигурацию если нужно
             if self._storage_config.storage_type.lower() == "cloud":
@@ -235,12 +299,18 @@ class ConfigRegistry:
         """Получить конфигурацию MinIO (если используется)"""
         return self._minio_config
     
+    def get_serialization_config(self) -> SerializationConfig:
+        """Получить конфигурацию сериализации"""
+        if self._serialization_config is None:
+            raise MissingConfigError("Serialization configuration is not loaded")
+        return self._serialization_config
+    
     def get(self, config_type: Type[T]) -> Optional[T]:
         """
         Получить конфигурацию по её типу.
         
         Args:
-            config_type: Тип конфигурации (CLIConfig, StorageConfig, MinioConfig)
+            config_type: Тип конфигурации (CLIConfig, StorageConfig, MinioConfig, SerializationConfig)
             
         Returns:
             Экземпляр запрошенной конфигурации или None, если не найден
@@ -251,6 +321,8 @@ class ConfigRegistry:
             return self._storage_config  # type: ignore
         elif config_type == MinioConfig:
             return self._minio_config  # type: ignore
+        elif config_type == SerializationConfig:
+            return self._serialization_config  # type: ignore
         else:
             return None
     
@@ -268,6 +340,10 @@ class ConfigRegistry:
         logging.info("Configuration status:")
         logging.info(f"CLI Config: {'Loaded' if self._cli_config else 'Not loaded'}")
         logging.info(f"Storage Config: {'Loaded' if self._storage_config else 'Not loaded'}")
+        logging.info(f"Serialization Config: {'Loaded' if self._serialization_config else 'Not loaded'}")
+        
+        if self._serialization_config:
+            logging.info(f"  Format: {self._serialization_config.format}")
         
         if self._storage_config and self._storage_config.storage_type.lower() == "cloud":
             logging.info(f"MinIO Config: {'Loaded' if self._minio_config else 'Not loaded'}")

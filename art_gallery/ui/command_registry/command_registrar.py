@@ -1,5 +1,6 @@
 from typing import List, Type, Tuple, Dict, Any
 from art_gallery.ui.commands.utility.format_command import FormatCommand
+from art_gallery.ui.commands.utility.convert_data_command import ConvertDataCommand
 from art_gallery.ui.command_registry.command_registry import CommandRegistry
 from art_gallery.ui.services import ServiceCollection
 from art_gallery.ui.interfaces.command import ICommand
@@ -102,6 +103,11 @@ def register_commands(registry: CommandRegistry, services: ServiceCollection, lo
         
         # Serialization Commands
         (FormatCommand, {
+            "command_registry": registry,
+            "user_service": services.user_service,
+            "serialization_factory": SerializationPluginFactory()
+        }),
+        (ConvertDataCommand, {
             "command_registry": registry,
             "user_service": services.user_service,
             "serialization_factory": SerializationPluginFactory()
