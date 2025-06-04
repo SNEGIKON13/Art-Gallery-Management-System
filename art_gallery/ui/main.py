@@ -12,7 +12,6 @@ from art_gallery.ui.command_registry.command_registry import CommandRegistry
 from art_gallery.ui.command_registry.command_parser import CommandParser
 from art_gallery.ui.services import create_real_services, create_mock_services  
 from art_gallery.infrastructure.config import ConfigRegistry, SerializationConfig
-from art_gallery.infrastructure.config.config_manager import ConfigManager
 from art_gallery.infrastructure.logging.interfaces.logger import LogLevel
 from art_gallery.ui.command_registry.command_registrar import register_commands
 
@@ -29,7 +28,6 @@ class Application:
     def __init__(self, args: Optional[argparse.Namespace] = None):
         # Инициализация конфигурации
         self.config = CLIConfig()
-        self.config_manager = ConfigManager()
         self.config_registry = ConfigRegistry()
         
         # Парсинг аргументов командной строки, если не переданы
@@ -43,28 +41,24 @@ class Application:
         # Определение формата данных с приоритетом:
         # 1. Аргументы командной строки
         # 2. ConfigRegistry (.env файл)
-        # 3. Старый ConfigManager (обратная совместимость)
         if args.format:
             format_name = args.format
         else:
             try:
-                # Попытаться загрузить из нового ConfigRegistry
+                # Загружаем из ConfigRegistry (.env файл)
                 format_name = self.config_registry.get_serialization_config().format
-            except Exception:
-                # Если не получилось, использовать старый ConfigManager
-                format_name = self.config_manager.get("format", "json")
+            except Exception as e:
+                logging.warning(f"Ошибка при чтении формата из ConfigRegistry: {e}")
+                # Используем значение по умолчанию
+                format_name = "json"
         
-        # Сохранение формата в обе системы конфигурации, если он задан через аргументы
+        # Сохранение формата в .env файл, если он задан через аргументы
         if args.format:
-            # Обновляем старый ConfigManager для совместимости
-            self.config_manager.set("format", args.format)
-            self.config_manager.save()
-            
-            # Обновляем .env файл для ConfigRegistry
+            # Обновляем .env файл через ConfigRegistry
             try:
-                self._update_env_file("SERIALIZATION_FORMAT", args.format)
-            except Exception:
-                pass  # Игнорируем ошибки при обновлении .env
+                ConfigRegistry.update_env_variable("SERIALIZATION_FORMAT", args.format)
+            except Exception as e:
+                logging.warning(f"Не удалось обновить переменную SERIALIZATION_FORMAT в .env: {e}")
             
         # Инициализация логгеров
         app_logger = FilteredLogger(
@@ -95,29 +89,7 @@ class Application:
         # Регистрация команд
         register_commands(self.command_registry, self.services, self.logger)
 
-    def _update_env_file(self, key: str, value: str) -> None:
-        """Обновляет значение в файле .env"""
-        base_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-        env_path = os.path.join(base_dir, '.env')
-        
-        if os.path.exists(env_path):
-            with open(env_path, 'r', encoding='utf-8') as f:
-                lines = f.readlines()
-            
-            updated = False
-            for i, line in enumerate(lines):
-                if line.startswith(f"{key}=") or line.startswith(f"{key} ="):
-                    lines[i] = f"{key}={value}\n"
-                    updated = True
-                    break
-            
-            if not updated:
-                if lines and not lines[-1].endswith('\n'):
-                    lines[-1] += '\n'
-                lines.append(f"{key}={value}\n")
-            
-            with open(env_path, 'w', encoding='utf-8') as f:
-                f.writelines(lines)
+    # Метод _update_env_file удален, так как теперь используется ConfigRegistry.update_env_variable
     
     def run(self) -> None:
         self.logger.info("Application started")

@@ -8,6 +8,7 @@ from art_gallery.exceptions.command_exceptions import CommandExecutionError
 
 
 class UploadArtworkImageCommand(BaseCommand):
+    """Command to upload an image for an existing artwork. (Admin only)"""
     def __init__(self, artwork_service: IArtworkService, user_service):
         super().__init__(user_service)
         self._artwork_service = artwork_service
@@ -23,22 +24,22 @@ class UploadArtworkImageCommand(BaseCommand):
             artwork_id = int(args[0])
             image_path = args[1]
             
-            # Проверяем, существует ли произведение искусства
+            # Check if the artwork exists
             artwork = self._artwork_service.get_artwork(artwork_id)
             if not artwork:
                 raise CommandExecutionError(f"Artwork with ID {artwork_id} not found")
                 
-            # Проверяем существование файла изображения
+            # Check if the image file exists
             if not os.path.exists(image_path):
                 raise CommandExecutionError(f"Image file not found: {image_path}")
                 
-            # Считываем файл изображения
+            # Read the image file
             try:
                 with open(image_path, 'rb') as image_file:
                     image_data = image_file.read()
                     filename = os.path.basename(image_path)
                     
-                    # Загружаем изображение
+                    # Upload the image
                     artwork = self._artwork_service.update_artwork_image(
                         artwork_id, 
                         image_data, 

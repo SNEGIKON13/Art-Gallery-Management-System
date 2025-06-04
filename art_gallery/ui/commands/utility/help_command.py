@@ -36,7 +36,7 @@ class HelpCommand(BaseCommand):
             "Utilities": ["format", "stats", "convert_data"]
         }
         
-        # Команды, требующие прав администратора
+        # Commands requiring administrator privileges
         admin_commands = [
             # Artworks
             "add_artwork", "update_artwork", "delete_artwork", "upload_image", 
@@ -70,7 +70,7 @@ class HelpCommand(BaseCommand):
                 help_text += f"\n== {category} ==\n"
                 for cmd_name in category_commands:
                     cmd_info = all_commands[cmd_name]
-                    # Добавляем пометку (admin only) для команд администратора
+                    # Add (admin only) suffix for admin commands
                     admin_suffix = " (admin only)" if cmd_name in admin_commands else ""
                     help_text += (f"{cmd_info['name']}{admin_suffix} - {cmd_info['description']}\n"
                                 f"Usage: {cmd_info['usage']}\n\n")
@@ -83,7 +83,7 @@ class HelpCommand(BaseCommand):
             help_text += "\n== Other commands ==\n"
             for cmd_name in uncategorized:
                 cmd_info = all_commands[cmd_name]
-                # Добавляем пометку (admin only) для команд администратора
+                # Add (admin only) suffix for admin commands
                 admin_suffix = " (admin only)" if cmd_name in admin_commands else ""
                 help_text += (f"{cmd_info['name']}{admin_suffix} - {cmd_info['description']}\n"
                             f"Usage: {cmd_info['usage']}\n\n")

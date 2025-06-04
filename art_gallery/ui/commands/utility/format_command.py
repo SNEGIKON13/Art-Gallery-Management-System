@@ -1,32 +1,32 @@
 from typing import List, Sequence, Optional
 import os
 import logging
-import json
 import xml.etree.ElementTree as ET
+from art_gallery.ui.decorators import admin_only
 from art_gallery.ui.interfaces.command import ICommand
 from art_gallery.ui.command_registry import CommandRegistry
 from art_gallery.application.interfaces.user_service import IUserService
 from art_gallery.domain import User
 from art_gallery.infrastructure.factory.serialization_plugin_factory import SerializationPluginFactory
-from art_gallery.infrastructure.config.config_manager import ConfigManager
 from art_gallery.infrastructure.config import ConfigRegistry, SerializationConfig
 
+
 class FormatCommand(ICommand):
-    """Команда для переключения формата данных между JSON и XML"""
+    """Command to switch the data format between JSON and XML. (Admin only)"""
     
     def __init__(self, command_registry: CommandRegistry, user_service: IUserService, 
                  serialization_factory: SerializationPluginFactory):
         self._command_registry = command_registry
         self._user_service = user_service
         self._serialization_factory = serialization_factory
-        self._config_manager = ConfigManager()
         self._config_registry = ConfigRegistry()
-        # Получаем формат из нового ConfigRegistry, с fallback на старый механизм
+        # Get format from ConfigRegistry (.env)
         try:
             serialization_config = self._config_registry.get_serialization_config()
             self._current_format = serialization_config.format
-        except Exception:
-            self._current_format = self._config_manager.get("format", "json")
+        except Exception as e:
+            logging.warning(f"Error reading format from ConfigRegistry: {e}")
+            self._current_format = "json"  # Default value
         self._current_user: Optional[User] = None
     
     def get_name(self) -> str:
@@ -43,13 +43,14 @@ class FormatCommand(ICommand):
         
     def get_help(self) -> str:
         return (
-            "Command for switching data format between JSON and XML.\n"
+            "(Admin only) Command for switching data format between JSON and XML.\n"
             "Usage: format [json|xml]\n"
             "  format - show current data format\n"
             "  format json - switch to JSON format\n"
             "  format xml - switch to XML format"
         )
-        
+
+    @admin_only  
     def execute(self, args: Sequence[str]) -> None:
         available_formats = self._serialization_factory.get_supported_formats()
         
@@ -106,55 +107,52 @@ class FormatCommand(ICommand):
             os.path.exists(new_exhibitions_file)
         ]
         
-        # If files for the new format already exist, ask the user if they want to switch to them
+        # If files for the new format already exist, inform the user how to switch
         if any(new_files_exist):
             print(f"Existing data files found in {requested_format.upper()} format.")
-            print(f"To switch to this format, restart the application with the --format {requested_format} parameter")
+            print(f"To switch to this format, restart the application with the --format {requested_format} parameter.")
             return
         
         # If files for the current format exist, but files for the new format don't exist,
-        # recommend that the user export the data
+        # recommend restarting with the new format to trigger conversion or inform about data unavailability.
         if any(old_files_exist) and not any(new_files_exist):
-            print(f"Data in {self._current_format.upper()} format will be unavailable after switching to {requested_format.upper()}.")
-            print(f"To correctly switch formats and preserve data, restart the application")
-            print(f"with the --format {requested_format} parameter")
-            return
-        
-        # Offer to export the data
+            print(f"Data in {self._current_format.upper()} format might become unavailable after switching to {requested_format.upper()} without conversion.")
+            print(f"To correctly switch formats and preserve data, consider exporting data or restarting the application")
+            print(f"with the --format {requested_format} parameter, which might trigger data conversion if implemented.")
+            # Depending on application logic, direct conversion might be preferred here.
+            # For now, we just inform and let the .env update proceed.
+
+        # Attempt to export the data if old files exist
         if any(old_files_exist):
             try:
                 self._export_data(self._current_format, requested_format)
-                print(f"Data successfully exported from {self._current_format.upper()} to {requested_format.upper()}")
+                print(f"Data successfully exported from {self._current_format.upper()} to {requested_format.upper()}.")
             except Exception as e:
+                logging.error(f"Error exporting data: {e}", exc_info=True)
                 print(f"Error exporting data: {e}")
-                print(f"Format will not be changed.")
+                print(f"Format will not be changed. Please check logs for details.")
                 return
 
-        # Update the current format in all configuration systems
+        # Update the current format in the application state and .env file
         self._current_format = requested_format
         
-        # 1. Update in old config_manager for backward compatibility
-        self._config_manager.set("format", requested_format)
-        self._config_manager.save()
-        
-        # 2. Update in .env file for new ConfigRegistry
         try:
             success = ConfigRegistry.update_env_variable("SERIALIZATION_FORMAT", requested_format)
-            print(f"Data format changed to: {requested_format.upper()}")
+            print(f"Data format setting changed to: {requested_format.upper()}.")
             if success:
-                print(f"The .env file has been updated with SERIALIZATION_FORMAT={requested_format}")
+                print(f"The .env file has been updated: SERIALIZATION_FORMAT={requested_format}.")
             else:
-                print(f"Warning: Could not update .env file. Manual update is required.")
+                print(f"Warning: Could not update .env file. Manual update might be required.")
         except Exception as e:
-            logging.error(f"Error updating .env file: {e}")
-            print(f"Data format changed to: {requested_format.upper()}")
-            print(f"Warning: Could not update .env file. Manual update is required.")
+            logging.error(f"Error updating .env file: {e}", exc_info=True)
+            print(f"Data format setting changed to: {requested_format.upper()}.")
+            print(f"Warning: Could not update .env file. Manual update might be required. Error: {e}")
         
-        print("To apply changes, restart the application")
+        print("To apply changes fully, please restart the application.")
         return
 
     def _export_data(self, source_format: str, target_format: str) -> None:
-        """Exports data from one format to another"""
+        """Exports data from one format to another."""
         base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
         data_dir = os.path.join(base_dir, 'data')
         

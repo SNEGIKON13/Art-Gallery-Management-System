@@ -1,6 +1,7 @@
 from typing import List, Optional, Sequence
 import os
 import logging
+from art_gallery.ui.decorators import admin_only
 from art_gallery.ui.interfaces.command import ICommand
 from art_gallery.ui.command_registry import CommandRegistry
 from art_gallery.application.interfaces.user_service import IUserService
@@ -9,7 +10,7 @@ from art_gallery.infrastructure.factory.serialization_plugin_factory import Seri
 from art_gallery.infrastructure.config import ConfigRegistry
 
 class ConvertDataCommand(ICommand):
-    """Команда для конвертации данных между различными форматами (json, xml)"""
+    """Command for converting data files between different formats (json, xml). (Admin only)"""
     
     def __init__(self, command_registry: CommandRegistry, user_service: IUserService, 
                  serialization_factory: SerializationPluginFactory):
@@ -33,7 +34,7 @@ class ConvertDataCommand(ICommand):
         
     def get_help(self) -> str:
         return (
-            "Command for converting data files between different formats.\n"
+            "(Admin only) Command for converting data files between different formats.\n"
             "Usage: convert_data <source_format> <target_format>\n"
             "Example: convert_data json xml - converts data from JSON to XML\n"
             "\n"
@@ -41,7 +42,8 @@ class ConvertDataCommand(ICommand):
             "It only converts the data files.\n"
             "To change the active format, use the 'format' command."
         )
-        
+    
+    @admin_only
     def execute(self, args: Sequence[str]) -> None:
         available_formats = self._serialization_factory.get_supported_formats()
         
@@ -86,22 +88,22 @@ class ConvertDataCommand(ICommand):
             
     def _convert_data(self, source_format: str, target_format: str) -> bool:
         """
-        Конвертирует данные из одного формата в другой.
+        Converts data from one format to another.
         
         Args:
-            source_format: исходный формат (json, xml)
-            target_format: целевой формат (json, xml)
+            source_format: source format (json, xml)
+            target_format: target format (json, xml)
             
         Returns:
-            bool: True если конвертация выполнена успешно
+            bool: True if conversion was successful
         """
-        # Фиксируем неправильный путь: надо подняться на 5 уровней, а не на 4
+        # Correcting the path: need to go up 5 levels, not 4
         base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
         data_dir = os.path.join(base_dir, 'data')
         print(f"Base directory: {base_dir}")
         print(f"Data directory: {data_dir}")
         
-        # Проверяем существование директорий
+        # Check if directories exist
         source_dir = os.path.join(data_dir, source_format)
         target_dir = os.path.join(data_dir, target_format)
         
@@ -111,13 +113,13 @@ class ConvertDataCommand(ICommand):
             
         os.makedirs(target_dir, exist_ok=True)
         
-        # Список сущностей для конвертации
+        # List of entities to convert
         entities = ['users', 'artworks', 'exhibitions']
         
-        # Счетчик успешных конвертаций
+        # Counter for successful conversions
         converted_count = 0
         
-        # Создаем сериализаторы/десериализаторы
+        # Create serializers/deserializers
         source_deserializer = self._serialization_factory.get_deserializer(source_format)
         target_serializer = self._serialization_factory.get_serializer(target_format)
         
@@ -125,7 +127,7 @@ class ConvertDataCommand(ICommand):
             source_file = os.path.join(source_dir, f'{entity}.{source_format}')
             target_file = os.path.join(target_dir, f'{entity}.{target_format}')
             
-            # Проверяем существование исходного файла и не пуст ли он
+            # Check if the source file exists and is not empty
             print(f"Checking source file: {source_file}")
             file_exists = os.path.exists(source_file)
             print(f"  - File exists: {file_exists}")
@@ -136,22 +138,22 @@ class ConvertDataCommand(ICommand):
                 
                 if file_size > 0:
                     try:
-                        # Чтение данных
+                        # Read data
                         with open(source_file, 'r', encoding='utf-8') as f:
                             file_content = f.read()
                             print(f"  - Successfully read file content ({len(file_content)} chars)")
                             
-                        # Десериализация данных
+                        # Deserialize data
                         data = source_deserializer.deserialize(file_content)
                         print(f"  - Successfully deserialized data")
                         if isinstance(data, list):
                             print(f"  - Data contains {len(data)} items")
                         
-                        # Сериализация в целевой формат
+                        # Serialize to target format
                         serialized_data = target_serializer.serialize(data)
                         print(f"  - Successfully serialized to {target_format} format")
                         
-                        # Запись в новом формате
+                        # Write in new format
                         with open(target_file, 'w', encoding='utf-8') as f:
                             f.write(serialized_data)
                             print(f"  - Successfully wrote data to {target_file}")
