@@ -1,4 +1,4 @@
-from typing import Sequence
+from typing import Sequence, Optional
 from art_gallery.ui.commands.base_command import BaseCommand
 from art_gallery.application.interfaces.exhibition_service import IExhibitionService
 from art_gallery.application.interfaces.artwork_service import IArtworkService
@@ -11,7 +11,7 @@ class GetExhibitionCommand(BaseCommand):
         self._exhibition_service = exhibition_service
         self._artwork_service = artwork_service
 
-    def execute(self, args: Sequence[str]) -> None:
+    def execute(self, args: Sequence[str]) -> Optional[str]:
         if len(args) != 1:
             raise MissingRequiredArgumentError("Required: exhibition_id")
         
@@ -19,26 +19,31 @@ class GetExhibitionCommand(BaseCommand):
             exhibition_id = int(args[0])
             exhibition = self._exhibition_service.get_exhibition(exhibition_id)
             if exhibition:
-                print(f"\nExhibition Details:")
-                print(f"ID: {exhibition.id}")
-                print(f"Title: {exhibition.title}")
-                print(f"Description: {exhibition.description}")
-                print(f"Start Date: {exhibition.start_date}")
-                print(f"End Date: {exhibition.end_date}")
-                print(f"Max Capacity: {exhibition.max_capacity}")
+                output_lines = []
+                output_lines.append(f"Exhibition Details:") # Removed leading \n, main.py handles spacing
+                output_lines.append(f"ID: {exhibition.id}")
+                output_lines.append(f"Title: {exhibition.title}")
+                output_lines.append(f"Description: {exhibition.description}")
+                output_lines.append(f"Start Date: {exhibition.start_date}")
+                output_lines.append(f"End Date: {exhibition.end_date}")
+                output_lines.append(f"Max Capacity: {exhibition.max_capacity if exhibition.max_capacity is not None else 'N/A'}")
                 
                 if exhibition.artwork_ids:
-                    print("\nArtworks in this exhibition:")
-                    artwork_ids = []
-                    for artwork_id in exhibition.artwork_ids:
-                        artwork = self._artwork_service.get_artwork(artwork_id)
+                    output_lines.append("\nArtworks in this exhibition:")
+                    artwork_display_ids = []
+                    for artwork_id_in_exh in exhibition.artwork_ids:
+                        artwork = self._artwork_service.get_artwork(artwork_id_in_exh)
                         if artwork:
-                            print(f"  - [{artwork.id}] {artwork.title} by {artwork.artist}")
-                            artwork_ids.append(str(artwork.id))
-                    print(f"\nArtwork IDs for reference: {', '.join(artwork_ids)}")
-                    print("\nUse 'get_artwork <id>' to view details or 'open_image <id>' to view image")
+                            output_lines.append(f"  - [{artwork.id}] {artwork.title} by {artwork.artist}")
+                            artwork_display_ids.append(str(artwork.id))
+                    if artwork_display_ids:
+                        output_lines.append(f"\nArtwork IDs for reference: {', '.join(artwork_display_ids)}")
+                        output_lines.append("\nUse 'get_artwork <id>' to view details or 'open_image <id>' to view image")
+                    else:
+                        output_lines.append("\nArtworks listed for this exhibition could not be found.")
                 else:
-                    print("\nNo artworks in this exhibition")
+                    output_lines.append("\nNo artworks in this exhibition")
+                return "\n".join(output_lines)
             else:
                 raise CommandExecutionError(f"Exhibition with ID {exhibition_id} not found")
         except ValueError:

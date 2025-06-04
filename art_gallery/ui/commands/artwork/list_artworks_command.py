@@ -7,26 +7,30 @@ class ListArtworksCommand(BaseCommand):
         super().__init__(user_service)
         self._artwork_service = artwork_service
 
-    def execute(self, args: Sequence[str]) -> None:
+    def execute(self, args: Sequence[str]) -> str:  # Изменяем возвращаемый тип на str
         artworks = self._artwork_service.get_all_artworks()
         
         if not artworks:
-            print("The gallery is empty. No artworks found.")
-            return
+            return "The gallery is empty. No artworks found."
             
-        print(f"Total artworks: {len(artworks)}")
-        print("-" * 80)
+        output_lines = []
+        separator = "-" * 60  # Стандартный разделитель
+        
+        output_lines.append(f"Total artworks: {len(artworks)}")
+        output_lines.append(separator)
         
         # Sort by ID for easier viewing
         sorted_artworks = sorted(artworks, key=lambda a: a.id)
         
         for artwork in sorted_artworks:
-            print(f"ID: {artwork.id}")
-            print(f"Title: {artwork.title}")
-            print(f"Artist: {artwork.artist}")
-            print(f"Year: {artwork.year}")
-            print(f"Type: {artwork.type.value}")
-            print("-" * 50)
+            output_lines.append(f"ID: {artwork.id}")
+            output_lines.append(f"Title: {artwork.title}")
+            output_lines.append(f"Artist: {artwork.artist}")
+            output_lines.append(f"Year: {artwork.year}")
+            output_lines.append(f"Type: {artwork.type.value}")
+            output_lines.append(separator)
+            
+        return "\n".join(output_lines)
             
     def get_name(self) -> str:
         return "list_artworks"

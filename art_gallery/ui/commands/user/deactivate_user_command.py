@@ -8,19 +8,19 @@ from art_gallery.exceptions.validation_exceptions import InvalidInputError
 
 class DeactivateUserCommand(BaseCommand):
     def get_name(self) -> str:
-        return "deactivate-user"
+        return "deactivate_user"
 
     def get_description(self) -> str:
         return "Deactivate user account (admin only)"
 
     def get_usage(self) -> str:
-        return "deactivate-user <user_id>"
+        return "deactivate_user <user_id>"
 
     def get_help(self) -> str:
         return ("Deactivates a user account by ID.\n"
                 "This command is only available to administrators.\n"
                 "Deactivated users cannot log in.\n"
-                "Usage: deactivate-user <user_id>")
+                "Usage: deactivate_user <user_id>")
 
     def execute(self, args: Sequence[str]) -> None:
         if not self._current_user or not self._current_user.is_admin():

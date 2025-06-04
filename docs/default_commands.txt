@@ -1,0 +1,45 @@
+add_artwork "Apotheosis of War" "Vasily Vereshchagin" 1871 painting "An anti-war painting depicting a pyramid of human skulls in a desert landscape. A stark reminder of war's consequences." art_gallery/media/paintings/apotheosis.jpg
+add_artwork "Black Square" "Kazimir Malevich" 1915 painting "A groundbreaking avant-garde artwork featuring a black square on white background, representing the zero point of painting." art_gallery/media/paintings/black_square.jpg
+add_artwork "Morning in a Pine Forest" "Ivan Shishkin" 1889 painting "A naturalistic scene showing four bear cubs playing in a misty pine forest, one of Russia's most famous landscape paintings." art_gallery/media/paintings/morning_in_a_pine_forest.jpg
+add_artwork "Portrait of Lopukhina" "Vladimir Borovikovsky" 1797 painting "A romantic portrait of Maria Lopukhina, representing the beauty ideals of Russian nobility in the 18th century." art_gallery/media/paintings/portrait_of_lopukhina.jpg
+add_artwork "Ship Grove" "Ivan Aivazovsky" 1898 painting "A maritime landscape showcasing Aivazovsky's mastery of seascapes and atmospheric effects." art_gallery/media/paintings/ship_grove.jpg
+add_artwork "The Starry Night" "Vincent van Gogh" 1889 painting "An iconic post-impressionist painting depicting a night scene with swirling clouds, bright stars, and a crescent moon over a village." art_gallery/media/paintings/starry_night.jpg
+add_artwork "The Appearance of Christ to the People" "Alexander Ivanov" 1857 painting "A monumental religious painting depicting John the Baptist's revelation of Christ to the people, took 20 years to complete." art_gallery/media/paintings/the_appearance_of_christ_to_the_people.jpg
+add_artwork "The Unknown Woman" "Ivan Kramskoi" 1883 painting "A mysterious portrait of an elegant unknown woman in a carriage, symbolizing the allure and sophistication of urban life in 19th century Russia." art_gallery/media/paintings/unknown.jpg
+add_artwork "A Moment of Peace" "Shane Gross" 2024 photograph "Grand Prize winning photograph capturing Western Toad tadpoles in a Vancouver lake, Canada. The image titled 'Swarm of Life' demonstrates the incredible biodiversity of wetland ecosystems." art_gallery/media/photographs/a_moment_of_peace.jpg
+add_artwork "Among the Trees" "Thomas Peschak" 2024 photograph "Award-winning photo story category winner showing Amazon river dolphins swimming through flooded forests, capturing their mysterious behavior in their natural habitat." art_gallery/media/photographs/among_the_trees.jpg
+add_artwork "Hope for Nina" "Yannico Kelk" 2024 photograph "Impact Award winning photograph of the Greater Bilby (Nina), showcasing this rare Australian marsupial in its natural environment, highlighting wildlife conservation efforts." art_gallery/media/photographs/hope_for_nina.jpg
+add_artwork "Lynx Border" "Igor Metelsky" 2024 photograph "Award-winning camera trap photograph of a lynx in its natural habitat, captured in the Lazovsky District of Primorsky Krai, Russia. Winner in the 'Animals in their Environment' category." art_gallery/media/photographs/lynx_border.jpg
+add_artwork "Under Water" "Matthew Smith" 2024 photograph "Winning photograph in the 'Underwater' category featuring a curious leopard seal in Antarctica, capturing the unique marine life of the polar regions." art_gallery/media/photographs/under_water.jpg
+add_artwork "Christ's Entry into Jerusalem" "Giovanni Della Robbia" 1521 sculpture "A masterful glazed terracotta relief sculpture depicting Christ's triumphant entry into Jerusalem. Part of the Renaissance tradition of religious architectural decoration." art_gallery/media/sculptures/christs_entry_into_jerusalem.jpg
+add_artwork "Leda and the Swan" "Bartolomeo Ammannati" 1535 sculpture "A marble sculpture depicting the mythological scene of Zeus transformed into a swan approaching Leda. This Renaissance masterpiece demonstrates the period's fascination with classical mythology." art_gallery/media/sculptures/leda_and_the_swan.jpg
+add_artwork "The Abduction of Ganymede" "Benvenuto Cellini" 1547 sculpture "A bronze sculpture depicting the mythological scene of Zeus, in the form of an eagle, carrying away the young Ganymede. This work exemplifies Mannerist sculpture." art_gallery/media/sculptures/the_abduction_of_ganymede.jpg
+add_artwork "The Dying Gladiator" "Unknown Roman Artist" 230 sculpture "Also known as the Dying Gaul, this ancient Roman marble copy of a lost Hellenistic bronze original depicts a wounded Celtic warrior in his final moments." art_gallery/media/sculptures/the_dying_gladiator.jpg
+
+
+
+create_exhibition "Russian Masters: 19th Century" "A collection of iconic Russian paintings from the 19th century." 2025-06-10 2025-07-10 None
+
+
+add_artwork_to_exhibition 1 1
+add_artwork_to_exhibition 1 3
+add_artwork_to_exhibition 1 4
+add_artwork_to_exhibition 1 5
+add_artwork_to_exhibition 1 8
+
+
+create_exhibition "World Photography Awards 2024" "Award-winning wildlife and landscape photographs from the 2024 international competition." 2025-07-15 2025-08-15 None
+
+add_artwork_to_exhibition 2 9
+add_artwork_to_exhibition 2 10
+add_artwork_to_exhibition 2 11
+add_artwork_to_exhibition 2 12
+add_artwork_to_exhibition 2 13
+
+
+create_exhibition "Myth and Reality: European Sculpture" "Masterpieces of European sculpture from antiquity to the Renaissance." 2025-08-20 2025-09-20 None
+
+add_artwork_to_exhibition 3 14
+add_artwork_to_exhibition 3 15
+add_artwork_to_exhibition 3 16
+add_artwork_to_exhibition 3 17

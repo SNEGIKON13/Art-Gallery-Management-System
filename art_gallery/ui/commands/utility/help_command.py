@@ -30,7 +30,7 @@ class HelpCommand(BaseCommand):
         # Command categories in English
         command_categories = {
             "General": ["help", "exit"],
-            "Users": ["login", "logout", "register", "change_password", "deactivate-user", "whoami", "list_users", "get_user"],
+            "Users": ["login", "logout", "register", "change_password", "deactivate_user", "whoami", "list_users", "get_user"],
             "Artworks": ["add_artwork", "get_artwork", "update_artwork", "delete_artwork", "open_image", "list_artworks", "search_artworks", "upload_image"],
             "Exhibitions": ["create_exhibition", "get_exhibition", "update_exhibition", "delete_exhibition", "list_exhibitions", "add_artwork_to_exhibition", "remove_artwork_from_exhibition"],
             "Utilities": ["format", "stats", "convert_data"]
@@ -41,12 +41,12 @@ class HelpCommand(BaseCommand):
             # Artworks
             "add_artwork", "update_artwork", "delete_artwork", "upload_image", 
             # Users
-            "deactivate-user", "list_users", "get_user", 
+            "deactivate_user", "list_users", "get_user", 
             # Exhibitions
             "create_exhibition", "update_exhibition", "delete_exhibition",
             "add_artwork_to_exhibition", "remove_artwork_from_exhibition",
             # Utilities
-            "format", "stats", "convert_data"
+            "format", "convert_data"
         ]
         
         # Create a dictionary for all commands

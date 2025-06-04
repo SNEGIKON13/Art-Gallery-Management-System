@@ -1,4 +1,4 @@
-from typing import Sequence, List
+from typing import Sequence, List, Optional
 from art_gallery.ui.commands.base_command import BaseCommand
 from art_gallery.application.interfaces.artwork_service import IArtworkService
 from art_gallery.domain.artwork import Artwork, ArtworkType
@@ -9,7 +9,7 @@ class SearchArtworksCommand(BaseCommand):
         super().__init__(user_service)
         self._artwork_service = artwork_service
 
-    def execute(self, args: Sequence[str]) -> None:
+    def execute(self, args: Sequence[str]) -> Optional[str]:
         if not args:
             raise ValidationError("No search query provided")
         
@@ -61,40 +61,41 @@ class SearchArtworksCommand(BaseCommand):
                     query in str(artwork.year)):
                     results.append(artwork)
         
-        self._display_results(results)
+        if not results:
+            return "No results found for your query."
+
+        output_lines = []
+        output_lines.append(f"Artworks found: {len(results)}")
+        output_lines.append("---") # General separator
+
+        # Sort by ID for easier viewing
+        sorted_artworks = sorted(results, key=lambda a: a.id)
+
+        for i, artwork in enumerate(sorted_artworks):
+            output_lines.append(f"ID: {artwork.id}")
+            output_lines.append(f"Title: {artwork.title}")
+            output_lines.append(f"Artist: {artwork.artist}")
+            output_lines.append(f"Year: {artwork.year}")
+            output_lines.append(f"Type: {artwork.type.value}")
+            if artwork.description:
+                 output_lines.append(f"Description: {artwork.description}")
+            if i < len(sorted_artworks) - 1:
+                output_lines.append("---") # Separator between artworks
+        
+        return "\n".join(output_lines)
     
     def _parse_artwork_type(self, type_str: str) -> ArtworkType:
         """Converts string to artwork type"""
         type_str = type_str.lower()
         
-        if type_str in ('painting', 'painting'):
+        if type_str == 'painting': # Simplified condition
             return ArtworkType.PAINTING
-        elif type_str in ('sculpture', 'sculpture'):
+        elif type_str == 'sculpture': # Simplified condition
             return ArtworkType.SCULPTURE
-        elif type_str in ('photograph', 'photograph'):
+        elif type_str == 'photograph': # Simplified condition
             return ArtworkType.PHOTOGRAPH
         else:
             raise ValueError(f"Unknown artwork type: {type_str}")
-    
-    def _display_results(self, artworks: List[Artwork]) -> None:
-        """Displays search results"""
-        if not artworks:
-            print("No results found for your query.")
-            return
-            
-        print(f"Artworks found: {len(artworks)}")
-        print("-" * 80)
-        
-        # Sort by ID for easier viewing
-        sorted_artworks = sorted(artworks, key=lambda a: a.id)
-        
-        for artwork in sorted_artworks:
-            print(f"ID: {artwork.id}")
-            print(f"Title: {artwork.title}")
-            print(f"Artist: {artwork.artist}")
-            print(f"Year: {artwork.year}")
-            print(f"Type: {artwork.type.value}")
-            print("-" * 50)
             
     def get_name(self) -> str:
         return "search_artworks"

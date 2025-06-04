@@ -4,7 +4,7 @@ from art_gallery.domain import User  # добавим импорт
 
 class ICommand(ABC):
     @abstractmethod
-    def execute(self, args: Sequence[str]) -> None:
+    def execute(self, args: Sequence[str]) -> Optional[str]: # Изменено на Optional[str]
         """Выполнить команду с заданными аргументами"""
         pass
 

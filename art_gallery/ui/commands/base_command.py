@@ -17,6 +17,6 @@ class BaseCommand(ICommand, ABC):
                 command._current_user = user
 
     @abstractmethod
-    def execute(self, args: Sequence[str]) -> None:
+    def execute(self, args: Sequence[str]) -> Optional[str]: # Изменено на Optional[str]
         """Execute command with given arguments"""
         pass

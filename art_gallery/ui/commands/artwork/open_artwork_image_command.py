@@ -1,5 +1,5 @@
 import logging
-from typing import Sequence
+from typing import Sequence, Optional
 from art_gallery.ui.commands.base_command import BaseCommand
 from art_gallery.application.interfaces.artwork_service import IArtworkService
 from art_gallery.ui.utils.image_viewer import ImageViewer
@@ -14,7 +14,7 @@ class OpenArtworkImageCommand(BaseCommand):
         self._image_viewer = ImageViewer(cli_config)
         self._logger = logging.getLogger(__name__)
 
-    def execute(self, args: Sequence[str]) -> None:
+    def execute(self, args: Sequence[str]) -> Optional[str]:
         if len(args) < 1:
             raise InvalidInputError("Required: artwork_id [--web]")
         
@@ -39,12 +39,20 @@ class OpenArtworkImageCommand(BaseCommand):
                 raise CommandExecutionError(f"Artwork {artwork_id} has no image")
             
             # Открываем изображение через просмотрщик
-            error = self._image_viewer.open_image(image_url, use_web)
-            if error:
-                raise CommandExecutionError(error)
-                
-            print(f"Opening image for artwork {artwork_id}" + (" in web browser" if use_web else ""))
-            print(f"Image URL: {image_url}")
+            viewer_message = self._image_viewer.open_image(image_url, use_web)
+
+            # Check if viewer_message indicates an error
+            if viewer_message and (
+                "error" in viewer_message.lower() or 
+                "failed" in viewer_message.lower() or 
+                "not found" in viewer_message.lower() or 
+                "unsupported" in viewer_message.lower() or
+                "could not" in viewer_message.lower()
+            ):
+                raise CommandExecutionError(viewer_message)
+            
+            # If no error, viewer_message contains the success message to be printed by the main loop
+            return viewer_message
             
         except ValueError:
             raise InvalidInputError("Artwork ID must be a number")

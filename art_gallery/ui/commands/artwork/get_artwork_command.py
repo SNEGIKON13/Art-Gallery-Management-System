@@ -1,4 +1,4 @@
-from typing import Sequence
+from typing import Sequence, Optional
 from art_gallery.ui.commands.base_command import BaseCommand
 from art_gallery.application.interfaces.artwork_service import IArtworkService
 from art_gallery.exceptions.validation_exceptions import InvalidInputError
@@ -8,7 +8,7 @@ class GetArtworkCommand(BaseCommand):
         super().__init__(user_service)
         self._artwork_service = artwork_service
 
-    def execute(self, args: Sequence[str]) -> None:
+    def execute(self, args: Sequence[str]) -> Optional[str]:
         if len(args) != 1:
             raise InvalidInputError("Required: artwork_id")
         
@@ -16,16 +16,18 @@ class GetArtworkCommand(BaseCommand):
             artwork_id = int(args[0])
             artwork = self._artwork_service.get_artwork(artwork_id)
             if artwork:
-                print(f"ID: {artwork.id}")
-                print(f"Title: {artwork.title}")
-                print(f"Artist: {artwork.artist}")
-                print(f"Year: {artwork.year}")
-                print(f"Type: {artwork.type.value}")
-                print(f"Description: {artwork.description}")
+                output_lines = []
+                output_lines.append(f"ID: {artwork.id}")
+                output_lines.append(f"Title: {artwork.title}")
+                output_lines.append(f"Artist: {artwork.artist}")
+                output_lines.append(f"Year: {artwork.year}")
+                output_lines.append(f"Type: {artwork.type.value if hasattr(artwork.type, 'value') else artwork.type}") # Handle if type is already a string
+                output_lines.append(f"Description: {artwork.description}")
                 if artwork.image_path:
-                    print(f"Image: {artwork.image_path}")
+                    output_lines.append(f"Image: {artwork.image_path}")
+                return "\n".join(output_lines)
             else:
-                print(f"Artwork {artwork_id} not found")
+                return f"Artwork {artwork_id} not found"
         except ValueError as e:
             raise InvalidInputError(str(e))
 

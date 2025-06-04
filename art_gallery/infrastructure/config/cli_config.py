@@ -87,6 +87,7 @@ class CLIConfig:
                 "success": "\033[92m",  # Зеленый
                 "warning": "\033[93m",  # Желтый
                 "info": "\033[94m",     # Синий
+                "prompt": "\033[90m",   # Серый (яркий черный)
                 "reset": "\033[0m"      # Сброс цвета
             }
         
@@ -99,7 +100,57 @@ class CLIConfig:
             }
     
     def format_message(self, message: str, message_type: str = "info") -> str:
-        """Форматирует сообщение с цветом и префиксом"""
-        color = self.colors.get(message_type, self.colors["reset"])
-        format_str = self.message_format.get(message_type, "{}")
-        return f"{color}{format_str}{self.colors['reset']}".format(message)
+        """Форматирует сообщение:
+        - Префикс и названия полей окрашиваются цветом message_type.
+        - Значения полей выводятся стандартным цветом терминала.
+        - Для многострочных сообщений префикс добавляется к первой строке,
+          последующие строки получают отступ.
+        """
+        color_for_field_and_prefix = self.colors.get(message_type, self.colors.get("info", "")) # Цвет для префикса и названий полей
+        color_for_value = self.colors.get("reset", "") # Стандартный цвет для значений
+        
+        # Шаблон префикса, например, "[INFO] {}"
+        prefix_format_template = self.message_format.get(message_type, "{}")
+        # Извлекаем сам текст префикса, например, "[INFO] "
+        actual_prefix_text = prefix_format_template.split('{}', 1)[0] if '{}' in prefix_format_template else prefix_format_template
+        if actual_prefix_text == "{}": # Если шаблоном было просто "{}", значит префикса нет
+            actual_prefix_text = ""
+
+        indent = "    "  # Отступ для последующих строк
+        input_lines = message.split('\n')
+        if not input_lines:
+            return ""
+
+        processed_output_lines = []
+
+        for i, line_content_str in enumerate(input_lines):
+            # Пропускаем полностью пустые строки в исходном сообщении, чтобы не добавлять к ним цвет/префикс
+            # if not line_content_str.strip() and i > 0: # Сохраняем пустые строки, но без обработки
+            #     processed_output_lines.append(line_content_str)
+            #     continue
+
+            current_line_colored_parts = []
+            parts = line_content_str.split(':', 1)
+
+            if len(parts) == 2:  # Строка содержит название поля и значение
+                field_name_part, field_value_part = parts[0], parts[1]
+                current_line_colored_parts.append(f"{color_for_field_and_prefix}{field_name_part}:{color_for_value}{field_value_part}")
+            else:  # Строка не является парой поле:значение (например, заголовок, разделитель или просто текст)
+                current_line_colored_parts.append(f"{color_for_field_and_prefix}{line_content_str}")
+            
+            # Собираем окрашенную строку контента. Завершаем сбросом цвета.
+            colored_content_for_this_line = "".join(current_line_colored_parts) + color_for_value # color_for_value здесь как reset
+
+            if i == 0:  # Первая строка
+                # Добавляем окрашенный префикс, если он есть
+                if actual_prefix_text:
+                    processed_output_lines.append(f"{color_for_field_and_prefix}{actual_prefix_text}{color_for_value}{colored_content_for_this_line}")
+                else:
+                    processed_output_lines.append(colored_content_for_this_line)
+            else:  # Последующие строки
+                if line_content_str.strip(): # Добавляем отступ только для непустых строк
+                    processed_output_lines.append(f"{indent}{colored_content_for_this_line}")
+                else: # Сохраняем пустые строки как есть (без отступа и дополнительного окрашивания)
+                    processed_output_lines.append(line_content_str)
+        
+        return "\n".join(processed_output_lines)

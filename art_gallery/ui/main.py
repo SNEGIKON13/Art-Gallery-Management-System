@@ -1,6 +1,7 @@
 import argparse
 import os
 import logging # Добавляем стандартный logging
+logging.disable(logging.CRITICAL + 1) # ПОЛНОСТЬЮ ОТКЛЮЧАЕМ СТАНДАРТНЫЙ ЛОГГИНГ
 import json
 from typing import Optional, Dict, Any
 from art_gallery.infrastructure.config.cli_config import CLIConfig
@@ -15,14 +16,7 @@ from art_gallery.infrastructure.config import ConfigRegistry, SerializationConfi
 from art_gallery.infrastructure.logging.interfaces.logger import LogLevel
 from art_gallery.ui.command_registry.command_registrar import register_commands
 
-# Настройка базового логирования для вывода DEBUG сообщений в консоль
-logging.basicConfig(
-    level=logging.DEBUG,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.StreamHandler() # Вывод в консоль (stderr по умолчанию)
-    ]
-)
+# Настройка базового логирования БЫЛА ЗДЕСЬ (теперь отключено через logging.disable)
 
 class Application:
     def __init__(self, args: Optional[argparse.Namespace] = None):
@@ -70,11 +64,21 @@ class Application:
             {LogLevel.ERROR, LogLevel.CRITICAL, LogLevel.WARNING}
         )
         
-        self.logger = CompositeLogger([app_logger, error_logger])
-        self.error_handler = ConsoleErrorHandler(self.logger)
+        # Инициализация логгеров (ПОДАВЛЕНО)
+        # app_logger = FilteredLogger(
+        #     FileLogger("logs/app.log"), 
+        #     {LogLevel.INFO, LogLevel.DEBUG}
+        # )
+        # error_logger = FilteredLogger(
+        #     FileLogger("logs/errors.log"), 
+        #     {LogLevel.ERROR, LogLevel.CRITICAL, LogLevel.WARNING}
+        # )
         
-        # Вывод информации о выбранном формате
-        print(f"Используем формат данных: {format_name.upper()}")
+        self.logger = CompositeLogger([]) # ПОДАВЛЯЕМ ВСЕ КАСТОМНЫЕ ЛОГИ
+        self.error_handler = ConsoleErrorHandler(self.logger, self.config) # Передаем self.config
+        
+        # Вывод информации о выбранном формате (ПОДАВЛЕНО, как техническая информация)
+        # print(f"Используем формат данных: {format_name.upper()}")
         
         # Инициализация сервисов
         if args.test:
@@ -92,12 +96,13 @@ class Application:
     # Метод _update_env_file удален, так как теперь используется ConfigRegistry.update_env_variable
     
     def run(self) -> None:
-        self.logger.info("Application started")
+        self.logger.info("Application started") # Этот лог уже подавлен через CompositeLogger([])
         print(self.config.format_message("Welcome to Art Gallery Management System", "info"))
         
         while True:
             try:
-                command = input(self.config.prompt_symbol).strip()
+                prompt_colored = f"{self.config.colors.get('prompt', '')}{self.config.prompt_symbol}{self.config.colors.get('reset', '')}"
+                command = input(prompt_colored).strip()
                 if command.lower() == "exit":
                     print(self.config.format_message("Goodbye!", "info"))
                     break
@@ -105,10 +110,10 @@ class Application:
                 # Выполняем команду
                 result = self.command_registry.execute(command)
                 if result:
-                    print(self.config.format_message(result, "success"))
+                    print(self.config.format_message(result, "info")) # Изменено на info для общего случая
                 
             except KeyboardInterrupt:
-                self.logger.info("Application terminated by user")
+                self.logger.info("Application terminated by user") # Этот лог уже подавлен
                 print(self.config.format_message("\nExiting...", "info"))
                 break
             except Exception as e:

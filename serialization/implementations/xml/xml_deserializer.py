@@ -70,7 +70,7 @@ class XmlDeserializer(IDeserializer):
         try:
             # Проверяем существование файла и его размер
             if not os.path.exists(filepath) or os.path.getsize(filepath) == 0:
-                print(f"[ИНФО] XML файл {filepath} не существует или пуст. Возвращаем пустой список.")
+                # print(f"[ИНФО] XML файл {filepath} не существует или пуст. Возвращаем пустой список.") # ПОДАВЛЕНО, как техническая информация
                 return []
                 
             tree = ET.parse(filepath)

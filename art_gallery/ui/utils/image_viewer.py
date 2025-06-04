@@ -156,28 +156,23 @@ class ImageViewer:
             use_web: Whether to open in web browser
 
         Returns:
-            Optional[str]: Error message or None if successful
+            Optional[str]: A message string (URL, success, or error).
         """
         try:
-            final_os_path: str  # OS-specific path for opening directly
-            path_for_html_src: str  # Path for <img src=...>, C:/style/path for local files
+            final_os_path: str
+            path_for_html_src: str
+
+            if self._is_url(image_path):  # Checks for http/https schemes with netloc
+                self._logger.info(f"Image is a web URL: {image_path}")
+                return f"Image URL: {image_path}\nUse Ctrl+click on the link above to open the image in your browser."
 
             if self._is_file_uri(image_path):
-                # Input is like "file:///C:/path/image.jpg" or "file:///path/image.jpg"
                 final_os_path = self._get_path_from_file_uri(image_path)
-                # _create_html_viewer expects a plain path (C:/path/img.jpg) for local files to add file:/// itself
-                path_for_html_src = final_os_path.replace('\\', '/')
+                path_for_html_src = final_os_path.replace('\\', '/') # For HTML src
                 self._logger.info(f"Processing file URI: '{image_path}' -> OS path: '{final_os_path}'")
-            elif self._is_url(image_path):  # Checks for http/https schemes with netloc
-                self._logger.info(f"Image is a web URL: {image_path}")
-                print(f"Image URL: {image_path}")
-                print("\nUse Ctrl+click on the link above to open the image in your browser.")
-                return None
-            else:
-                # Input is a relative or absolute local path without a scheme, e.g., "subdir/img.jpg" or "C:\\path\\img.jpg"
-                final_os_path = self._get_local_path(image_path) # Resolves relative to base_media_path
-                # _create_html_viewer expects a plain path (C:/path/img.jpg) for local files
-                path_for_html_src = os.path.abspath(final_os_path).replace('\\', '/')
+            else: # Is a relative or absolute local path
+                final_os_path = self._get_local_path(image_path)
+                path_for_html_src = os.path.abspath(final_os_path).replace('\\', '/') # For HTML src
                 self._logger.info(f"Processing local path: '{image_path}' -> OS path: '{final_os_path}'")
 
             if not os.path.exists(final_os_path):
@@ -187,34 +182,43 @@ class ImageViewer:
             title = os.path.basename(final_os_path)
 
             if use_web:
-                # self._create_html_viewer expects path_for_html_src to be either a web URL
-                # or a plain local path like 'C:/path/to/image.jpg'.
-                # It will add 'file:///' prefix for local paths itself.
-                html_content_string = self._create_html_viewer(path_for_html_src, title)
+                # path_for_html_src is 'C:/path/img.jpg' or a web URL.
+                # _create_html_viewer handles both, creates an HTML file, and returns its path.
+                created_html_file_path = self._create_html_viewer(path_for_html_src, title)
+                
+                # Ensure the path is absolute for webbrowser.open
+                abs_html_path = os.path.abspath(created_html_file_path).replace("\\", "/")
+                
+                webbrowser.open(f'file:///{abs_html_path}')
+                self._logger.info(f"Opened HTML viewer for {path_for_html_src} at {created_html_file_path}")
+                return f"Opening image '{title}' in web browser via temporary HTML: file:///{abs_html_path}"
 
-                base_temp_dir = self._config.base_media_path or os.getcwd()
-                temp_dir = os.path.join(base_temp_dir, "temp")
-                os.makedirs(temp_dir, exist_ok=True)
-
-                temp_html_filename = f"viewer_{os.urandom(4).hex()}.html"
-                html_file_path = os.path.join(temp_dir, temp_html_filename)
-
-                with open(html_file_path, 'w', encoding='utf-8') as f:
-                    f.write(html_content_string)
-
-                # Construct file URI for the browser to open the temporary HTML file
-                html_url_for_browser = "file:///" + os.path.abspath(html_file_path).replace('\\', '/')
-                webbrowser.open(html_url_for_browser, new=2)
-                self._logger.info(f"Opened image '{final_os_path}' in web viewer: {html_url_for_browser}")
             else:
-                # Use system's default viewer for the OS-specific path
+                opened_successfully = False
                 if os.name == 'nt':  # Windows
-                    os.startfile(final_os_path)
-                elif os.name == 'posix':  # Linux/Mac
-                    subprocess.run(['xdg-open', final_os_path], check=False)
-                self._logger.info(f"Opened image '{final_os_path}' in system viewer.")
+                    try:
+                        os.startfile(final_os_path)
+                        opened_successfully = True
+                    except Exception as e:
+                        self._logger.error(f"os.startfile failed for {final_os_path}: {e}")
+                        return f"Failed to open image with os.startfile: {e}"
+                elif os.name == 'posix':  # macOS, Linux
+                    try:
+                        # Try 'xdg-open' (Linux) or 'open' (macOS)
+                        cmd = 'open' if subprocess.check_output(['uname']).strip().decode() == 'Darwin' else 'xdg-open'
+                        subprocess.run([cmd, final_os_path], check=True)
+                        opened_successfully = True
+                    except (FileNotFoundError, subprocess.CalledProcessError) as e:
+                        self._logger.error(f"Command failed for {final_os_path}: {e}")
+                        return f"Failed to open image with system viewer: {e}"
+                else:
+                    return f"Unsupported OS for opening image directly: {os.name}"
 
-            return None
+                if opened_successfully:
+                    return f"Attempted to open image '{title}' with the default system viewer."
+                # This part should ideally not be reached if error handling above is complete
+                return f"Could not open image '{title}' with system viewer."
+
         except Exception as e:
-            self._logger.error(f"Failed to open image '{image_path}': {str(e)}", exc_info=True)
-            return f"Failed to open image: {str(e)}"
+            self._logger.error(f"Error opening image {image_path}: {e}", exc_info=True)
+            return f"An unexpected error occurred while opening image: {str(e)}"

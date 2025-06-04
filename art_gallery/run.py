@@ -1,11 +1,12 @@
 import sys
 import os
 import logging
+logging.disable(logging.CRITICAL + 1) # ПОЛНОСТЬЮ ОТКЛЮЧАЕМ СТАНДАРТНЫЙ ЛОГГИНГ В САМОМ НАЧАЛЕ
 from dotenv import load_dotenv # Импортируем load_dotenv
 
-# Настроим базовый логгер
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
+# Стандартный логгер был настроен здесь, но теперь он отключен глобально.
+# logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+# logger = logging.getLogger(__name__)
 
 # Загружаем переменные из .env файла
 # Это нужно сделать до импорта модулей, которые могут использовать os.getenv()
