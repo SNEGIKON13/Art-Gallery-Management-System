@@ -9,8 +9,8 @@ from art_gallery.domain import Exhibition
 from art_gallery.repository.interfaces.exhibition_repository import IExhibitionRepository
 from art_gallery.repository.implementations.minio.base_minio_repository import BaseMinioRepository
 from art_gallery.repository.specifications.base_specification import Specification
-from art_gallery.infrastructure.config.minio_config import MinioConfig
-from art_gallery.infrastructure.storage.minio_service import MinioService
+from art_gallery.infrastructure.cloud.minio_config import MinioConfig
+from art_gallery.infrastructure.cloud.minio_service import MinioService
 
 from serialization.interfaces.ISerializer import ISerializer
 from serialization.interfaces.IDeserializer import IDeserializer
@@ -36,15 +36,17 @@ class ExhibitionMinioRepository(BaseMinioRepository[Exhibition], IExhibitionRepo
             minio_service: Сервис для работы с MinIO. Если не указан, создается новый.
             config: Конфигурация для подключения к MinIO. Используется, если minio_service не указан.
         """
-        self._config = config or MinioConfig()
+        self._config = config or MinioConfig.from_env()
         
-        # Определяем путь к объекту в зависимости от формата сериализации
-        object_path = self._config.EXHIBITIONS_JSON_PATH
-        if serializer.__class__.__name__ == 'XMLSerializer':
-            object_path = self._config.EXHIBITIONS_XML_PATH
+        self.ENTITY_TYPE_STR = "exhibition"
+        file_extension = "xml" if serializer.__class__.__name__ == 'XMLSerializer' else "json"
+        
+        # Construct the object path using the prefix and file extension
+        base_filename = f"{self.ENTITY_TYPE_STR}.{file_extension}"
+        object_path = f"{self._config.get_prefix_for_entity_type(self.ENTITY_TYPE_STR)}{base_filename}"
         
         super().__init__(
-            bucket_name=self._config.DATA_BUCKET,
+            bucket_name=self._config.default_bucket,
             object_path=object_path,
             serializer=serializer,
             deserializer=deserializer,

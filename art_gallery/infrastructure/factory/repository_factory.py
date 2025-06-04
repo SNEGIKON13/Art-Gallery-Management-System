@@ -17,8 +17,8 @@ from art_gallery.repository.implementations.minio.artwork_repository import Artw
 from art_gallery.repository.implementations.minio.exhibition_repository import ExhibitionMinioRepository
 from art_gallery.repository.implementations.minio.unit_of_work import MinioUnitOfWork
 
-from art_gallery.infrastructure.config.minio_config import MinioConfig
-from art_gallery.infrastructure.storage.minio_service import MinioService
+from art_gallery.infrastructure.cloud.minio_config import MinioConfig
+from art_gallery.infrastructure.cloud.minio_service import MinioService
 from art_gallery.infrastructure.factory.serialization_plugin_factory import SerializationPluginFactory
 from art_gallery.infrastructure.factory.minio_repository_factory import MinioRepositoryFactory
 

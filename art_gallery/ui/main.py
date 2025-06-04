@@ -1,5 +1,6 @@
 import argparse
 import os
+import logging # Добавляем стандартный logging
 import json
 from typing import Optional, Dict, Any
 from art_gallery.infrastructure.config.cli_config import CLIConfig
@@ -13,6 +14,15 @@ from art_gallery.ui.services import create_real_services, create_mock_services
 from art_gallery.infrastructure.config.config_manager import ConfigManager
 from art_gallery.infrastructure.logging.interfaces.logger import LogLevel
 from art_gallery.ui.command_registry.command_registrar import register_commands
+
+# Настройка базового логирования для вывода DEBUG сообщений в консоль
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler() # Вывод в консоль (stderr по умолчанию)
+    ]
+)
 
 class Application:
     def __init__(self, args: Optional[argparse.Namespace] = None):

@@ -1,15 +1,28 @@
 import os
 import logging
 from dataclasses import dataclass
+from typing import Optional
+
+# Сервисы и интерфейсы приложения
 from art_gallery.application.services.mocks.mock_user_service import MockUserService
 from art_gallery.application.services.mocks.mock_artwork_service import MockArtworkService
 from art_gallery.application.services.mocks.mock_exhibition_service import MockExhibitionService
 from art_gallery.application.interfaces.user_service import IUserService
 from art_gallery.application.interfaces.artwork_service import IArtworkService
 from art_gallery.application.interfaces.exhibition_service import IExhibitionService
+
+# Облачное хранение
 from art_gallery.application.interfaces.cloud.i_file_storage_strategy import IFileStorageStrategy
-from art_gallery.application.services.cloud.file_storage_strategy_factory import FileStorageStrategyFactory
+from art_gallery.application.interfaces.cloud.i_media_service import IMediaService
+from art_gallery.application.services.cloud.local_file_storage_strategy import LocalFileStorageStrategy
+from art_gallery.application.services.cloud.cloud_file_storage_strategy import CloudFileStorageStrategy
+from art_gallery.infrastructure.cloud.minio_service import MinioService
+from art_gallery.infrastructure.cloud.minio_config import MinioConfig
+from art_gallery.infrastructure.interfaces.cloud.i_storage_service import IStorageService
+
+# Конфигурация
 from art_gallery.infrastructure.config.cli_config import CLIConfig
+from art_gallery.infrastructure.config.storage_config import StorageConfig
 from art_gallery.infrastructure.factory.serialization_plugin_factory import SerializationPluginFactory
 
 # Реальные сервисы
@@ -34,25 +47,33 @@ class ServiceCollection:
     artwork_service: IArtworkService
     exhibition_service: IExhibitionService
     cli_config: CLIConfig
+    storage_config: StorageConfig
     serialization_factory: SerializationPluginFactory
+    storage_service: Optional[IStorageService] = None
+    media_service: Optional[IMediaService] = None
+    file_storage_strategy: Optional[IFileStorageStrategy] = None
 
 def create_mock_services() -> ServiceCollection:
+    """Создает и настраивает тестовые сервисы с тестовыми хранилищами"""
     # Инициализируем фабрику плагинов сериализации
     factory = SerializationPluginFactory()
     factory.initialize()
     
-    # Создаем конфигурацию CLI
+    # Создаем конфигурацию CLI и хранилища
     cli_config = CLIConfig()
+    storage_config = StorageConfig(storage_type='local')
     
     # Создаем стратегию хранения файлов для мок-сервисов
+    storage_service = None
+    media_service = None
+    file_storage = None
+    
     try:
-        # Для тестового режима используем локальную стратегию
-        strategy_factory = FileStorageStrategyFactory()
-        file_storage = strategy_factory.create_strategy("local")
+        # Для тестового режима всегда используем локальную стратегию
+        file_storage = LocalFileStorageStrategy(storage_config.local_storage_path)
         logging.info("Mock services using local file storage strategy")
     except Exception as e:
         logging.warning(f"Failed to create file storage strategy for mock services: {str(e)}")
-        file_storage = None
     
     # Создаем мок-сервисы со стратегией хранения файлов
     artwork_service = MockArtworkService(file_storage_strategy=file_storage)
@@ -62,18 +83,21 @@ def create_mock_services() -> ServiceCollection:
         artwork_service=artwork_service,
         exhibition_service=MockExhibitionService(),
         cli_config=cli_config,
-        serialization_factory=factory
+        storage_config=storage_config,
+        serialization_factory=factory,
+        storage_service=storage_service,
+        media_service=media_service,
+        file_storage_strategy=file_storage
     )
 
 def create_real_services(format_name: str = 'json'):
-    """Создает экземпляры реальных сервисов с рабочими репозиториями
+    """Создает экземпляры реальных сервисов с рабочими репозиториями и стратегиями хранения
     
     Args:
         format_name (str, optional): Формат данных для хранения ('json' или 'xml'). По умолчанию 'json'.
     
     Returns:
-        Tuple[UserService, ArtworkService, ExhibitionService]: 
-            Возвращает три сервиса: пользователей, произведений искусства и выставок
+        ServiceCollection: Коллекция всех сервисов для работы приложения
     """
     # Определяем директорию с данными
     base_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
@@ -109,21 +133,55 @@ def create_real_services(format_name: str = 'json'):
     artwork_repo = ArtworkFileRepository(artworks_file, serializer, deserializer)
     exhibition_repo = ExhibitionFileRepository(exhibitions_file, serializer, deserializer)
 
-    # Создаем CLIConfig
+    # Создаем конфигурации
     cli_config = CLIConfig()
+    storage_config = StorageConfig.from_env()
     
-    # Создаем стратегию хранения файлов
+    # Инициализируем сервисы для хранения файлов
+    storage_service = None
+    media_service = None
+    file_storage: Optional[IFileStorageStrategy] = None
+    
     try:
-        # По умолчанию используем локальное хранилище
-        # В будущем можно добавить настройку из конфигурации
-        strategy_factory = FileStorageStrategyFactory()
-        strategy_type = "local"  # Здесь можно сделать выбор между "local" и "cloud"
-        
-        file_storage = strategy_factory.create_strategy(strategy_type)
-        logging.info(f"Created {strategy_type} file storage strategy")
+        # Настраиваем стратегию хранения файлов в соответствии с конфигурацией
+        if storage_config.storage_type.lower() == "cloud":
+            try:
+                logging.debug("Attempting to initialize MinIO services...")
+                minio_config = MinioConfig.from_env()
+                logging.debug(f"MinIO Config: Endpoint={minio_config.endpoint}, Bucket={minio_config.default_bucket}, Secure={minio_config.secure}")
+                
+                storage_service = MinioService(minio_config)
+                logging.debug("MinioService initialized successfully.")
+                
+                if storage_service is not None:
+                    logging.debug("Storage service is initialized. Creating CloudFileStorageStrategy...")
+                    file_storage = CloudFileStorageStrategy(storage_service, minio_config.default_bucket)
+                    # Установим media_service в None, так как мы не используем этот интерфейс
+                    media_service = None
+                    logging.info("Successfully initialized cloud (MinIO) file storage strategy.")
+                else:
+                    logging.error("Media service object is None after MinioService initialization!")
+                    raise ValueError("Media service is None, cannot create cloud storage strategy")
+            except Exception as cloud_error:
+                logging.warning(f"Failed to initialize cloud storage: {str(cloud_error)}", exc_info=True)
+                # Если произошла ошибка, используем локальную стратегию
+                # Создаем локальную стратегию как запасной вариант
+                file_storage = LocalFileStorageStrategy(storage_config.local_storage_path)
+                logging.info("Using local file storage as fallback after cloud init failure")
+        else:
+            logging.info("Storage type is not 'cloud'. Initializing local file storage strategy.")
+            file_storage = LocalFileStorageStrategy(storage_config.local_storage_path)
+            logging.info("Initialized local file storage strategy")
     except Exception as e:
-        logging.warning(f"Failed to create file storage strategy: {str(e)}")
-        file_storage = None
+        logging.warning(f"Failed to initialize file storage strategy: {str(e)}", exc_info=True)
+        # Если произошла ошибка, используем локальную стратегию как резервную
+        try:
+            # Создаем локальное хранилище как резервное
+            file_storage = LocalFileStorageStrategy(storage_config.local_storage_path)
+            logging.info("Using local file storage as fallback")
+        except Exception as fallback_error:
+            logging.error(f"Fallback storage initialization failed: {str(fallback_error)}")
+            file_storage = None
     
     # Инициализация реальных сервисов
     user_service = UserService(user_repo)
@@ -135,5 +193,9 @@ def create_real_services(format_name: str = 'json'):
         artwork_service=artwork_service,
         exhibition_service=exhibition_service,
         cli_config=cli_config,
-        serialization_factory=factory
+        storage_config=storage_config,
+        serialization_factory=factory,
+        storage_service=storage_service,
+        media_service=media_service,
+        file_storage_strategy=file_storage
     )

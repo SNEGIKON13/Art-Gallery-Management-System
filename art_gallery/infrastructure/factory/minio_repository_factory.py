@@ -1,7 +1,7 @@
 """
 Фабрика для создания MinIO репозиториев и сервисов.
 """
-from typing import Optional, Union
+from typing import Optional
 
 from art_gallery.repository.interfaces.user_repository import IUserRepository
 from art_gallery.repository.interfaces.artwork_repository import IArtworkRepository
@@ -11,9 +11,10 @@ from art_gallery.repository.implementations.minio.artwork_repository import Artw
 from art_gallery.repository.implementations.minio.exhibition_repository import ExhibitionMinioRepository
 from art_gallery.repository.implementations.minio.unit_of_work import MinioUnitOfWork
 
-from art_gallery.infrastructure.storage.minio_service import MinioService
-from art_gallery.infrastructure.storage.media_service import MediaService
-from art_gallery.infrastructure.config.minio_config import MinioConfig
+from art_gallery.application.interfaces.cloud.i_media_service import IMediaService
+from art_gallery.infrastructure.cloud.minio_service import MinioService
+from art_gallery.infrastructure.cloud.minio_config import MinioConfig
+from art_gallery.infrastructure.cloud.media_service import MediaService
 from art_gallery.infrastructure.factory.serialization_plugin_factory import SerializationPluginFactory
 
 
@@ -33,7 +34,7 @@ class MinioRepositoryFactory:
         Returns:
             MinioService: Сервис для работы с MinIO.
         """
-        minio_config = config or MinioConfig()
+        minio_config = config or MinioConfig.from_env()
         return MinioService(minio_config)
 
     @classmethod
@@ -50,7 +51,7 @@ class MinioRepositoryFactory:
         Returns:
             MediaService: Сервис для работы с медиа-файлами.
         """
-        minio_config = config or MinioConfig()
+        minio_config = config or MinioConfig.from_env()
         service = minio_service or cls.create_minio_service(minio_config)
         return MediaService(service, minio_config)
 
@@ -70,7 +71,7 @@ class MinioRepositoryFactory:
         Returns:
             IUserRepository: Репозиторий пользователей.
         """
-        minio_config = config or MinioConfig()
+        minio_config = config or MinioConfig.from_env()
         service = minio_service or cls.create_minio_service(minio_config)
         
         serializer = SerializationPluginFactory.get_serializer(format_name)
@@ -99,7 +100,7 @@ class MinioRepositoryFactory:
         Returns:
             IArtworkRepository: Репозиторий экспонатов.
         """
-        minio_config = config or MinioConfig()
+        minio_config = config or MinioConfig.from_env()
         service = minio_service or cls.create_minio_service(minio_config)
         
         serializer = SerializationPluginFactory.get_serializer(format_name)
@@ -128,7 +129,7 @@ class MinioRepositoryFactory:
         Returns:
             IExhibitionRepository: Репозиторий выставок.
         """
-        minio_config = config or MinioConfig()
+        minio_config = config or MinioConfig.from_env()
         service = minio_service or cls.create_minio_service(minio_config)
         
         serializer = SerializationPluginFactory.get_serializer(format_name)
@@ -157,7 +158,7 @@ class MinioRepositoryFactory:
         Returns:
             MinioUnitOfWork: Unit of Work для работы с MinIO репозиториями.
         """
-        minio_config = config or MinioConfig()
+        minio_config = config or MinioConfig.from_env()
         service = minio_service or cls.create_minio_service(minio_config)
         
         return MinioUnitOfWork(

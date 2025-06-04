@@ -9,8 +9,8 @@ from abc import ABC, abstractmethod
 from art_gallery.domain.base_entity import BaseEntity
 from art_gallery.repository.interfaces.base_repository import IBaseRepository
 from art_gallery.repository.specifications.base_specification import Specification
-from art_gallery.infrastructure.config.minio_config import MinioConfig
-from art_gallery.infrastructure.storage.minio_service import MinioService
+from art_gallery.infrastructure.cloud.minio_config import MinioConfig
+from art_gallery.infrastructure.cloud.minio_service import MinioService
 
 from serialization.interfaces.ISerializer import ISerializer
 from serialization.interfaces.IDeserializer import IDeserializer
@@ -47,7 +47,7 @@ class BaseMinioRepository(Generic[T], IBaseRepository[T], ABC):
         self._object_path = object_path
         self._serializer = serializer
         self._deserializer = deserializer
-        self._config = config or MinioConfig()
+        self._config = config or MinioConfig.from_env()
         self._minio_service = minio_service or MinioService(self._config)
         
         # Убедимся, что бакет существует
