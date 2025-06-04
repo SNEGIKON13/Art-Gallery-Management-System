@@ -9,7 +9,7 @@ from art_gallery.application.validation.validators import BusinessRuleValidator
 class UserService(IUserService):
     def __init__(self, user_repository: IUserRepository):
         self._repository = user_repository
-        self._next_id = 1  # Временное решение для генерации ID
+        # Убираем генерацию ID на уровне сервиса, репозиторий сам управляет ID
 
     def _hash_password(self, password: str) -> str:
         """Хеширует пароль"""
@@ -47,9 +47,7 @@ class UserService(IUserService):
             created_at=datetime.now()
         )
         
-        # Установка ID перед добавлением в репозиторий
-        user.id = self._next_id
-        self._next_id += 1
+        # Репозиторий сам генерирует и устанавливает ID
         return self._repository.add(user)
 
     def authenticate(self, username: str, password: str) -> Optional[User]:

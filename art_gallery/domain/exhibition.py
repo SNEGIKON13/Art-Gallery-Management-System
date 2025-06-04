@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import List, Optional, Dict, Any
 from art_gallery.domain.base_entity import BaseEntity
 
@@ -108,12 +108,31 @@ class Exhibition(BaseEntity):
         start_date_str = data['start_date']
         end_date_str = data['end_date']
         
-        start_date = datetime.fromisoformat(start_date_str)
-        end_date = datetime.fromisoformat(end_date_str)
+        # По умолчанию устанавливаем текущую дату
+        start_date = datetime.now()
+        # Проверяем, что значение не None и не строка "None"
+        if start_date_str and start_date_str.lower() != 'none':
+            try:
+                start_date = datetime.fromisoformat(start_date_str)
+            except ValueError:
+                # Если произошла ошибка преобразования, используем текущую дату
+                pass
+            
+        # По умолчанию окончание выставки через 30 дней
+        end_date = datetime.now() + timedelta(days=30)
+        # Проверяем, что значение не None и не строка "None"
+        if end_date_str and end_date_str.lower() != 'none':
+            try:
+                end_date = datetime.fromisoformat(end_date_str)
+            except ValueError:
+                # Если произошла ошибка преобразования, используем дату по умолчанию
+                pass
         
         # Обработка даты создания
         created_at_str = data.get('created_at')
-        created_at = datetime.fromisoformat(created_at_str) if created_at_str else datetime.now()
+        created_at = datetime.now()
+        if created_at_str and created_at_str.lower() != 'none':
+            created_at = datetime.fromisoformat(created_at_str)
         
         # Обработка опциональных полей
         max_capacity = data.get('max_capacity')

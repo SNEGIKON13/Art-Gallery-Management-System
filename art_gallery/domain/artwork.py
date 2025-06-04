@@ -122,7 +122,9 @@ class Artwork(BaseEntity):
         
         # Обработка даты создания
         created_at_str = data.get('created_at')
-        created_at = datetime.fromisoformat(created_at_str) if created_at_str else datetime.now()
+        created_at = datetime.now()
+        if created_at_str and created_at_str.lower() != 'none':
+            created_at = datetime.fromisoformat(created_at_str)
         
         # Создание объекта
         artwork = cls(

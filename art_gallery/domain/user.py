@@ -105,7 +105,9 @@ class User(BaseEntity):
         created_at = datetime.fromisoformat(created_at_str) if created_at_str else datetime.now()
         
         last_login_str = data.get('last_login')
-        last_login = datetime.fromisoformat(last_login_str) if last_login_str else None
+        last_login = None
+        if last_login_str and last_login_str.lower() != 'none':
+            last_login = datetime.fromisoformat(last_login_str)
         
         # Обработка активности
         is_active = data.get('is_active', True)

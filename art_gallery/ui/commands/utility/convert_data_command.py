@@ -95,8 +95,11 @@ class ConvertDataCommand(ICommand):
         Returns:
             bool: True если конвертация выполнена успешно
         """
-        base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+        # Фиксируем неправильный путь: надо подняться на 5 уровней, а не на 4
+        base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
         data_dir = os.path.join(base_dir, 'data')
+        print(f"Base directory: {base_dir}")
+        print(f"Data directory: {data_dir}")
         
         # Проверяем существование директорий
         source_dir = os.path.join(data_dir, source_format)
@@ -115,30 +118,53 @@ class ConvertDataCommand(ICommand):
         converted_count = 0
         
         # Создаем сериализаторы/десериализаторы
-        source_deserializer = self._serialization_factory.create_deserializer(source_format)
-        target_serializer = self._serialization_factory.create_serializer(target_format)
+        source_deserializer = self._serialization_factory.get_deserializer(source_format)
+        target_serializer = self._serialization_factory.get_serializer(target_format)
         
         for entity in entities:
             source_file = os.path.join(source_dir, f'{entity}.{source_format}')
             target_file = os.path.join(target_dir, f'{entity}.{target_format}')
             
             # Проверяем существование исходного файла и не пуст ли он
-            if os.path.exists(source_file) and os.path.getsize(source_file) > 0:
-                try:
-                    # Чтение данных
-                    with open(source_file, 'r', encoding='utf-8') as f:
-                        data = source_deserializer.deserialize(f.read())
-                    
-                    # Запись в новом формате
-                    with open(target_file, 'w', encoding='utf-8') as f:
-                        f.write(target_serializer.serialize(data))
+            print(f"Checking source file: {source_file}")
+            file_exists = os.path.exists(source_file)
+            print(f"  - File exists: {file_exists}")
+            
+            if file_exists:
+                file_size = os.path.getsize(source_file)
+                print(f"  - File size: {file_size} bytes")
+                
+                if file_size > 0:
+                    try:
+                        # Чтение данных
+                        with open(source_file, 'r', encoding='utf-8') as f:
+                            file_content = f.read()
+                            print(f"  - Successfully read file content ({len(file_content)} chars)")
+                            
+                        # Десериализация данных
+                        data = source_deserializer.deserialize(file_content)
+                        print(f"  - Successfully deserialized data")
+                        if isinstance(data, list):
+                            print(f"  - Data contains {len(data)} items")
                         
-                    print(f"Converted {entity} from {source_format} to {target_format}")
-                    converted_count += 1
-                except Exception as e:
-                    logging.error(f"Error converting {entity}: {str(e)}", exc_info=True)
-                    print(f"Error converting {entity}: {str(e)}")
+                        # Сериализация в целевой формат
+                        serialized_data = target_serializer.serialize(data)
+                        print(f"  - Successfully serialized to {target_format} format")
+                        
+                        # Запись в новом формате
+                        with open(target_file, 'w', encoding='utf-8') as f:
+                            f.write(serialized_data)
+                            print(f"  - Successfully wrote data to {target_file}")
+                            
+                        print(f"Converted {entity} from {source_format} to {target_format}")
+                        converted_count += 1
+                    except Exception as e:
+                        logging.error(f"Error converting {entity}: {str(e)}", exc_info=True)
+                        print(f"Error converting {entity}: {str(e)}")
+                        print(f"Detailed error:", e.__class__.__name__, e)
+                else:
+                    print(f"File for {entity} in {source_format} format is empty (0 bytes).")
             else:
-                print(f"File for {entity} in {source_format} format does not exist or is empty.")
+                print(f"File for {entity} in {source_format} format does not exist.")
         
         return converted_count > 0

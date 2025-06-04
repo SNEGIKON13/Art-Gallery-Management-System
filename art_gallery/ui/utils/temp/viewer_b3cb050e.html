@@ -1,0 +1,59 @@
+
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Artwork Image</title>
+            <style>
+                body { 
+                    margin: 0; 
+                    padding: 20px;
+                    background: #1a1a1a;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                }
+                img { 
+                    max-width: 90%;
+                    max-height: 90vh;
+                    object-fit: contain;
+                    border: 2px solid #333;
+                    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+                }
+                h1 {
+                    color: #fff;
+                    font-family: Arial, sans-serif;
+                    margin-bottom: 20px;
+                }
+                .image-container {
+                    position: relative;
+                    min-width: 300px;
+                    min-height: 200px;
+                }
+                .error-message {
+                    color: #ff5555;
+                    padding: 20px;
+                    text-align: center;
+                    border: 1px solid #ff5555;
+                    display: none;
+                }
+            </style>
+            <script>
+                function handleImageError() {
+                    document.getElementById('error-message').style.display = 'block';
+                }
+            </script>
+        </head>
+        <body>
+            <h1>Artwork Image</h1>
+            <div class="image-container">
+                <img src="http://localhost:9000/art-gallery/artworks/1/the_abduction_of_ganymede.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20250604%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250604T042600Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=3ce8288a3988eba462f8f1aaf45936fc15862ca63e6370513af3b007a769d189" alt="Artwork Image"> <!-- заменяем кавычки для корректного отображения в строке -->
+                <div id="error-message" class="error-message">
+                    Error loading image. The image might be unavailable or the URL might be incorrect.
+                </div>
+            </div>
+            <script>
+                document.querySelector('img').onerror = handleImageError;
+            </script>
+        </body>
+        </html>
+        

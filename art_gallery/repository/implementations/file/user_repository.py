@@ -26,8 +26,17 @@ class UserFileRepository(IUserRepository):
             # Используем десериализатор из плагина
             list_of_dicts = self._deserializer.deserialize_from_file(self._filepath)
             loaded_users = []
+            
+            # Отдельный список для отслеживания всех ID, включая ID пользователей с ошибками
+            self._all_ids = set()
+            
             for user_data_dict in list_of_dicts:
                 try:
+                    # Сохраняем ID в наборе, даже если дальше будет ошибка
+                    if 'id' in user_data_dict:
+                        user_id = int(user_data_dict['id'])
+                        self._all_ids.add(user_id)
+                        
                     loaded_users.append(User.from_dict(user_data_dict))
                 except Exception as e:
                     print(f"Error creating User from dict: {user_data_dict}, error: {e}")
@@ -38,6 +47,7 @@ class UserFileRepository(IUserRepository):
             print(f"Error loading data from {self._filepath} using deserializer: {e}")
             # TODO: Заменить на логирование
             self._users = []
+            self._all_ids = set()
 
     def _save_data(self) -> None:
         try:
@@ -55,16 +65,22 @@ class UserFileRepository(IUserRepository):
         # Присвоение ID происходит через свойство user.id
         if not user.id:
             # Генерация ID для нового пользователя (всегда положительный)
-            if not self._users:
+            # Используем набор всех ID (из успешно загруженных и сломанных записей)
+            if not hasattr(self, '_all_ids'):
+                self._all_ids = set()
+                # Загружаем ID из _users для обратной совместимости
+                for u in self._users:
+                    if hasattr(u, 'id') and u.id is not None:
+                        self._all_ids.add(u.id)
+            
+            if not self._all_ids:
                 new_id = 1  # Начинаем с 1, т.к. BaseEntity требует ID > 0
             else:
-                # Находим максимальный ID и увеличиваем на 1
-                existing_ids = [u.id for u in self._users if hasattr(u, 'id') and u.id is not None]
-                if not existing_ids:
-                    new_id = 1  # Начинаем с 1
-                else:
-                    new_id = max(existing_ids) + 1
+                new_id = max(self._all_ids) + 1
+                
             user.id = new_id
+            # Добавляем новый ID в набор всех ID
+            self._all_ids.add(new_id)
             
         self._users.append(user)
         self._save_data()

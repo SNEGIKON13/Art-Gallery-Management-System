@@ -120,9 +120,12 @@ class ImageViewer:
         Returns:
             str: Полный путь к файлу
         """
+        # Проверяем, что base_media_path не None
+        base_path = self._config.base_media_path or os.getcwd()
+        
         # Нормализуем путь и уберем дублирование media
         normalized_path = image_path.replace('media/', '')
-        return os.path.normpath(os.path.join(self._config.base_media_path, normalized_path))
+        return os.path.normpath(os.path.join(base_path, normalized_path))
     
     def open_image(self, image_path: str, use_web: bool = False) -> Optional[str]:
         """Opens image in default viewer or web browser
@@ -139,11 +142,12 @@ class ImageViewer:
             is_url = self._is_url(image_path)
             
             if is_url:
-                # Для URL всегда используем веб-браузер
-                use_web = True
-                self._logger.info(f"Opening URL image: {image_path}")
-                image_src = image_path
-                title = "Artwork Image"
+                # Если это URL, то не открываем браузер автоматически,
+                # а только выводим ссылку с инструкцией
+                self._logger.info(f"Image URL: {image_path}")
+                print(f"Image URL: {image_path}")
+                print("\nUse Ctrl+click on the link above to open the image in your browser.")
+                return None  # Успешно обработали URL
             else:
                 # Для локальных файлов проверяем существование
                 full_path = self._get_local_path(image_path)
@@ -157,7 +161,9 @@ class ImageViewer:
             # Открываем изображение
             if use_web:
                 # Создаем HTML просмотрщик
-                temp_dir = os.path.join(self._config.base_media_path, "temp")
+                # Проверяем, что base_media_path не None
+                base_path = self._config.base_media_path or os.getcwd()
+                temp_dir = os.path.join(base_path, "temp")
                 os.makedirs(temp_dir, exist_ok=True)
                 
                 # Используем временное имя для HTML файла
